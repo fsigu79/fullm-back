@@ -20,6 +20,12 @@ use App\Http\Controllers\PacPresupuestoController;
 use App\Http\Controllers\PacCarteraController;
 use App\Http\Controllers\PacVentasController;
 use App\Http\Controllers\PacGerencialDiarioController;
+use App\Http\Controllers\MarcaController;
+use App\Http\Controllers\ModeloController;
+use App\Http\Controllers\MotoController;
+use App\Http\Controllers\SegmentoController;
+use App\Http\Controllers\CobuController;
+use App\Http\Controllers\EadeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -172,6 +178,48 @@ Route::group([
     Route::get('gerdia', [PacGerencialDiarioController::class, 'ventasmarca']);
 });
 
+
+
+
+Route::group([
+    'prefix' => 'marca',
+], function () {
+    Route::get('list', [MarcaController::class, 'list']);
+    Route::get('list/{id}', [MarcaController::class, 'getById']);
+    Route::post('create', [MarcaController::class, 'create']);
+    Route::put('edit', [MarcaController::class, 'edit']);
+    Route::delete('delete/{id}', [MarcaController::class, 'delete']);
+});
+
+Route::group([
+    'prefix' => 'modelo',
+], function () {
+    Route::get('list', [ModeloController::class, 'list']);
+    Route::get('list/{id}', [ModeloController::class, 'getById']);
+    Route::post('create', [ModeloController::class, 'create']);
+    Route::put('edit', [ModeloController::class, 'edit']);
+    Route::delete('delete/{id}', [ModeloController::class, 'delete']);
+});
+
+Route::group([
+    'prefix' => 'segmento',
+], function () {
+    Route::get('list', [SegmentoController::class, 'list']);
+    Route::get('list/{id}', [SegmentoController::class, 'getById']);
+    Route::post('create', [SegmentoController::class, 'create']);
+    Route::put('edit', [SegmentoController::class, 'edit']);
+    Route::delete('delete/{id}', [SegmentoController::class, 'delete']);
+});
+
+Route::group([
+    'prefix' => 'moto',
+], function () {
+    Route::get('list', [MotoController::class, 'list']);
+    Route::get('list/{id}', [MotoController::class, 'getById']);
+    Route::post('create', [MotoController::class, 'create']);
+    Route::put('edit', [MotoController::class, 'edit']);
+    Route::delete('delete/{id}', [MotoController::class, 'delete']);
+});
 
 
 Route::group([
