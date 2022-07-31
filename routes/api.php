@@ -221,6 +221,19 @@ Route::group([
     Route::delete('delete/{id}', [MotoController::class, 'delete']);
 });
 
+Route::group([
+    'prefix' => 'eade',
+], function () {
+    Route::get('list', [EadeController::class, 'list']);
+    Route::post('create', [EadeController::class, 'create']);
+});
+
+Route::group([
+    'prefix' => 'cobus',
+], function () {
+    Route::get('list', [CobuController::class, 'list']);
+    Route::post('create', [CobuController::class, 'create']);
+});
 
 Route::group([
     'prefix' => 'pacg',

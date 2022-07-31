@@ -11,6 +11,7 @@ class Eade extends Model
 
     protected $fillable = [
         'codigo',
+        'anio',
         'mes',
         'anio_modelo',
         'marca',
