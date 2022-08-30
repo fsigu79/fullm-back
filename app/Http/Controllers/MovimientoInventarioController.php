@@ -28,10 +28,9 @@ class MovimientoInventarioController extends Controller
         $ffin=$request['ffin'];
         $doc=$request['doc'];
 
-        $sql=  "SELECT c.id, documento, numero, destino_id,nombre as destino,
+        $sql=  "SELECT c.id, documento, c.id as numero,cliente_id as destino_id,cliente_nombre as destino,referencia,observacion,
                         fecha, total,c.esactivo
                 FROM movimientos c
-                inner join destinos d on c.destino_id=d.id
                 where fecha>=? and fecha<=? and c.documento=?
                 order by fecha desc,numero desc";
         $list = DB::select($sql,[$finicio,$ffin,$doc]);
@@ -41,7 +40,7 @@ class MovimientoInventarioController extends Controller
 
     public function findById($id)
     {
-        $invoice = MovimientoInventario::with(['MovimientoDetalle','movimientoDetalle.product','destino'])->find($id);
+        $invoice = MovimientoInventario::with(['MovimientoDetalle',])->find($id);
         return $this->getOk($invoice);
     }
 
@@ -248,6 +247,87 @@ class MovimientoInventarioController extends Controller
 
         } else {
             return $this->insertErrCustom($validation->messages(), 'Datos inválidos');
+        }
+    }
+
+
+
+
+
+    public function savePac(Request $request)
+    {
+        $validation = Validator::make(
+            $request->all(),
+            [
+                'cliente_id' => 'required',
+            ],
+            [
+                'cliente_id.required' => 'El cliente es requerido.',
+            ]
+        );
+        if (!$validation->fails()) {
+
+            $input = $request->all();
+            $movimiento = new MovimientoInventario($input);
+            $movimiento->save();
+
+            foreach ($input['detalle'] as $parent_row) {
+                $detalle = new MovimientoInventarioDetalle($parent_row);
+                $detalle->movimiento_id = $movimiento->id;
+                $detalle->save();
+            }
+            if ($movimiento) {
+                return $this->insertOk($movimiento);
+            } else {
+                return $this->insertErr($movimiento);
+            }
+        } else {
+            return $this->insertErrCustom($validation->messages(), 'Datos inválidos');
+        }
+    }
+
+    public function updatePac(Request $request)
+    {
+        $validation = Validator::make(
+            $request->all(),
+            [
+                'provider_id' => 'required',
+            ],
+            [
+                'provider_id.required' => 'El nombre es requerido.',
+            ]
+        );
+        if (!$validation->fails()) {
+
+            $input = $request->all();
+            $movimiento = MovimientoInventario::find($input['id']);
+            $movimiento->update($request->all());
+
+            $detalles = $input['detalle'];
+            $movimiento_id = $input['id'];
+            $all_orders_ids = array_map(function ($detalle) use ($movimiento_id) {
+                $new_order_box = MovimientoDetalle::updateOrCreate(
+                    ['id' => $detalle['id']],
+                    [
+                        'movimiento_id' => $movimiento_id,
+                        'box_id' => $detalle['box_id'],
+                        'box_number' => $detalle['box_number'],
+                    ],
+                );
+                //return $detalle['id'];
+                return $new_order_box->id;
+            }, $detalles);
+            MovimientoInventarioDetalle::where('movimiento_id', $movimiento_id)->whereNotIn('id', $all_orders_ids)->delete();
+
+            return $this->updateOk($all_orders_ids);
+
+            if ($movimiento) {
+                return $this->updateOk(null);
+            } else {
+                return $this->updateErr(null);
+            }
+        } else {
+            return $this->updateErrCustom($validation->messages(), 'Datos inválidos');
         }
     }
 

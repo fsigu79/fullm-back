@@ -28,8 +28,26 @@ class GuiasPacController extends Controller
                     FROM xbase.movpro
                     INNER JOIN ybase.maepro ON codprod03 = codprod01
                     INNER JOIN zbase.maefac ON NOCOMP03=nofact31 AND cvanulado31!=9
-                    LEFT JOIN jcev.guia_remision_electronica on numero_documento_origen=NOCOMP03
+                    LEFT JOIN xbase.guia_remision_electronica on numero_documento_origen=NOCOMP03
                     WHERE tipotra03 IN ('80') AND cvanulado03 <>'S' AND fecmov03 >= 'xfinicio'  AND fecmov03 <= 'xffin' AND  tipprod01='S' AND statuspro01='S'";
+
+    private $sqlguias="SELECT ALL SUBSTRING(NOCOMP03,1,7) AS agencia,
+                            nocte31 AS codigocliente,
+                            nomcte31 AS cliente,
+                            codprod01 AS codigo,
+	                        desprod01 AS articulo,
+                            'FA' AS tipodoc,
+	                        NOCOMP03 AS documento,
+                            date(fecha_emision) AS fecha,
+	                        cantid03 AS cantidad,
+                            (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '4530' AND codtab <> '' AND codtab = marca01) AS marca,
+                            (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab =novend31) AS vendedor,
+                            numero_guia_remision
+                    FROM xbase.movpro
+                    INNER JOIN ybase.maepro ON codprod03 = codprod01
+                    INNER JOIN zbase.maefac ON NOCOMP03=nofact31 AND cvanulado31!=9
+                    LEFT JOIN xbase.guia_remision_electronica on numero_documento_origen=NOCOMP03
+                    WHERE tipotra03 IN ('80') AND cvanulado03 <>'S' AND fecha_emision >= 'xfinicio'  AND fecha_emision <= 'xffin' AND  tipprod01='S' AND statuspro01='S'";
 
     public function __construct()
     {
@@ -70,9 +88,6 @@ class GuiasPacController extends Controller
         return $this->getOk($list);
     }
 
-
-
-
     public function generaQueryGuias($bodega,$bodega1,$bodega2,$inicio,$fin)
     {
         $query=  str_replace('xbase',$bodega,$this->sqlgen);
@@ -83,6 +98,49 @@ class GuiasPacController extends Controller
         return $query;
     }
 
+
+    public function guiasDetalle(Request $request)
+    {
+        $input = $request->all();
+        $inicio=$request['finicio'].' 00:00:00';
+        $fin=$request['ffin'].' 23:59:00';
+        $sql='';
+
+        // select de guias
+        $sql=$this->generaQueryGuiasDetalle('jcev','jcev','jcev',$inicio,$fin);
+        $sql=$sql.' UNION ALL '.$this->generaQueryGuiasDetalle('jcevcuenca2','jcevcuenca2','jcevcuenca2',$inicio,$fin);
+        $sql=$sql.' UNION ALL '.$this->generaQueryGuiasDetalle('jcevcuenca1','jcevcuenca1','jcevcuenca1',$inicio,$fin);
+        $sql=$sql.' UNION ALL '.$this->generaQueryGuiasDetalle('jcevgye1','jcevgye1','jcevgye1',$inicio,$fin);
+        $sql=$sql.' UNION ALL '.$this->generaQueryGuiasDetalle('jcevgye10','jcevgye10','jcevgye10',$inicio,$fin);
+        $sql=$sql.' UNION ALL '.$this->generaQueryGuiasDetalle('jcevuio1','jcevuio1','jcevuio1',$inicio,$fin);
+        $sql=$sql.' UNION ALL '.$this->generaQueryGuiasDetalle('jcevconsigvirt','jcevuio1','jcevuio1',$inicio,$fin);
+        $sql=$sql.' UNION ALL '.$this->generaQueryGuiasDetalle('jcevgyeassem','jcevgyeassem','jcevgyeassem',$inicio,$fin);
+        $sql=$sql.' UNION ALL '.$this->generaQueryGuiasDetalle('jcevconsigvirt','jcevconsigvirt','jcevgyeassem',$inicio,$fin);
+        $sql=$sql.' UNION ALL '.$this->generaQueryGuiasDetalle('jcevstecvir','jcevstecvir','jcevstecvir',$inicio,$fin);
+
+        /*$sql='select codigocliente,
+                    cliente,
+                    documento,
+                    fecha,
+                    vendedor,
+                    numero_guia_remision,
+                    sum(cantidad) as cantidad
+              from ('.$sql.' ) a group by codigocliente,cliente,documento,fecha,vendedor,numero_guia_remision';
+*/
+        $list = DB::connection('mysqlpac')->select($sql);
+
+        return $this->getOk($list);
+    }
+
+    public function generaQueryGuiasDetalle($bodega,$bodega1,$bodega2,$inicio,$fin)
+    {
+        $query=  str_replace('xbase',$bodega,$this->sqlguias);
+        $query=  str_replace('ybase',$bodega1,$query);
+        $query=  str_replace('zbase',$bodega2,$query);
+        $query=  str_replace('xfinicio',$inicio,$query);
+        $query=  str_replace('xffin',$fin,$query);
+        return $query;
+    }
 
 
 

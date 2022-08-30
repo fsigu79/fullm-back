@@ -11,10 +11,13 @@ class MovimientoInventarioDetalle extends Model
     protected $table = 'movimientosd';
 
     protected $fillable = [
+        'id',
         'movimiento_id',
         'documento',
         'numero',
         'producto_id',
+        'producto_codigo',
+        'producto_nombre',
         'cantidad',
         'costo',
         'recibidos',

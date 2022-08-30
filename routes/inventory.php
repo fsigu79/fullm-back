@@ -97,8 +97,8 @@ Route::group([
 ], function () {
     Route::get('list', [MovimientoInventarioController::class, 'list']);
     Route::get('list/{id}', [MovimientoInventarioController::class, 'findById']);
-    Route::post('create', [MovimientoInventarioController::class, 'saveEgreso']);
-    Route::put('update/{id}', [MovimientoInventarioController::class, 'saveEgreso']);
+    Route::post('create', [MovimientoInventarioController::class, 'savePac']);
+    Route::put('update/{id}', [MovimientoInventarioController::class, 'updatePac']);
     Route::delete('delete/{id}', [MovimientoInventarioController::class, 'deleteEgreso']);
 });
 
