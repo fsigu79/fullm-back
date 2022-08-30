@@ -26,6 +26,7 @@ use App\Http\Controllers\MotoController;
 use App\Http\Controllers\SegmentoController;
 use App\Http\Controllers\CobuController;
 use App\Http\Controllers\EadeController;
+use App\Http\Controllers\PacVentasComparaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -176,6 +177,15 @@ Route::group([
     Route::get('segucon', [PacCarteraController::class, 'seguroConfianza']);
     Route::get('vensem', [PacVentasController::class, 'ventasSemana']);
     Route::get('gerdia', [PacGerencialDiarioController::class, 'ventasmarca']);
+
+    Route::get('vtacomcli', [PacVentasComparaController::class, 'ventamescliente']);
+    Route::get('vtacomven', [PacVentasComparaController::class, 'ventamesvendedor']);
+    Route::get('vtacompro', [PacVentasComparaController::class, 'ventamesproducto']);
+    Route::get('vtacommar', [PacVentasComparaController::class, 'ventamesmarca']);
+
+    Route::get('searchproddupac', [ProductoPacController::class, 'searchProductsPac']);
+    Route::get('prodbyidpac/{id}', [ProductoPacController::class, 'productIdPac']);
+
 });
 
 
@@ -226,6 +236,7 @@ Route::group([
 ], function () {
     Route::get('list', [EadeController::class, 'list']);
     Route::post('create', [EadeController::class, 'create']);
+    Route::get('search', [EadeController::class, 'searchProductsEade']);
 });
 
 Route::group([
@@ -233,12 +244,14 @@ Route::group([
 ], function () {
     Route::get('list', [CobuController::class, 'list']);
     Route::post('create', [CobuController::class, 'create']);
+    Route::get('search', [CobuController::class, 'searchProductsCobus']);
 });
 
 Route::group([
     'prefix' => 'pacg',
 ], function () {
     Route::get('guiasvta', [GuiasPacController::class, 'ventaGuias']);
+    Route::get('guias/det', [GuiasPacController::class, 'guiasDetalle']);
 });
 
 

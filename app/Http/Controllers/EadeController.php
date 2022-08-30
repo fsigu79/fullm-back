@@ -24,6 +24,38 @@ class EadeController extends Controller
         return $this->getOk($list);
     }
 
+    public function searchProductsEade(Request $request)
+    {
+        $input = $request->all();
+        $marca=$request['marca'];
+        $modelo=strtoupper($request['modelo']);
+
+         if ($request['marca']=='null' || $request['marca']==''){
+            $marca='0';
+        }else{
+            $marca=$request['marca'];
+        }
+
+        if ($request['modelo']=='null' || $request['modelo']==''){
+            $modelo='0';
+        }else{
+            $modelo=$request['modelo'];
+        }
+
+       try{
+            $sql="select distinct codigo, marca,modelo,segmento
+                from eade
+                where if ('".$marca."'='0',true,marca like '%".$marca."%') and
+                        if ('".$modelo."'='0',true,modelo like '%".$modelo."%')";
+
+            $list = DB::select($sql);
+            return $this->getOk($list);
+
+        }catch(\Exception $e) {
+            return $this->insertErrCustom($request, $e->getMessage());
+        }
+    }
+
     public function create(Request $request)
     {
         try{

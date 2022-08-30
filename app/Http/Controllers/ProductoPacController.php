@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\ClientExport;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\FormatResponseTrait;
 use App\Models\Customer;
@@ -39,6 +38,9 @@ class ProductoPacController extends Controller
         }else{
             $descripcion=$request['producto_nombre'].'%';
         }
+
+        //$producto=isset($request['producto_id']) ?$request['producto_id']:'0';
+        //$vendedor=isset($request['vendedor_id']) ?$request['vendedor_id']:'0';
 
 
         //$descripcion=$request['producto_nombre'];
@@ -81,6 +83,62 @@ class ProductoPacController extends Controller
         )->setPaper([0, 0, 141.73,283.47 ], 'landscape');
 
         return $pdf->stream('label1.pdf');
+    }
+
+    public function searchProductsPac(Request $request)
+    {
+        $input = $request->all();
+        $cod=$request['code'];
+        $des=strtoupper($request['name']);
+
+         if ($request['code']=='null' || $request['code']==''){
+            $cod='0';
+        }else{
+            $cod=$request['code'];
+        }
+
+        if ($request['name']=='null' || $request['name']==''){
+            $des='0';
+        }else{
+            $des=$request['name'];
+        }
+
+       try{
+            $sql="SELECT 1 as id,codprod01 as codigo,desprod01 as nombre,'barcode' as barcode,'descripcion' as descripcion ,
+                        cantact01 as saldo,
+                        valact01 as costo_promedio,
+                        0 as descuento,
+                        0 as nventariado,
+                        1 as tieneiva
+                from jcev.maepro
+                where if ('".$cod."'='0',true,codprod01 like '%".$cod."%') and
+                        if ('".$des."'='0',true,desprod01 like '%".$des."%')";
+
+            $list = DB::connection('mysqlpac')->select($sql);
+            return $this->getOk($list);
+
+        }catch(\Exception $e) {
+            return $this->insertErrCustom($request, $e->getMessage());
+        }
+    }
+
+
+
+     public function productIdPac($id){
+        try{
+            $sql="SELECT 1 as id,codprod01 as codigo,desprod01 as nombre,'barcode' as barcode,'descripcion' as descripcion ,
+                            cantact01 as saldo,
+                            valact01 as costo_promedio,
+                            0 as descuento,
+                            0 as nventariado,
+                            1 as tieneiva
+                    from jcev.maepro where codprod01=?";
+            $list = DB::connection('mysqlpac')->select($sql,[$id]);
+            return $this->getOk($list);
+
+        }catch(\Exception $e) {
+            return $this->insertErrCustom($id, $e->getMessage());
+        }
     }
 
 
