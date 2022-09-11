@@ -100,6 +100,8 @@ Route::group([
     Route::post('create', [MovimientoInventarioController::class, 'savePac']);
     Route::put('update/{id}', [MovimientoInventarioController::class, 'updatePac']);
     Route::delete('delete/{id}', [MovimientoInventarioController::class, 'deleteEgreso']);
+    Route::put('approve', [MovimientoInventarioController::class, 'updateAprobar']);
+    Route::put('register', [MovimientoInventarioController::class, 'updateRegistrado']);
 });
 
 

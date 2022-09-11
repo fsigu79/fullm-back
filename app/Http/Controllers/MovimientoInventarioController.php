@@ -28,7 +28,9 @@ class MovimientoInventarioController extends Controller
         $ffin=$request['ffin'];
         $doc=$request['doc'];
 
-        $sql=  "SELECT c.id, documento, c.id as numero,cliente_id as destino_id,cliente_nombre as destino,referencia,observacion,
+
+
+        $sql=  "SELECT c.id, documento, c.numero as numero,cliente_id as destino_id,cliente_nombre as destino,referencia,observacion,
                         fecha, total,c.esactivo
                 FROM movimientos c
                 where fecha>=? and fecha<=? and c.documento=?
@@ -320,6 +322,72 @@ class MovimientoInventarioController extends Controller
             MovimientoInventarioDetalle::where('movimiento_id', $movimiento_id)->whereNotIn('id', $all_orders_ids)->delete();
 
             return $this->updateOk($all_orders_ids);
+
+            if ($movimiento) {
+                return $this->updateOk(null);
+            } else {
+                return $this->updateErr(null);
+            }
+        } else {
+            return $this->updateErrCustom($validation->messages(), 'Datos inválidos');
+        }
+    }
+
+
+
+
+    public function updateAprobar(Request $request)
+    {
+        $validation = Validator::make(
+            $request->all(),
+            [
+                'id' => 'required',
+            ],
+            [
+                'id.required' => 'El codigo es requerido.',
+            ]
+        );
+        if (!$validation->fails()) {
+
+            $input = $request->all();
+            $id=$input['id'];
+
+            $sql="update movimientos set aprobado=1 where id=?";
+            $order = DB::update($sql,[$id]);
+
+            return $this->updateOk($input);
+
+            if ($movimiento) {
+                return $this->updateOk(null);
+            } else {
+                return $this->updateErr(null);
+            }
+        } else {
+            return $this->updateErrCustom($validation->messages(), 'Datos inválidos');
+        }
+    }
+
+    public function updateRegistrado(Request $request)
+    {
+        $validation = Validator::make(
+            $request->all(),
+            [
+                'id' => 'required',
+            ],
+            [
+                'id.required' => 'El codigo es requerido.',
+            ]
+        );
+        if (!$validation->fails()) {
+
+            $input = $request->all();
+            $id=$input['id'];
+            $ref=$input['referencia_pac'];
+
+            $sql="update movimientos set registrado=1,referencia_pac=? where id=?";
+            $order = DB::update($sql,[$ref,$id]);
+
+            return $this->updateOk($input);
 
             if ($movimiento) {
                 return $this->updateOk(null);
