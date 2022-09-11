@@ -78,6 +78,7 @@ class ProductoPacController extends Controller
         $sql='SELECT codprod01 as codigo,desprod01 as producto from jcev.maepro where codprod01=?';
         $order = DB::connection('mysqlpac')->select($sql,[$id]);
 
+
         $customPaper = array(0,0,567.00,283.80);
         $pdf = PDF::loadView('label',compact('order')
         )->setPaper([0, 0, 141.73,283.47 ], 'landscape');
