@@ -351,9 +351,10 @@ class MovimientoInventarioController extends Controller
 
             $input = $request->all();
             $id=$input['id'];
+            $apro=$input['aprobado'];
 
-            $sql="update movimientos set aprobado=1 where id=?";
-            $order = DB::update($sql,[$id]);
+            $sql="update movimientos set aprobado=? where id=?";
+            $order = DB::update($sql,[$apro,$id]);
 
             return $this->updateOk($input);
 
@@ -383,9 +384,10 @@ class MovimientoInventarioController extends Controller
             $input = $request->all();
             $id=$input['id'];
             $ref=$input['referencia_pac'];
+            $regis=$input['registrado'];
 
-            $sql="update movimientos set registrado=1,referencia_pac=? where id=?";
-            $order = DB::update($sql,[$ref,$id]);
+            $sql="update movimientos set registrado=?,referencia_pac=? where id=?";
+            $order = DB::update($sql,[$regis,$ref,$id]);
 
             return $this->updateOk($input);
 
