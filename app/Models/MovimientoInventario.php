@@ -25,6 +25,9 @@ class MovimientoInventario extends Model
         'subcero',
         'iva',
         'total',
+        'aprobado',
+        'registrado',
+        'referencia_pac',
         'esactivo',
         'usuario_id',
 
