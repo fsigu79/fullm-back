@@ -62,6 +62,7 @@ class MovimientoInventarioController extends Controller
         if (!$validation->fails()) {
                 try{
                     $input = $request->all();
+
                     DB::beginTransaction();
                     if ($input['accion']!='Eliminar') {
                         //eliminamos el detalle si es modificacion
@@ -74,19 +75,22 @@ class MovimientoInventarioController extends Controller
                                 ]);
                         };
 
-                        $results=DB::select('SELECT movimiento_ingreso_grabar_cabecera(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                        $results=DB::select('SELECT movimiento_ingreso_grabar_cabecera(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                                     [$input['id'],
                                     $input['documento'],
+                                    $input['serie'],
                                     $input['numero'],
-                                    $input['fecha'],
                                     $input['nota_contable'],
-                                    $input['precio_id'],
+                                    $input['fecha'],
                                     $input['destino_id'],
+                                    $input['cliente_id'],
+                                    $input['cliente_nombre'],
+                                    $input['precio_id'],
                                     $input['referencia'],
                                     $input['observacion'],
-                                    $input['subiva'],
-                                    $input['subcero'],
                                     $input['subtotal'],
+                                    $input['subcero'],
+                                    $input['subiva'],
                                     $input['total'],
                                     $input['esactivo'],
                                     $input['accion']
@@ -102,11 +106,14 @@ class MovimientoInventarioController extends Controller
 
                         //grabamos el detalle
                         foreach ($input['detalle'] as $detalle) {
-                             $results=DB::select('SELECT movimiento_ingreso_grabar_detalle(?,?,?,?,?,?,?,?)',[
+                             $results=DB::select('SELECT movimiento_ingreso_grabar_detalle(?,?,?,?,?,?,?,?,?,?,?)',[
                             $input['id'],
                             $input['documento'],
+                            $input['serie'],
                             $input['numero'],
                             $detalle['producto_id'],
+                            $detalle['producto_codigo'],
+                            $detalle['producto_nombre'],
                             $detalle['cantidad'],
                             $detalle['costo'],
                             $detalle['recibidos'],
@@ -367,6 +374,40 @@ class MovimientoInventarioController extends Controller
             return $this->updateErrCustom($validation->messages(), 'Datos inválidos');
         }
     }
+
+    public function updateNegado(Request $request)
+    {
+        $validation = Validator::make(
+            $request->all(),
+            [
+                'id' => 'required',
+            ],
+            [
+                'id.required' => 'El codigo es requerido.',
+            ]
+        );
+        if (!$validation->fails()) {
+
+            $input = $request->all();
+            $id=$input['id'];
+            $ref=$input['referencia_negado'];
+            $regis=$input['negado'];
+
+            $sql="update movimientos set negado=?,referencia_negado=? where id=?";
+            $order = DB::update($sql,[$regis,$ref,$id]);
+
+            return $this->updateOk($input);
+
+            if ($movimiento) {
+                return $this->updateOk(null);
+            } else {
+                return $this->updateErr(null);
+            }
+        } else {
+            return $this->updateErrCustom($validation->messages(), 'Datos inválidos');
+        }
+    }
+
 
     public function updateRegistrado(Request $request)
     {

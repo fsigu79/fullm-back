@@ -12,6 +12,7 @@ class Destino extends Model
      protected $fillable = [
         'nombre',
         'esactivo',
+        'serie',
     ];
 
     protected $hidden = [
