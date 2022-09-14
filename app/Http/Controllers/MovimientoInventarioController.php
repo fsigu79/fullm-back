@@ -30,7 +30,7 @@ class MovimientoInventarioController extends Controller
 
 
 
-        $sql=  "SELECT c.id, documento, c.numero as numero,cliente_id as destino_id,cliente_nombre as destino,referencia,observacion,
+        $sql=  "SELECT c.id, documento, c.numero as numero,cliente_id as destino_id,cliente_codigo,cliente_ruc,cliente_nombre as destino,referencia,observacion,
                         fecha, total,c.esactivo,aprobado,registrado,referencia_pac
                 FROM movimientos c
                 where fecha>=? and fecha<=? and c.documento=?
@@ -75,7 +75,7 @@ class MovimientoInventarioController extends Controller
                                 ]);
                         };
 
-                        $results=DB::select('SELECT movimiento_ingreso_grabar_cabecera(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                        $results=DB::select('SELECT movimiento_ingreso_grabar_cabecera(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                                     [$input['id'],
                                     $input['documento'],
                                     $input['serie'],
@@ -85,6 +85,8 @@ class MovimientoInventarioController extends Controller
                                     $input['destino_id'],
                                     $input['cliente_id'],
                                     $input['cliente_nombre'],
+                                    $input['cliente_codigo'],
+                                    $input['cliente_ruc'],
                                     $input['precio_id'],
                                     $input['referencia'],
                                     $input['observacion'],

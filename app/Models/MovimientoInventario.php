@@ -15,6 +15,8 @@ class MovimientoInventario extends Model
         'numero',
         'cliente_id',
         'cliente_nombre',
+        'cliente_codigo',
+        'cliente_ruc',
         'fecha',
         'nota_contable',
         'precio_id',
