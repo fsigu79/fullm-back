@@ -107,7 +107,7 @@ class ProductoPacController extends Controller
        try{
             $sql="SELECT 1 as id,codprod01 as codigo,desprod01 as nombre,'barcode' as barcode,'descripcion' as descripcion ,
                         cantact01 as saldo,
-                        valact01 as costo_promedio,
+                        precuni01 as costo_promedio,
                         0 as descuento,
                         0 as nventariado,
                         1 as tieneiva

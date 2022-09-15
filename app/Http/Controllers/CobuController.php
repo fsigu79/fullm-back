@@ -56,21 +56,50 @@ class CobuController extends Controller
         }
     }
 
+
+
     public function create(Request $request)
     {
         try{
+
             $input = $request->all();
-            //DB::beginTransaction();
+            //$params_arrray = json_decode($input,true); //consigo un objeto
+            //return $this->getOk($input);
+            DB::beginTransaction();
             //grabamos el detalle
             foreach ($input['detalle'] as $detalle) {
                 $entidad = new Cobus($detalle);
                 $entidad->save();
             };
-            //  DB::commit();
+              DB::commit();
             return $this->insertOk($input);
 
         } catch (\Exception $e) {
-            //DB::rollBack();
+            DB::rollBack();
+            return $this->insertErrCustom(null, $e->getMessage());
+        }
+
+    }
+
+
+    public function create1(Request $request)
+    {
+        try{
+
+            $input = $request->all();
+            //$params_arrray = json_decode($input,true); //consigo un objeto
+            //return $this->getOk($input);
+            DB::beginTransaction();
+            //grabamos el detalle
+            foreach ($input['detalle'] as $detalle) {
+                $entidad = new Cobus($detalle);
+                $entidad->save();
+            };
+              DB::commit();
+            return $this->insertOk($input);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
             return $this->insertErrCustom(null, $e->getMessage());
         }
 
