@@ -78,6 +78,7 @@ Route::group([
     Route::post('create', [DestinoController::class, 'create']);
     Route::put('update/{id}', [DestinoController::class, 'update']);
     Route::delete('delete/{id}', [DestinoController::class, 'delete']);
+    Route::get('listnum', [DestinoController::class, 'listNumeros']);
 });
 
 

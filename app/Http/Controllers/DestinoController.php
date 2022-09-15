@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Destino;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Traits\FormatResponseTrait;
+use Illuminate\Support\Facades\DB;
 
 class DestinoController extends Controller{
 
@@ -17,6 +18,19 @@ class DestinoController extends Controller{
         $this->middleware('auth:admin');
     }
 
+     public function listNumeros()
+    {
+        $doc='IN';
+
+        $sql=  "select d.id,d.nombre,d.serie,doc.numero,doc.codigo_contable
+                from destinos d
+                inner join documentos doc on d.serie=doc.serie and doc.codigo=? and doc.modulo='Inventarios'
+                where d.esactivo=1";
+
+        $list = DB::select($sql,[$doc]);
+
+        return $this->getOk($list);
+    }
 
     public function list()
     {
@@ -29,6 +43,7 @@ class DestinoController extends Controller{
         $product = Destino::find($id);
         return $this->getOk($product);
     }
+
 
 
 
