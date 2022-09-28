@@ -186,6 +186,9 @@ Route::group([
     Route::get('searchproddupac', [ProductoPacController::class, 'searchProductsPac']);
     Route::get('prodbyidpac/{id}', [ProductoPacController::class, 'productIdPac']);
 
+    Route::get('searchclipac', [ClientesPacController::class, 'searchClientesPac']);
+    Route::get('searchprovepac', [ClientesPacController::class, 'searchProveedorPac']);
+
 });
 
 

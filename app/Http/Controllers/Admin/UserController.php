@@ -92,7 +92,7 @@ class UserController extends Controller
         return $this->getOkPagination($results);
     }
 
-    public function registerNew(Request $request)
+    public function register(Request $request)
     {
         $validation = Validator::make(
             $request->all(),
@@ -116,7 +116,7 @@ class UserController extends Controller
 
             $input = $request->all();
             $user = new User($input);
-            $user->auid = (string) \Str::uuid();
+            //$user->auid = (string) \Str::uuid();
             $user->save();
             if ($user) {
                 return $this->insertOk(null);
@@ -128,7 +128,7 @@ class UserController extends Controller
         }
     }
 
-     public function register(Request $request) {
+     public function register1(Request $request) {
 
         //$name =  $request->input('name');
         //$surname =  $request->input('surname');

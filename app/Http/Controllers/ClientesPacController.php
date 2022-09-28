@@ -797,5 +797,78 @@ class ClientesPacController extends Controller
         return $pdf->stream('label1.pdf');
     }
 
+    public function searchClientesPac(Request $request)
+    {
+        $input = $request->all();
+        //return $this->getOk($input);
+        $cod=$input['ruc'];
+        $des=strtoupper($input['name']);
+
+         if ($input['ruc']=='null' || $input['ruc']==''){
+            $cod='0';
+        }else{
+            $cod=$input['ruc'];
+        }
+
+        if ($input['name']=='NULL' || $input['name']==''){
+            $des='0';
+        }else{
+            $des=$input['name'];
+        }
+
+        //return $this->getOk($input);
+
+       try{
+
+            $sql="select 1 as id,codcte01 as codigo, nomcte01 as nombre, cascte01 as ruc,'.' as apellido
+                from jcev.maecte
+                where if ('".$cod."'='0',true,cascte01 like '%".$cod."%') and
+                        if ('".$des."'='0',true,nomcte01 like '%".$des."%')";
+
+            $list = DB::connection('mysqlpac')->select($sql);
+            return $this->getOk($list);
+
+        }catch(\Exception $e) {
+            return $this->insertErrCustom($request, $e->getMessage());
+        }
+    }
+
+
+     public function searchProveedorPac(Request $request)
+    {
+        $input = $request->all();
+
+        $cod=$request['ruc'];
+        $des=strtoupper($input['nombres']);
+
+         if ($input['ruc']=='null' || $input['ruc']==''){
+            $cod='0';
+        }else{
+            $cod=$input['ruc'];
+        }
+
+        if ($input['nombres']=='NULL' || $input['nombres']==''){
+            $des='0';
+        }else{
+            $des=$input['nombres'];
+        }
+
+       try{
+
+            $sql="select 1 as id,codcte01 as codigo, nomcte01 as nombres, cascte01 as ruc,'.' as apellidos
+                from jcev.maepag
+                where if ('".$cod."'='0',true,cascte01 like '".$cod."%') and
+                        if ('".$des."'='0',true,nomcte01 like '%".$des."%')";
+            //return $this->getOk($sql);
+            $list = DB::connection('mysqlpac')->select($sql);
+            return $this->getOk($list);
+
+        }catch(\Exception $e) {
+            return $this->insertErrCustom($request, $e->getMessage());
+        }
+    }
+
+
+
 
 }

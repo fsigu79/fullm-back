@@ -35,6 +35,7 @@ class MovimientoInventarioController extends Controller
                 FROM movimientos c
                 where fecha>=? and fecha<=? and c.documento=?
                 order by fecha desc,numero desc";
+
         $list = DB::select($sql,[$finicio,$ffin,$doc]);
 
         return $this->getOk($list);
@@ -75,7 +76,7 @@ class MovimientoInventarioController extends Controller
                                 ]);
                         };
 
-                        $results=DB::select('SELECT movimiento_ingreso_grabar_cabecera(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                        $results=DB::select('SELECT movimiento_ingreso_grabar_cabecera(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                                     [$input['id'],
                                     $input['documento'],
                                     $input['serie'],
@@ -95,6 +96,7 @@ class MovimientoInventarioController extends Controller
                                     $input['subiva'],
                                     $input['total'],
                                     $input['esactivo'],
+                                    $input['descripcion'],
                                     $input['accion']
                                 ]);
 
