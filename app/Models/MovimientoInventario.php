@@ -30,6 +30,7 @@ class MovimientoInventario extends Model
         'aprobado',
         'registrado',
         'referencia_pac',
+        'descripcion',
         'esactivo',
         'usuario_id',
 

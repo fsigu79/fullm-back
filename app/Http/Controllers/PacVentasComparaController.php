@@ -527,9 +527,9 @@ class PacVentasComparaController extends Controller
         else
         {
             // select de ventas
-            $sql=$this->generaQueryVentas($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+            $sql=$this->generaQueryVentas($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
             // select de notas de credito
-            $sqlnc=$this->generaQueryNC($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+            $sqlnc=$this->generaQueryNC($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
         }
 
         if ($unidades=="true")

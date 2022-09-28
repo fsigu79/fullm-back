@@ -64,7 +64,7 @@ class CobuController extends Controller
 
             $input = $request->all();
             //$params_arrray = json_decode($input,true); //consigo un objeto
-            //return $this->getOk($input);
+            //getseriesreturn $this->getOk($input);
             DB::beginTransaction();
             //grabamos el detalle
             foreach ($input['detalle'] as $detalle) {
