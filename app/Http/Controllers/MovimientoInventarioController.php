@@ -43,7 +43,7 @@ class MovimientoInventarioController extends Controller
 
     public function findById($id)
     {
-        $invoice = MovimientoInventario::with(['MovimientoDetalle',])->find($id);
+        $invoice = MovimientoInventario::with(['MovimientoDetalle','destino'])->find($id);
         return $this->getOk($invoice);
     }
 

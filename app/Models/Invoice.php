@@ -48,7 +48,7 @@ class Invoice extends Model
         return $this->belongsTo(Customer::class,'cliente_id','id');
     }
 
-        public function price()
+    public function price()
     {
         return $this->belongsTo(Price::class);
     }
