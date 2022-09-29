@@ -30,9 +30,10 @@ class MovimientoInventarioController extends Controller
 
 
 
-        $sql=  "SELECT c.id, documento, c.numero as numero,cliente_id as destino_id,cliente_codigo,cliente_ruc,cliente_nombre as destino,
+        $sql=  "SELECT c.id,c.serie, documento, c.numero as numero,cliente_id,destino_id,cliente_codigo,cliente_ruc,cliente_nombre,d.nombre as destino,
                         referencia,observacion,fecha, total,c.esactivo,aprobado,registrado,referencia_pac,negado,referencia_negado
                 FROM movimientos c
+                inner join destinos d on c.destino_id=d.id
                 where fecha>=? and fecha<=? and c.documento=?
                 order by fecha desc,numero desc";
 
