@@ -12,6 +12,7 @@ class MovimientoInventario extends Model
     protected $fillable = [
         'id',
         'documento',
+        'serie',
         'numero',
         'cliente_id',
         'cliente_nombre',
@@ -45,6 +46,11 @@ class MovimientoInventario extends Model
         'id' => 'integer',
     ];
 
+
+    public function destino()
+    {
+        return $this->belongsTo(Destino::class,'cliente_id','id');
+    }
 
 
     public function movimientoDetalle()
