@@ -6,6 +6,7 @@ use App\Exports\ClientExport;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\FormatResponseTrait;
 use App\Models\Customer;
+use App\Models\SqlModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
@@ -166,7 +167,7 @@ class ClientesPacController extends Controller
         else
         {
             // select de ventas
-            $sql=$this->generaQueryVentas($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+            $sql=$this->generaQueryVentas($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
             // select de notas de credito
             $sqlnc=$this->generaQueryNC($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente);
         }
@@ -299,7 +300,7 @@ class ClientesPacController extends Controller
         else
         {
             // select de ventas
-            $sql=$this->generaQueryVentas($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+            $sql=$this->generaQueryVentas($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
             // select de notas de credito
             $sqlnc=$this->generaQueryNC($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente);
         }
@@ -369,6 +370,10 @@ class ClientesPacController extends Controller
 
 
 
+            $box = new SqlModel();
+            $box->sql= $sql;
+            $box->sql1=$sql;
+            $box->save();
         //return $this->getOk($sql);
 
         //$list = DB::select($sql,[$request['cliente_id']]);
@@ -423,7 +428,7 @@ class ClientesPacController extends Controller
         else
         {
             // select de ventas
-            $sql=$this->generaQueryVentas($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+            $sql=$this->generaQueryVentas($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
             // select de notas de credito
             $sqlnc=$this->generaQueryNC($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente);
         }
@@ -574,7 +579,7 @@ class ClientesPacController extends Controller
         else
         {
             // select de ventas
-            $sql=$this->generaQueryVentas($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+            $sql=$this->generaQueryVentas($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
             // select de notas de credito
             $sqlnc=$this->generaQueryNC($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente);
         }
@@ -837,17 +842,17 @@ class ClientesPacController extends Controller
      public function searchProveedorPac(Request $request)
     {
         $input = $request->all();
-
+        //return $this->getOk($input);
         $cod=$request['ruc'];
         $des=strtoupper($input['nombres']);
 
-         if ($input['ruc']=='null' || $input['ruc']==''){
+        if ($input['ruc']=='null' || $input['ruc']==''){
             $cod='0';
         }else{
             $cod=$input['ruc'];
         }
 
-        if ($input['nombres']=='NULL' || $input['nombres']==''){
+        if ($input['nombres']=='null' || $input['nombres']==''){
             $des='0';
         }else{
             $des=$input['nombres'];

@@ -532,14 +532,37 @@ class PacGerencialDiarioController extends Controller
     public function ventasmarca(Request $request)
     {
         $input = $request->all();
+
         $bodega = isset($request['marca_id']) ?$request['bodega_id']:'todas';
         $bodega_filtro='';
-        $inicio=$request['finicio'].' 00:00:00';
+        //
+        // si es acumulado o solo quieren del del dia actual
+        //
+        if ($input['acumulado']=='true'){
+            $fechai=Carbon::parse($input['finicio']);
+            $inicio = Carbon::create($fechai->year,$fechai->month, 1, 0, 0, 0);
+            $inicio=$inicio->format('Y-m-d').' 00:00:00';
+        }else{
+            $inicio=$request['finicio'].' 00:00:00';
+        }
         $fin=$request['finicio'].' 23:59:00';
-
+        //
+        //revisamos los dias laborables del año anterior en el mismo mes
+        //
         $fanterior = $this->DiasLaborables($inicio);
-        $fanterior=$fanterior->format('Y-m-d');
-        $inicio1=$fanterior.' 00:00:00';
+
+        //return $this->getOk($fanterior);
+
+         if ($input['acumulado']=='true'){
+            return $this->getOk($fanterior);
+            $inicio1 = Carbon::create($fanterior->year,$fanterior->month, 1, 0, 0, 0);
+            return $this->getOk($inicio1);
+            $inicio1=$inicio1->format('Y-m-d').' 00:00:00';
+        }else{
+            $fanterior=$fanterior->format('Y-m-d');
+            $inicio1=$fanterior.' 00:00:00';
+        }
+        //return $this->getOk($inicio1);
         $fin1=$fanterior.' 23:59:00';
 
         $marca=isset($request['marca_id']) ?$request['marca_id']:'0';
@@ -792,6 +815,7 @@ class PacGerencialDiarioController extends Controller
         $fechainicio = Carbon::create($fecha->year,$fecha->month, 1, 0, 0, 0);
 
         $dias_laborable=0;
+
         while ($fecha >= $fechainicio){
             $diasemana=$fechainicio->format("l");
             if (strtoupper($diasemana)!='SATURDAY' and strtoupper($diasemana)!='SUNDAY'){
@@ -799,7 +823,9 @@ class PacGerencialDiarioController extends Controller
             }
             $fechainicio->addDays(1);
         }
+
         $fechainicioanterior = Carbon::create(($fecha->year)-1,$fecha->month, 1, 0, 0, 0);
+
         $dias=0;
         $dias_laborable_anterior=0;
         while ($dias < $dias_laborable){
@@ -811,7 +837,7 @@ class PacGerencialDiarioController extends Controller
             $dias_laborable_anterior++;
             $fechainicioanterior->addDays(1);
         }
-
+        //return $fechainicioanterior;
 
         $fechaanterior = Carbon::create(($fecha->year)-1,$fecha->month, $dias_laborable_anterior, 0, 0, 0);
         return $fechaanterior;

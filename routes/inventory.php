@@ -99,8 +99,10 @@ Route::group([
     Route::get('list', [MovimientoInventarioController::class, 'list']);
     Route::get('list/{id}', [MovimientoInventarioController::class, 'findById']);
     Route::post('create', [MovimientoInventarioController::class, 'save']);
-    Route::put('update/{id}', [MovimientoInventarioController::class, 'updatePac']);
-    Route::delete('delete/{id}', [MovimientoInventarioController::class, 'deleteEgreso']);
+    //Route::put('update/{id}', [MovimientoInventarioController::class, 'updatePac']);
+    Route::post('update/{id}', [MovimientoInventarioController::class, 'save']);
+    Route::post('delete/{id}', [MovimientoInventarioController::class, 'save']);
+    //Route::delete('delete/{id}', [MovimientoInventarioController::class, 'deleteEgreso']);
     Route::put('approve', [MovimientoInventarioController::class, 'updateAprobar']);
     Route::put('register', [MovimientoInventarioController::class, 'updateRegistrado']);
     Route::put('negar', [MovimientoInventarioController::class, 'updateNegado']);

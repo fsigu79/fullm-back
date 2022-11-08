@@ -14,7 +14,7 @@ trait FormatResponseTrait
             'data' => $data,
         ], 200);
     }
- 
+
     public function getErr($message)
     {
         return response([
