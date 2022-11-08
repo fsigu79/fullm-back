@@ -14,18 +14,19 @@ class MovimientoInventario extends Model
         'documento',
         'serie',
         'numero',
+        'nota_contable',
+        'fecha',
+        'destino_id',
         'cliente_id',
         'cliente_nombre',
         'cliente_codigo',
         'cliente_ruc',
-        'fecha',
-        'nota_contable',
         'precio_id',
         'referencia',
         'observacion',
         'subtotal',
-        'subiva',
         'subcero',
+        'subiva',
         'iva',
         'total',
         'aprobado',
@@ -49,7 +50,7 @@ class MovimientoInventario extends Model
 
     public function destino()
     {
-        return $this->belongsTo(Destino::class,'cliente_id','id');
+        return $this->belongsTo(Destino::class,'destino_id','id');
     }
 
 

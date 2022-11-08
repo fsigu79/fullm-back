@@ -27,6 +27,7 @@ use App\Http\Controllers\SegmentoController;
 use App\Http\Controllers\CobuController;
 use App\Http\Controllers\EadeController;
 use App\Http\Controllers\PacVentasComparaController;
+use App\Http\Controllers\AuditoriaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -158,8 +159,14 @@ Route::group([
         Route::get('clie/list', [CatalogoController::class, 'listClientes']);
         Route::get('prod/list', [CatalogoController::class, 'listProductos']);
         Route::get('prodcod/list', [CatalogoController::class, 'listProductosCodigo']);
+
     });
 
+Route::group([
+        'prefix' => 'audi',
+    ], function () {
+       Route::get('list', [AuditoriaController::class, 'getByDocumento']);
+    });
 
 
 
@@ -174,6 +181,7 @@ Route::group([
     Route::get('export-label/{id}', [ProductoPacController::class, 'exportLabel']);
     Route::get('produpac', [ProductoPacController::class, 'listprodpac']);
     Route::get('prespac', [PacPresupuestoController::class, 'presupuestoPac']);
+    Route::get('prespacvs', [PacPresupuestoController::class, 'presupuestoPacCompara']);
     Route::get('segucon', [PacCarteraController::class, 'seguroConfianza']);
     Route::get('vensem', [PacVentasController::class, 'ventasSemana']);
     Route::get('gerdia', [PacGerencialDiarioController::class, 'ventasmarca']);

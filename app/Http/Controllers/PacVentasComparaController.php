@@ -73,7 +73,7 @@ class PacVentasComparaController extends Controller
 					      INNER JOIN jcev.maecte ON codcte43=codcte01
 					      INNER JOIN xbase.movpro  ON NOCOMP03=numdoc43 AND tipotra03 IN ('22') AND cvanulado03 <>'S'
 					      INNER JOIN xbase.maepro ON codprod03 = codprod01 AND  tipprod01='S'  AND statuspro01='S'
-					      WHERE tipodoc43 IN ('53')  AND ((fecdoc43 >= 'xfinicio'  AND fecdoc43) or (fecdoc43 >= 'yfinicioa'  AND fecdoc43 <= 'yffina')) <= 'xffin' AND cvanulado43<>'S' AND tipoNC43='P'
+					      WHERE tipodoc43 IN ('53')  AND ((fecdoc43 >= 'xfinicio'  AND fecdoc43<= 'xffin') or (fecdoc43 >= 'yfinicioa'  AND fecdoc43 <= 'yffina'))  AND cvanulado43<>'S' AND tipoNC43='P'
                                 and case when '0'='xmarc' then true else marca01 in ('xmarc') end
                                 and case when '0'='xprod' then true else codprod01 in ('xprod') end
                                 and case when '0'='xvend' then true else vendcte01 in ('xvend') end
@@ -176,7 +176,7 @@ class PacVentasComparaController extends Controller
         else
         {
             // select de ventas
-            $sql=$this->generaQueryVentas($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+            $sql=$this->generaQueryVentas($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
             // select de notas de credito
             $sqlnc=$this->generaQueryNC($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
         }
@@ -187,7 +187,6 @@ class PacVentasComparaController extends Controller
             $sql='SELECT 	codigocliente AS codigo,
 				                        cliente AS articulo,
 				                        cate AS categoria,
-				                        vendedor,
 					                    ROUND(SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)),2) AS anterior,
 					                    ROUND(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)),2) AS actual,
 					                    ROUND(ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)),0)*100,2) as incremento
@@ -203,7 +202,7 @@ class PacVentasComparaController extends Controller
 					            vencod,vendedor,
 					            catcod,cate
                         FROM ( '.$sqlnc.') a'.') b
-                                      GROUP BY b.codigocliente,b.cliente,b.cate,b.vendedor
+                                      GROUP BY b.codigocliente,b.cliente,b.cate
                                       ORDER BY SUM(b.cantidad) DESC';
         }
         else
@@ -212,7 +211,6 @@ class PacVentasComparaController extends Controller
             $sql='SELECT 	codigocliente AS codigo,
 				                        cliente AS articulo,
 				                        cate AS categoria,
-				                        vendedor,
 					                    ROUND(SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0)),2) AS anterior,
 					                    ROUND(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)),2) AS actual,
                                         ROUND(ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0)),0)*100,2) as incremento
@@ -228,7 +226,7 @@ class PacVentasComparaController extends Controller
 					            vencod,vendedor,
 					            catcod,cate
                         FROM ( '.$sqlnc.') a'.') b
-                                      GROUP BY b.codigocliente,b.cliente,b.cate,b.vendedor
+                                      GROUP BY b.codigocliente,b.cliente,b.cate
                                       ORDER BY SUM(b.vtaneta) DESC';
         }
 
@@ -298,7 +296,7 @@ class PacVentasComparaController extends Controller
         else
         {
             // select de ventas
-            $sql=$this->generaQueryVentas($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+            $sql=$this->generaQueryVentas($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
             // select de notas de credito
             $sqlnc=$this->generaQueryNC($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
         }
@@ -410,7 +408,7 @@ class PacVentasComparaController extends Controller
         else
         {
             // select de ventas
-            $sql=$this->generaQueryVentas($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+            $sql=$this->generaQueryVentas($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
             // select de notas de credito
             $sqlnc=$this->generaQueryNC($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
         }
@@ -529,7 +527,7 @@ class PacVentasComparaController extends Controller
             // select de ventas
             $sql=$this->generaQueryVentas($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
             // select de notas de credito
-            $sqlnc=$this->generaQueryNC($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+            $sqlnc=$this->generaQueryNC($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
         }
 
         if ($unidades=="true")
