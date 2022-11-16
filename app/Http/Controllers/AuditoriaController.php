@@ -25,7 +25,7 @@ class AuditoriaController extends Controller{
                         fecha_documento, usuario_id, usuario_login
                 FROM auditorias
                 WHERE documento=? and serie=? and numero=?";
-
+        //$list =null;
         $list = DB::select($sql,[$input['documento'],$input['serie'],$input['numero']]);
         return $this->getOk($list);
 

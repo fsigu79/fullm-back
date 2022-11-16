@@ -370,10 +370,10 @@ class ClientesPacController extends Controller
 
 
 
-            $box = new SqlModel();
+            /*$box = new SqlModel();
             $box->sql= $sql;
             $box->sql1=$sql;
-            $box->save();
+            $box->save();*/
         //return $this->getOk($sql);
 
         //$list = DB::select($sql,[$request['cliente_id']]);

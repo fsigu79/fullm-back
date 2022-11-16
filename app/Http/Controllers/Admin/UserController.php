@@ -108,7 +108,7 @@ class UserController extends Controller
                 'surname.required' => 'El apellido es requerido.',
                 'login.required' => 'El login es requerido.',
                 'email.required' => 'El email es requerido.',
-                'password.required' => 'La clave es requerida.',
+                'password.required' => 'La clave del usuario es requerida.',
 
             ]
         );
