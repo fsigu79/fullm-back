@@ -146,7 +146,7 @@ class MovimientoInventarioController extends Controller
                         $input['accion']
                         ]);
                         $audi=new AuditoriaController();
-                        $resAudi=$audi->Create('Inventarios', 'Ingresos','IN',$input['serie'],$input['numero'], 'IN'.$input['serie'].str_pad($input['numero'], 9, "0", STR_PAD_LEFT), new DateTime(), $input['accion'],$input['total'] ,$input['fecha'], 1,'fsigu');
+                        $resAudi=$audi->Create('Inventarios', 'Ingresos','IN',$input['serie'],$input['numero'], 'IN'.$input['serie'].'-'.str_pad($input['numero'], 9, "0", STR_PAD_LEFT), new DateTime(), $input['accion'],$input['total'] ,$input['fecha'], $input['usuario_id'],$input['usuario_login']);
 
                     }
                     //grabar nota contable

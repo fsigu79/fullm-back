@@ -32,36 +32,41 @@ class UseroldController extends Controller {
         //var_dump($miArray);
         //die();
         //recoger datos
-        $json = $request->input('json', null);
-        $miObjeto = json_decode($json); //consigo un objeto
-        $miArray = json_decode($json, true); //consigo un array
+        //$json = $request->input('json', null);
+        //$miObjeto = json_decode($json); //consigo un objeto
+        //$miArray = json_decode($json, true); //consigo un array
 
-        if (!empty($miObjeto) && !empty($miArray)) {
+
+        //if (!empty($miObjeto) && !empty($miArray)) {
             //limpiar datos
-            $miArray = array_map('trim', $miArray);
+            //$miArray = array_map('trim', $miArray);
+        $validation = Validator::make(
+                $request->all(),
+                [
+                    'name' => 'required',
+                    'surname' => 'required',
+                    'login' => 'required',
+                    'email' => 'required',
+                    'password' => 'required',
 
-            //validar datos
-            $validate = \Validator::make($miArray, [
-                        'name' => 'required|alpha',
-                        'surname' => 'required|alpha',
-                        'login' => 'required|alpha',
-                        'email' => 'required|unique:users', //si existe da un error, valida que sea unico
-                        'role' => 'required',
-                        'password' => 'required',
-            ]);
-
-            if ($validate->fails()) {
+                ],
+                [
+                    'documento.required' => 'El documento es requerido.',
+                ]
+        );
+        if ($validation->fails()) {
                 //la validacion a fallado
                 $data = array(
                     'status' => 'error',
                     'code' => 404,
                     'message' => 'usuario no creado',
-                    'errors' => $validate->errors()
+                    'errors' => $validation->errors()
                 );
             } else {
+                $miArray = $request->all();
 
                 //cifrar contraseña sha
-                $pwd = hash('sha256', $miObjeto->password);
+                $pwd = hash('sha256', $miArray['password']);
                 //crear el usuario completo
                 $user = new User();
                 $user->name = $miArray['name'];
@@ -87,13 +92,13 @@ class UseroldController extends Controller {
                     'user' => $user,
                 );
             }
-        } else {
+       /* } else {
             $data = array(
                 'status' => 'error',
                 'code' => 404,
                 'message' => 'datos incorrectos',
             );
-        }
+        }*/
         return response()->json($data);
     }
 

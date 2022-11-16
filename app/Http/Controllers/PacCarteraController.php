@@ -19,6 +19,8 @@ class PacCarteraController extends Controller
                         nofact31 as documento,
                         date(fecfact31) as fecha,
                         (SELECT cascte01 FROM jcev.maecte WHERE jcev.maecte.codcte01=xbase.maefac.nocte31) as ruc,
+                        (SELECT sdoact01 FROM jcev.maecte WHERE jcev.maecte.codcte01=xbase.maefac.nocte31) as saldo_actual,
+                        (SELECT limcred01 FROM jcev.maecte WHERE jcev.maecte.codcte01=xbase.maefac.nocte31) as limite_credito,
                         (select nomtab from jcev.maetab where numtab='72' and codtab=trim(condpag31)) as condicion,
                         (SELECT nomtab FROM maetab,maecte WHERE numtab='79' AND codtab=trim(jcev.maecte.tipcte01) and jcev.maecte.codcte01=xbase.maefac.nocte31) as tipo,
                         (select max(totdoc43) from jcev.movcte where tipodoc43='02' and numdoc43=nofact31) as total,
