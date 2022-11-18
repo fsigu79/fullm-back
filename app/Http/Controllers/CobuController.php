@@ -20,38 +20,37 @@ class CobuController extends Controller
 
     public function list()
     {
-        $list = Cobus::orderBy('razon_social', 'desc')->orderBy('marca','desc')->get();
+        $list = Cobus::orderBy('razon_social', 'desc')->orderBy('marca', 'desc')->get();
         return $this->getOk($list);
     }
 
     public function searchProductsCobus(Request $request)
     {
         $input = $request->all();
-        $marca=$request['marca'];
-        $modelo=strtoupper($request['modelo']);
+        $marca = $request['marca'];
+        $modelo = strtoupper($request['modelo']);
 
-         if ($request['marca']=='null' || $request['marca']==''){
-            $marca='0';
-        }else{
-            $marca=$request['marca'];
+        if ($request['marca'] == 'null' || $request['marca'] == '') {
+            $marca = '0';
+        } else {
+            $marca = $request['marca'];
         }
 
-        if ($request['modelo']=='null' || $request['modelo']==''){
-            $modelo='0';
-        }else{
-            $modelo=$request['modelo'];
+        if ($request['modelo'] == 'null' || $request['modelo'] == '') {
+            $modelo = '0';
+        } else {
+            $modelo = $request['modelo'];
         }
 
-       try{
-            $sql="select distinct codigo, razon_social,marca,modelo
+        try {
+            $sql = "select distinct codigo, razon_social,marca,modelo
                 from cobus
-                where if ('".$marca."'='0',true,marca like '%".$marca."%') and
-                        if ('".$modelo."'='0',true,modelo like '%".$modelo."%')";
+                where if ('" . $marca . "'='0',true,marca like '%" . $marca . "%') and
+                        if ('" . $modelo . "'='0',true,modelo like '%" . $modelo . "%')";
 
             $list = DB::select($sql);
             return $this->getOk($list);
-
-        }catch(\Exception $e) {
+        } catch (\Exception $e) {
             return $this->insertErrCustom($request, $e->getMessage());
         }
     }
@@ -60,31 +59,55 @@ class CobuController extends Controller
 
     public function create(Request $request)
     {
-        try{
+        try {
 
             $input = $request->all();
             //$params_arrray = json_decode($input,true); //consigo un objeto
             //getseriesreturn $this->getOk($input);
-            DB::beginTransaction();
+            //DB::beginTransaction();
             //grabamos el detalle
-            foreach ($input['detalle'] as $detalle) {
-                $entidad = new Cobus($detalle);
-                $entidad->save();
-            };
-              DB::commit();
-            return $this->insertOk($input);
 
+            foreach ($input['detalle'] as $detalle) {
+
+                $sql = "select count(id) from cobus WHERE
+                (codigo=?) and
+                (razon_social=?) and
+                (ruc=?) and
+                (marca=?) and
+                (modelo=?) and
+                (referendo=?) and
+                (fecha_salida=?);";
+
+                $count = DB::select(
+                    $sql,
+                    [
+                        $detalle['codigo'],
+                        $detalle['razon_social'],
+                        $detalle['ruc'],
+                        $detalle['marca'],
+                        $detalle['modelo'],
+                        $detalle['referendo'],
+                        $detalle['fecha_salida']
+                    ]
+                );
+
+                if ($count[0]->count <= 0) {
+                    $entidad = new Cobus($detalle);
+                    $entidad->save();
+                }
+            };
+            //DB::commit();
+            return $this->insertOk($input);
         } catch (\Exception $e) {
-            DB::rollBack();
+            //DB::rollBack();
             return $this->insertErrCustom(null, $e->getMessage());
         }
-
     }
 
 
     public function create1(Request $request)
     {
-        try{
+        try {
 
             $input = $request->all();
             //$params_arrray = json_decode($input,true); //consigo un objeto
@@ -95,19 +118,11 @@ class CobuController extends Controller
                 $entidad = new Cobus($detalle);
                 $entidad->save();
             };
-              DB::commit();
+            DB::commit();
             return $this->insertOk($input);
-
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->insertErrCustom(null, $e->getMessage());
         }
-
     }
-
-
-
-
-
-
 }
