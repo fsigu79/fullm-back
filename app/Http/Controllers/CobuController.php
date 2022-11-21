@@ -18,9 +18,22 @@ class CobuController extends Controller
         $this->middleware('auth:admin');
     }
 
-    public function list()
+    public function list(Request $request)
     {
-        $list = Cobus::orderBy('razon_social', 'desc')->orderBy('marca', 'desc')->get();
+        $finicio=$request['finicio'];
+        $ffin=$request['ffin'];
+        $tipo=$request['tipo'];
+
+        if($tipo=='salida'){
+            $sql="select * from cobus where fecha_salida between ? and ? order by fecha_salida desc;";
+        }elseif($tipo=='liquidacion'){
+            $sql="select * from cobus where fecha_liquidacion between ? and ? order by fecha_salida desc;";
+        }else{
+            return $this->getErrCustom($request, 'Tipo de reporte no valido');
+        }
+        $list = DB::select($sql, [$finicio, $ffin]);
+        // $list = Cobus::whereBetween('fecha_salida', [$finicio, $ffin])->orderBy('razon_social', 'desc')->get();
+        // $list = Cobus::orderBy('razon_social', 'desc')->orderBy('marca', 'desc')->get();
         return $this->getOk($list);
     }
 
