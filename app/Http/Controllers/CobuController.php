@@ -32,11 +32,7 @@ class CobuController extends Controller
             return $this->getErrCustom($request, 'Tipo de reporte no valido');
         }
         $list = DB::select($sql, [$finicio, $ffin]);
-
-        #$list = Cobus::whereBetween('fecha_salida', [$finicio, $ffin])->orderBy('razon_social', 'desc')->get();
-
-
-
+        // $list = Cobus::whereBetween('fecha_salida', [$finicio, $ffin])->orderBy('razon_social', 'desc')->get();
         // $list = Cobus::orderBy('razon_social', 'desc')->orderBy('marca', 'desc')->get();
         return $this->getOk($list);
     }

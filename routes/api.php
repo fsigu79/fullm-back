@@ -246,6 +246,8 @@ Route::group([
     'prefix' => 'eade',
 ], function () {
     Route::get('list', [EadeController::class, 'list']);
+    Route::get('list-all', [EadeController::class, 'listAll']);
+    Route::get('years', [EadeController::class, 'listYears']);
     Route::post('create', [EadeController::class, 'create']);
     Route::get('search', [EadeController::class, 'searchProductsEade']);
 });

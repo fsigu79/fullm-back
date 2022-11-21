@@ -18,9 +18,46 @@ class EadeController extends Controller
         $this->middleware('auth:admin');
     }
 
-    public function list()
+    public function listAll()
     {
-        $list = Eade::orderBy('anio_modelo', 'desc')->orderBy('marca', 'desc')->get();
+        $list = Eade::orderBy('anio', 'desc')->orderBy('marca', 'desc');
+        return $this->getOk($list);
+    }
+
+    public function list(Request $request)
+    {
+        $anio = $request['anio'];
+        $mes = $request['mes'];
+        $tipo = $request['tipo'];
+
+        if ($tipo == 'anio') {
+            $list = Eade::where('anio', $anio)->orderBy('anio', 'desc')->orderBy('marca', 'desc');
+        } elseif ($tipo == 'anio_modelo') {
+            $list = Eade::where('anio_modelo', $anio)->orderBy('anio_modelo', 'desc')->orderBy('marca', 'desc');
+        } else {
+            return $this->getErrCustom($request, 'Tipo de reporte no valido');
+        }
+        if ($mes != "all") {
+            $list = $list->where('mes', $mes);
+        }
+        $list = $list->get();
+        return $this->getOk($list);
+    }
+
+    public function listYears(Request $request)
+    {
+        $tipo = $request['tipo'];
+        // if ($tipo == 'anio') {
+        //     $sql = "SELECT anio FROM eade GROUP BY anio ORDER BY anio;";
+        // } elseif ($tipo == 'anio_modelo') {
+        //     $sql = "SELECT anio_modelo FROM eade GROUP BY anio_modelo ORDER BY anio_modelo;";
+        // } else {
+        //     return $this->getErrCustom($request, 'Tipo de reporte no valido');
+        // }
+        //$sql = "SELECT ? FROM eade GROUP BY ? ORDER BY ?;";
+        //$list = DB::select($sql, [$tipo, $tipo, $tipo]);
+
+        $list = Eade::select($tipo . ' AS anio')->distinct()->orderBy($tipo, 'desc')->get();
         return $this->getOk($list);
     }
 
