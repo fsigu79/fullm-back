@@ -77,6 +77,8 @@ class CompraController extends Controller
                     $input = $request->all();
                     DB::beginTransaction();
                     if ($input['accion']!='Eliminar') {
+                       
+                       
                         //eliminamos el detalle si es modificacion
                         if ($input['accion']==='Modificar') {
                             $results=DB::select('SELECT compras_elimina_detalle(?,?,?,?)',

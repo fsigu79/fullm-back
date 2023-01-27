@@ -28,6 +28,17 @@ use App\Http\Controllers\CobuController;
 use App\Http\Controllers\EadeController;
 use App\Http\Controllers\PacVentasComparaController;
 use App\Http\Controllers\AuditoriaController;
+use App\Http\Controllers\CuposUsosController;
+
+use App\Http\Controllers\CredimportVentaMensualController;
+use App\Http\Controllers\CredimportSeguroConfianzasController;
+use App\Http\Controllers\CredimportCuposUsosController;
+
+use App\Http\Controllers\TodoMotoVentaMensualController;
+use App\Http\Controllers\TodoMotoSeguroConfianzasController;
+use App\Http\Controllers\TodoMotoCuposUsosController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -162,6 +173,35 @@ Route::group([
 
     });
 
+    Route::group([
+        'prefix' => 'cattodom',
+    ], function () {
+        Route::get('prov/list', [CatalogoController::class, 'listProvinciasTodoMoto']);
+        Route::get('vend/list', [CatalogoController::class, 'listVendedoresTodoMoto']);
+        Route::get('catc/list', [CatalogoController::class, 'listCatClientesTodoMoto']);
+        Route::get('catp/list', [CatalogoController::class, 'listCatProductosTodoMoto']);
+        Route::get('marc/list', [CatalogoController::class, 'listMarcasTodoMoto']);
+        Route::get('clie/list', [CatalogoController::class, 'listClientesTodoMoto']);
+        Route::get('prod/list', [CatalogoController::class, 'listProductosTodoMoto']);
+        Route::get('prodcod/list', [CatalogoController::class, 'listProductosCodigoTodoMoto']);
+
+    });
+
+
+    Route::group([
+        'prefix' => 'catcredi',
+    ], function () {
+        Route::get('prov/list', [CatalogoController::class, 'listProvinciasCredimport']);
+        Route::get('vend/list', [CatalogoController::class, 'listVendedoresCredimport']);
+        Route::get('catc/list', [CatalogoController::class, 'listCatClientesCredimport']);
+        Route::get('catp/list', [CatalogoController::class, 'listCatProductosCredimport']);
+        Route::get('marc/list', [CatalogoController::class, 'listMarcasCredimport']);
+        Route::get('clie/list', [CatalogoController::class, 'listClientesCredimport']);
+        Route::get('prod/list', [CatalogoController::class, 'listProductosCredimport']);
+        Route::get('prodcod/list', [CatalogoController::class, 'listProductosCodigoCredimport']);
+
+    });
+
 Route::group([
         'prefix' => 'audi',
     ], function () {
@@ -183,6 +223,7 @@ Route::group([
     Route::get('prespac', [PacPresupuestoController::class, 'presupuestoPac']);
     Route::get('prespacvs', [PacPresupuestoController::class, 'presupuestoPacCompara']);
     Route::get('segucon', [PacCarteraController::class, 'seguroConfianza']);
+    Route::get('cuposusos', [CuposUsosController::class, 'cuposUsos']);
     Route::get('vensem', [PacVentasController::class, 'ventasSemana']);
     Route::get('gerdia', [PacGerencialDiarioController::class, 'ventasmarca']);
 
@@ -199,6 +240,31 @@ Route::group([
 
 });
 
+
+
+Route::group([
+    'prefix' => 'credi',
+], function () {
+    Route::get('vtames', [CredimportVentaMensualController::class, 'ventamescliente']);
+    Route::get('vtamesven', [CredimportVentaMensualController::class, 'ventamesvendedor']);
+    Route::get('vtamespro', [CredimportVentaMensualController::class, 'ventamesproducto']);
+    Route::get('vtamesmar', [CredimportVentaMensualController::class, 'ventamesmarca']);
+    Route::get('segucon', [CredimportSeguroConfianzasController::class, 'seguroConfianza']);
+    Route::get('cuposusos', [CredimportCuposUsosController::class, 'cuposUsos']);
+
+});
+
+Route::group([
+    'prefix' => 'master',
+], function () {
+    Route::get('vtames', [TodoMotoVentaMensualController::class, 'ventamescliente']);
+    Route::get('vtamesven', [TodoMotoVentaMensualController::class, 'ventamesvendedor']);
+    Route::get('vtamespro', [TodoMotoVentaMensualController::class, 'ventamesproducto']);
+    Route::get('vtamesmar', [TodoMotoVentaMensualController::class, 'ventamesmarca']);
+    Route::get('segucon', [TodoMotoSeguroConfianzasController::class, 'seguroConfianza']);
+    Route::get('cuposusos', [TodoMotoCuposUsosController::class, 'cuposUsos']);
+
+});
 
 
 
@@ -272,6 +338,12 @@ Route::group([
     'prefix' => 'pacext',
 ], function () {
     Route::get('chasis', [ConsultaExtPacController::class, 'datosPorChasis']);
+    Route::get('catseries', [ConsultaExtPacController::class, 'catalogoSeries']);
+    Route::get('catscodigo', [ConsultaExtPacController::class, 'catalogoSeriesByCodCliente']);
+    Route::get('catscliente', [ConsultaExtPacController::class, 'catalogoSeriesByCliente']);
+    Route::get('catsfechafac', [ConsultaExtPacController::class, 'catalogoSeriesByFechaFactura']);
+    Route::get('catschasis', [ConsultaExtPacController::class, 'catalogoSeriesByChasis']);
+    Route::get('protodomoto', [ConsultaExtPacController::class, 'productosTodomoto']);
 
 
 });
