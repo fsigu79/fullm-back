@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\ClientExport;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\FormatResponseTrait;
 use App\Models\Customer;
@@ -13,7 +12,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use PDF;
 
-class ClientesPacController extends Controller
+class TodoMotoVentaMensualController extends Controller
 {
     use FormatResponseTrait;
 
@@ -33,15 +32,15 @@ class ClientesPacController extends Controller
 	                        desctotvta03 AS descliente,
 	                        (precvta03 - descvta03-desctotvta03) AS vtaNeta,
 	                        marca01 AS marcod,
-  					        (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '4530' AND codtab <> '' AND codtab = marca01) AS marca,
+  					        (SELECT DISTINCT nomtab FROM todomoto.maetab WHERE numtab = '4530' AND codtab <> '' AND codtab = marca01) AS marca,
 	 				        novend31 AS vencod,
-  					        (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab =novend31) AS vendedor,
+  					        (SELECT nomtab FROM todomoto.maetab WHERE numtab='73' AND codtab =novend31) AS vendedor,
 					        catcte01 AS catcod,
-  					        (SELECT b.desccate AS categoria FROM jcev.categorias a INNER JOIN  jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
+  					        (SELECT b.desccate AS categoria FROM todomoto.categorias a INNER JOIN  todomoto.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
                FROM xbase.movpro
                INNER JOIN ybase1.maepro ON codprod03 = codprod01
                INNER JOIN zbase1.maefac ON NOCOMP03=nofact31 AND cvanulado31!=9
-               INNER JOIN jcev.maecte ON nocte31=codcte01
+               INNER JOIN todomoto.maecte ON nocte31=codcte01
                WHERE tipotra03 IN ('80') AND cvanulado03 <>'S' AND fecmov03 >= 'xfinicio'  AND fecmov03 <= 'xffin' AND  tipprod01='S'
                     and case when '0'='xmarc' then true else marca01 in ('xmarc') end
                     and case when '0'='xprod' then true else codprod01 in ('xprod') end
@@ -65,13 +64,13 @@ class ClientesPacController extends Controller
 						     IFNULL((precvta03 - descvta03-desctotvta03)*-1,0) AS vtaNeta,
 						     (valorabono43/1.12)*-1 AS net,
 						      marca01 AS marcod,
-						     (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '4530' AND codtab <> '' AND codtab = marca01) AS marca,
+						     (SELECT DISTINCT nomtab FROM todomoto.maetab WHERE numtab = '4530' AND codtab <> '' AND codtab = marca01) AS marca,
 						      numvencob43 AS vencod,
-						      (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
+						      (SELECT nomtab FROM todomoto.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM jcev.categorias a INNER JOIN  jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
-					      FROM jcev.movcte
-					      INNER JOIN jcev.maecte ON codcte43=codcte01
+						      (SELECT b.desccate AS categoria FROM todomoto.categorias a INNER JOIN  todomoto.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
+					      FROM todomoto.movcte
+					      INNER JOIN todomoto.maecte ON codcte43=codcte01
 					      INNER JOIN xbase.movpro  ON NOCOMP03=numdoc43 AND tipotra03 IN ('22') AND cvanulado03 <>'S'
 					      INNER JOIN xbase.maepro ON codprod03 = codprod01 AND  tipprod01='S'  AND statuspro01='S'
 					      WHERE tipodoc43 IN ('53')  AND fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin' AND cvanulado43<>'S' AND tipoNC43='P' and ocurren43 in ('00','0000')
@@ -98,13 +97,13 @@ class ClientesPacController extends Controller
 						     IFNULL((precvta03 - descvta03-desctotvta03)*-1,0) AS vtaNeta,
 						     (valorabono43/1.12)*-1 AS net,
 						      marca01 AS marcod,
-						     (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '4530' AND codtab <> '' AND codtab = marca01) AS marca,
+						     (SELECT DISTINCT nomtab FROM todomoto.maetab WHERE numtab = '4530' AND codtab <> '' AND codtab = marca01) AS marca,
 						      numvencob43 AS vencod,
-						      (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
+						      (SELECT nomtab FROM todomoto.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM jcev.categorias a INNER JOIN  jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
-					      FROM jcev.movcte2
-					      INNER JOIN jcev.maecte ON codcte43=codcte01
+						      (SELECT b.desccate AS categoria FROM todomoto.categorias a INNER JOIN  todomoto.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
+					      FROM todomoto.movcte2
+					      INNER JOIN todomoto.maecte ON codcte43=codcte01
 					      INNER JOIN xbase.movpro  ON NOCOMP03=numdoc43 AND tipotra03 IN ('22') AND cvanulado03 <>'S'
 					      INNER JOIN xbase.maepro ON codprod03 = codprod01 AND  tipprod01='S'  AND statuspro01='S'
 					      WHERE tipodoc43 IN ('53')  AND fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin' AND cvanulado43<>'S' AND tipoNC43='P'  and ocurren43 in ('00','0000')
@@ -141,27 +140,10 @@ class ClientesPacController extends Controller
 
         if ($bodega=='todas'){
                 // select de ventas
-               $sql=$this->generaQueryVentas('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
+               $sql=$this->generaQueryVentas('todomoto',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
                 // select de notas de credito
-                $sqlnc=$this->generaQueryNC('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatriz('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+                $sqlnc=$this->generaQueryNC('todomoto',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatriz('todomoto',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
 
         }
         else
@@ -274,27 +256,10 @@ class ClientesPacController extends Controller
 
         if ($bodega=='todas'){
                 // select de ventas
-                $sql=$this->generaQueryVentas('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                // select de notas de credito
-                $sqlnc=$this->generaQueryNC('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatriz('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+                $sql=$this->generaQueryVentas('todomoto',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
+
+                $sqlnc=$this->generaQueryNC('todomoto',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatriz('todomoto',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
 
         }
         else
@@ -402,27 +367,10 @@ class ClientesPacController extends Controller
 
         if ($bodega=='todas'){
                 // select de ventas
-                $sql=$this->generaQueryVentas('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
+                $sql=$this->generaQueryVentas('todomoto',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
+
                 // select de notas de credito
-                $sqlnc=$this->generaQueryNC('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatriz('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+                $sqlnc=$this->generaQueryNC('todomoto',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
 
         }
         else
@@ -439,15 +387,7 @@ class ClientesPacController extends Controller
                                 articulo,
                                 marca,
                                 (
-                                    IFNULL((SELECT cantact01 FROM jcev.maepro WHERE codigo=jcev.maepro.codprod01),0)+
-                                    IFNULL((SELECT cantact01 FROM jcevcuenca2.maepro WHERE codigo=jcevcuenca2.maepro.codprod01),0)+
-                                    IFNULL((SELECT cantact01 FROM jcevgye1.maepro WHERE codigo=jcevgye1.maepro.codprod01),0)+
-                                    IFNULL((SELECT cantact01 FROM jcevuio1.maepro WHERE codigo=jcevuio1.maepro.codprod01),0)+
-                                    IFNULL((SELECT cantact01 FROM jcevconsigvirt.maepro WHERE codigo=jcevconsigvirt.maepro.codprod01),0) +
-                                    IFNULL((SELECT cantact01 FROM jcevstecvir.maepro WHERE codigo=jcevstecvir.maepro.codprod01),0) +
-                                    IFNULL((SELECT cantact01 FROM jcevgyeassem.maepro WHERE codigo=jcevgyeassem.maepro.codprod01),0) +
-                                    IFNULL((SELECT cantact01 FROM jcevcuenca1.maepro WHERE codigo=jcevcuenca1.maepro.codprod01),0) +
-                                    IFNULL((SELECT cantact01 FROM jcevgye10.maepro WHERE codigo=jcevgye10.maepro.codprod01),0)
+                                    IFNULL((SELECT cantact01 FROM todomoto.maepro WHERE codigo=todomoto.maepro.codprod01),0)
                                 ) as stock,
 					            ROUND(SUM(IF(MONTH(fecha) = 1,  cantidad, 0)),2) AS ene,
 								ROUND(SUM(IF(MONTH(fecha) = 2,  cantidad, 0)),2) AS feb,
@@ -483,15 +423,7 @@ class ClientesPacController extends Controller
                                 articulo,
                                 marca,
                                 (
-                                    IFNULL((SELECT cantact01 FROM jcev.maepro WHERE codigo=jcev.maepro.codprod01),0)+
-                                    IFNULL((SELECT cantact01 FROM jcevcuenca2.maepro WHERE codigo=jcevcuenca2.maepro.codprod01),0)+
-                                    IFNULL((SELECT cantact01 FROM jcevgye1.maepro WHERE codigo=jcevgye1.maepro.codprod01),0)+
-                                    IFNULL((SELECT cantact01 FROM jcevuio1.maepro WHERE codigo=jcevuio1.maepro.codprod01),0)+
-                                    IFNULL((SELECT cantact01 FROM jcevconsigvirt.maepro WHERE codigo=jcevconsigvirt.maepro.codprod01),0) +
-                                    IFNULL((SELECT cantact01 FROM jcevstecvir.maepro WHERE codigo=jcevstecvir.maepro.codprod01),0) +
-                                    IFNULL((SELECT cantact01 FROM jcevgyeassem.maepro WHERE codigo=jcevgyeassem.maepro.codprod01),0) +
-                                    IFNULL((SELECT cantact01 FROM jcevcuenca1.maepro WHERE codigo=jcevcuenca1.maepro.codprod01),0) +
-                                    IFNULL((SELECT cantact01 FROM jcevgye10.maepro WHERE codigo=jcevgye10.maepro.codprod01),0)
+                                    IFNULL((SELECT cantact01 FROM todomoto.maepro WHERE codigo=todomoto.maepro.codprod01),0)
                                 ) as stock,
 					            ROUND(SUM(IF(MONTH(fecha) = 1,  vtaneta, 0)),2) AS ene,
 								ROUND(SUM(IF(MONTH(fecha) = 2,  vtaneta, 0)),2) AS feb,
@@ -524,15 +456,8 @@ class ClientesPacController extends Controller
         }
 
         //echo $sql;
-        //fsigu sqls
-         /*$box = new SqlModel();
-            $box->sql= $sql;
-            $box->sql1=$sql;
-            $box->save();*/
+
         //return $this->getOk($sql);
-
-
-
 
         //$list = DB::select($sql,[$request['cliente_id']]);
         $list = DB::connection('mysqlpac')->select($sql);
@@ -560,26 +485,11 @@ class ClientesPacController extends Controller
 
         if ($bodega=='todas'){
                 // select de ventas
-                $sql=$this->generaQueryVentas('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI');
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
+                $sql=$this->generaQueryVentas('todomoto',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
+
                 // select de notas de credito
-                $sqlnc=$this->generaQueryNC('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+                $sqlnc=$this->generaQueryNC('todomoto',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+
                 //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatriz('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
 
         }
@@ -672,19 +582,9 @@ class ClientesPacController extends Controller
     public function generaQueryVentas($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,$virtual1)
     {
         $query=  str_replace('xbase',$bodega,$this->sqlgen);
-        if ($bodega=='jcevconsigvirt'){
-            $query= str_replace('ybase1','jcevuio1',$query);
-            if ($virtual1=='SI'){
-                $query= str_replace('zbase1','jcevgyeassem',$query);
-            }
-            else{
-                $query= str_replace('zbase1','jcevuio1',$query);
-            }
-        }
-        else{
-            $query=  str_replace('ybase1',$bodega,$query);
-            $query=  str_replace('zbase1',$bodega,$query);
-        }
+        $query=  str_replace('ybase1',$bodega,$query);
+        $query=  str_replace('zbase1',$bodega,$query);
+
         $query=  str_replace('xfinicio',$inicio,$query);
         $query=  str_replace('xffin',$fin,$query);
         $query=  str_replace('xmarc',$marca,$query);
@@ -741,9 +641,9 @@ class ClientesPacController extends Controller
 						      '0' AS marcod,
 						     '-' AS marca,
 						      numvencob43 AS vencod,
-						      (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
+						      (SELECT nomtab FROM todomoto.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM jcev.categorias a INNER JOIN  jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
+						      (SELECT b.desccate AS categoria FROM todomoto.categorias a INNER JOIN  todomoto.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
 					    FROM xbase.movcte
 					    INNER JOIN xbase.maecte ON codcte43=codcte01
 					    WHERE tipodoc43 IN ('53')  AND fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin' AND cvanulado43<>'S' AND tipoNC43<>'P' and ocurren43 in ('00','0000')
@@ -768,9 +668,9 @@ class ClientesPacController extends Controller
 						      '0' AS marcod,
 						     '-' AS marca,
 						      numvencob43 AS vencod,
-						      (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
+						      (SELECT nomtab FROM todomoto.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM  jcev.categorias a INNER JOIN   jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
+						      (SELECT b.desccate AS categoria FROM  todomoto.categorias a INNER JOIN   todomoto.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
 					      FROM xbase.movcte2
 					      INNER JOIN xbase.maecte ON codcte43=codcte01
 					      WHERE tipodoc43 IN ('53')  AND fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin' AND cvanulado43<>'S' AND tipoNC43<>'P' and ocurren43 in ('00','0000')
@@ -792,93 +692,11 @@ class ClientesPacController extends Controller
 
     public function grupoConsulta($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente)
     {
-
-
         return $query;
     }
 
 
-    public function exportLabel($id)
-    {
-        $sql='SELECT codprod01 as codigo,desprod01 as producto from jcev.maepro where codprod01 in("BICI308A24V","BICI89","BUZ01")';
-        $order = DB::connection('mysqlpac')->select($sql);
-        $customPaper = array(0,0,567.00,283.80);
-        $pdf = PDF::loadView('label',compact('order')
-        )->setPaper([0, 0, 141.73,283.47 ], 'landscape');
 
-        return $pdf->stream('label1.pdf');
-    }
-
-    public function searchClientesPac(Request $request)
-    {
-        $input = $request->all();
-        //return $this->getOk($input);
-        $cod=$input['ruc'];
-        $des=strtoupper($input['name']);
-
-         if ($input['ruc']=='null' || $input['ruc']==''){
-            $cod='0';
-        }else{
-            $cod=$input['ruc'];
-        }
-
-        if ($input['name']=='NULL' || $input['name']==''){
-            $des='0';
-        }else{
-            $des=$input['name'];
-        }
-
-        //return $this->getOk($input);
-
-       try{
-
-            $sql="select 1 as id,codcte01 as codigo, nomcte01 as nombre, cascte01 as ruc,'.' as apellido
-                from jcev.maecte
-                where if ('".$cod."'='0',true,cascte01 like '%".$cod."%') and
-                        if ('".$des."'='0',true,nomcte01 like '%".$des."%')";
-
-            $list = DB::connection('mysqlpac')->select($sql);
-            return $this->getOk($list);
-
-        }catch(\Exception $e) {
-            return $this->insertErrCustom($request, $e->getMessage());
-        }
-    }
-
-
-     public function searchProveedorPac(Request $request)
-    {
-        $input = $request->all();
-        //return $this->getOk($input);
-        $cod=$request['ruc'];
-        $des=strtoupper($input['nombres']);
-
-        if ($input['ruc']=='null' || $input['ruc']==''){
-            $cod='0';
-        }else{
-            $cod=$input['ruc'];
-        }
-
-        if ($input['nombres']=='null' || $input['nombres']==''){
-            $des='0';
-        }else{
-            $des=$input['nombres'];
-        }
-
-       try{
-
-            $sql="select 1 as id,codcte01 as codigo, nomcte01 as nombres, cascte01 as ruc,'.' as apellidos
-                from jcev.maepag
-                where if ('".$cod."'='0',true,cascte01 like '".$cod."%') and
-                        if ('".$des."'='0',true,nomcte01 like '%".$des."%')";
-            //return $this->getOk($sql);
-            $list = DB::connection('mysqlpac')->select($sql);
-            return $this->getOk($list);
-
-        }catch(\Exception $e) {
-            return $this->insertErrCustom($request, $e->getMessage());
-        }
-    }
 
 
 

@@ -101,6 +101,7 @@ class UseroldController extends Controller {
         }*/
         return response()->json($data);
     }
+    
 
     public function login(Request $request) {
         $jwtAuth = new \App\Helpers\JwtAuth();

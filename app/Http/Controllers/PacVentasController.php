@@ -65,7 +65,7 @@ class PacVentasController extends Controller
                                           FROM jcev.movpro
                                           INNER JOIN jcev.maepro ON codprod03 = codprod01
                                           LEFT JOIN jcev.categorias AS ca ON  catprod01=codcate
-                                          WHERE tipotra03 IN ('80','22','23') AND cvanulado03 <>'S' AND fecmov03 >= xinicio  AND fecmov03 <= xfin AND  tipprod01='S' AND statuspro01='S'
+                                          WHERE tipotra03 IN ('80','22','23') AND cvanulado03 <>'S' AND fecmov03 >= xinicio  AND fecmov03 <= xfin AND  tipprod01='S'
                                           UNION ALL
                                          SELECT codprod01 AS codigo,
 	                                         desprod01 AS articulo,
@@ -81,7 +81,7 @@ class PacVentasController extends Controller
                                           FROM jcevgye1.movpro
                                           INNER JOIN jcevgye1.maepro  ON codprod03 = codprod01
                                           LEFT JOIN jcev.categorias AS ca ON  catprod01=codcate
-                                          WHERE tipotra03 IN ('80','22','23') AND cvanulado03 <>'S' AND fecmov03 >= xinicio  AND fecmov03 <= xfin AND  tipprod01='S' AND statuspro01='S'
+                                          WHERE tipotra03 IN ('80','22','23') AND cvanulado03 <>'S' AND fecmov03 >= xinicio  AND fecmov03 <= xfin AND  tipprod01='S'
                                           UNION ALL
                                           SELECT codprod01 AS codigo,
 	                                         desprod01 AS articulo,
@@ -97,7 +97,7 @@ class PacVentasController extends Controller
                                           FROM jcevuio1.movpro
                                           INNER JOIN jcevuio1.maepro   ON codprod03 = codprod01
                                           LEFT JOIN jcev.categorias AS ca ON  catprod01=codcate
-                                          WHERE tipotra03 IN ('80','22','23') AND cvanulado03 <>'S' AND fecmov03 >= xinicio  AND fecmov03 <= xfin AND  tipprod01='S' AND statuspro01='S'
+                                          WHERE tipotra03 IN ('80','22','23') AND cvanulado03 <>'S' AND fecmov03 >= xinicio  AND fecmov03 <= xfin AND  tipprod01='S'
                                           UNION ALL
                                           SELECT codprod01 AS codigo,
 	                                         desprod01 AS articulo,
@@ -113,7 +113,7 @@ class PacVentasController extends Controller
                                           FROM jcevgyeassem.movpro
                                           INNER JOIN jcevgyeassem.maepro ON codprod03 = codprod01
                                           LEFT JOIN jcev.categorias AS ca ON  catprod01=codcate
-                                          WHERE tipotra03 IN ('80','22','23') AND cvanulado03 <>'S' AND fecmov03 >= xinicio  AND fecmov03 <= xfin AND  tipprod01='S' AND statuspro01='S'
+                                          WHERE tipotra03 IN ('80','22','23') AND cvanulado03 <>'S' AND fecmov03 >= xinicio  AND fecmov03 <= xfin AND  tipprod01='S'
                                           UNION ALL
                                           SELECT codprod01 AS codigo,
 	                                         desprod01 AS articulo,
@@ -129,7 +129,7 @@ class PacVentasController extends Controller
                                           FROM jcevconsigvirt.movpro
                                           INNER JOIN jcevconsigvirt.maepro ON codprod03 = codprod01
                                           LEFT JOIN jcev.categorias AS ca ON  catprod01=codcate
-                                          WHERE tipotra03 IN ('80','22','23') AND cvanulado03 <>'S' AND fecmov03 >= xinicio  AND fecmov03 <= xfin AND  tipprod01='S' AND statuspro01='S'
+                                          WHERE tipotra03 IN ('80','22','23') AND cvanulado03 <>'S' AND fecmov03 >= xinicio  AND fecmov03 <= xfin AND  tipprod01='S'
                                            UNION ALL
                                           SELECT codprod01 AS codigo,
 	                                         desprod01 AS articulo,
@@ -145,7 +145,7 @@ class PacVentasController extends Controller
                                           FROM jcevgye10.movpro
                                           INNER JOIN jcevgye10.maepro ON codprod03 = codprod01
                                           LEFT JOIN jcev.categorias AS ca ON  catprod01=codcate
-                                          WHERE tipotra03 IN ('80','22','23') AND cvanulado03 <>'S' AND fecmov03 >= xinicio  AND fecmov03 <= xfin AND  tipprod01='S' AND statuspro01='S'
+                                          WHERE tipotra03 IN ('80','22','23') AND cvanulado03 <>'S' AND fecmov03 >= xinicio  AND fecmov03 <= xfin AND  tipprod01='S'
                                           UNION ALL
                                          SELECT codprod01 AS codigo,
 	                                         desprod01 AS articulo,
@@ -161,7 +161,7 @@ class PacVentasController extends Controller
                                           FROM jcevcuenca1.movpro
                                           INNER JOIN jcevcuenca1.maepro  ON codprod03 = codprod01
                                           LEFT JOIN jcev.categorias AS ca ON  catprod01=codcate
-                                          WHERE tipotra03 IN ('80','22','23') AND cvanulado03 <>'S' AND fecmov03 >= xinicio  AND fecmov03 <= xfin AND  tipprod01='S' AND statuspro01='S'
+                                          WHERE tipotra03 IN ('80','22','23') AND cvanulado03 <>'S' AND fecmov03 >= xinicio  AND fecmov03 <= xfin AND  tipprod01='S'
                                          UNION ALL
                                          SELECT codprod01 AS codigo,
 	                                         desprod01 AS articulo,
@@ -177,7 +177,7 @@ class PacVentasController extends Controller
                                           FROM jcevstecvir.movpro
                                           INNER JOIN jcevstecvir.maepro  ON codprod03 = codprod01
                                           LEFT JOIN jcev.categorias AS ca ON  catprod01=codcate
-                                           WHERE tipotra03 IN ('80','22','23') AND cvanulado03 <>'S' AND fecmov03 >= xinicio  AND fecmov03 <= xfin AND  tipprod01='S' AND statuspro01='S'
+                                           WHERE tipotra03 IN ('80','22','23') AND cvanulado03 <>'S' AND fecmov03 >= xinicio  AND fecmov03 <= xfin AND  tipprod01='S'
 
                                         UNION ALL
                                          SELECT codprod01 AS codigo,
@@ -194,7 +194,7 @@ class PacVentasController extends Controller
                                           FROM jcevcuenca2.movpro
                                           INNER JOIN jcevcuenca2.maepro  ON codprod03 = codprod01
                                           LEFT JOIN jcev.categorias AS ca ON  catprod01=codcate
-                                          WHERE tipotra03 IN ('80','22','23') AND cvanulado03 <>'S' AND fecmov03 >= xinicio  AND fecmov03 <= xfin AND  tipprod01='S' AND statuspro01='S'
+                                          WHERE tipotra03 IN ('80','22','23') AND cvanulado03 <>'S' AND fecmov03 >= xinicio  AND fecmov03 <= xfin AND  tipprod01='S'
                                           ORDER BY codigo ASC
                                         ) a
                                         GROUP BY a.codigo,a.articulo,a.categoria,a.marca

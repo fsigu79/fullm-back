@@ -41,7 +41,7 @@ class PacVentasComparaController extends Controller
                INNER JOIN ybase1.maepro ON codprod03 = codprod01
                INNER JOIN zbase1.maefac ON NOCOMP03=nofact31 AND cvanulado31!=9
                INNER JOIN jcev.maecte ON nocte31=codcte01
-               WHERE tipotra03 IN ('80') AND cvanulado03 <>'S' AND ((fecmov03 >= 'xfinicio'  AND fecmov03 <= 'xffin') or (fecmov03 >= 'yfinicioa'  AND fecmov03 <= 'yffina')) AND  tipprod01='S' AND statuspro01='S'
+               WHERE tipotra03 IN ('80') AND cvanulado03 <>'S' AND ((fecmov03 >= 'xfinicio'  AND fecmov03 <= 'xffin') or (fecmov03 >= 'yfinicioa'  AND fecmov03 <= 'yffina')) AND  tipprod01='S'
                     and case when '0'='xmarc' then true else marca01 in ('xmarc') end
                     and case when '0'='xprod' then true else codprod01 in ('xprod') end
                     and case when '0'='xvend' then true else vendcte01 in ('xvend') end
@@ -73,7 +73,7 @@ class PacVentasComparaController extends Controller
 					      INNER JOIN jcev.maecte ON codcte43=codcte01
 					      INNER JOIN xbase.movpro  ON NOCOMP03=numdoc43 AND tipotra03 IN ('22') AND cvanulado03 <>'S'
 					      INNER JOIN xbase.maepro ON codprod03 = codprod01 AND  tipprod01='S'  AND statuspro01='S'
-					      WHERE tipodoc43 IN ('53')  AND ((fecdoc43 >= 'xfinicio'  AND fecdoc43<= 'xffin') or (fecdoc43 >= 'yfinicioa'  AND fecdoc43 <= 'yffina'))  AND cvanulado43<>'S' AND tipoNC43='P'
+					      WHERE tipodoc43 IN ('53')  AND ((fecdoc43 >= 'xfinicio'  AND fecdoc43<= 'xffin') or (fecdoc43 >= 'yfinicioa'  AND fecdoc43 <= 'yffina'))  AND cvanulado43<>'S' AND tipoNC43='P' and ocurren43 in ('00','0000')
                                 and case when '0'='xmarc' then true else marca01 in ('xmarc') end
                                 and case when '0'='xprod' then true else codprod01 in ('xprod') end
                                 and case when '0'='xvend' then true else vendcte01 in ('xvend') end
@@ -106,7 +106,7 @@ class PacVentasComparaController extends Controller
 					      INNER JOIN jcev.maecte ON codcte43=codcte01
 					      INNER JOIN xbase.movpro  ON NOCOMP03=numdoc43 AND tipotra03 IN ('22') AND cvanulado03 <>'S'
 					      INNER JOIN xbase.maepro ON codprod03 = codprod01 AND  tipprod01='S'  AND statuspro01='S'
-					      WHERE tipodoc43 IN ('53')  AND ((fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin') or (fecdoc43 >= 'yfinicioa'  AND fecdoc43 <= 'yffina')) AND cvanulado43<>'S' AND tipoNC43='P'
+					      WHERE tipodoc43 IN ('53')  AND ((fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin') or (fecdoc43 >= 'yfinicioa'  AND fecdoc43 <= 'yffina')) AND cvanulado43<>'S' AND tipoNC43='P' and ocurren43 in ('00','0000')
                                 and case when '0'='xmarc' then true else marca01 in ('xmarc') end
                                 and case when '0'='xprod' then true else codprod01 in ('xprod') end
                                 and case when '0'='xvend' then true else vendcte01 in ('xvend') end
@@ -678,7 +678,7 @@ class PacVentasComparaController extends Controller
 						      (SELECT b.desccate AS categoria FROM jcev.categorias a INNER JOIN  jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
 					    FROM xbase.movcte
 					    INNER JOIN xbase.maecte ON codcte43=codcte01
-					    WHERE tipodoc43 IN ('53')  AND ((fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin') or (fecdoc43 >= 'yfinicioa'  AND fecdoc43 <= 'yffina'))  AND cvanulado43<>'S' AND tipoNC43<>'P'
+					    WHERE tipodoc43 IN ('53')  AND ((fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin') or (fecdoc43 >= 'yfinicioa'  AND fecdoc43 <= 'yffina'))  AND cvanulado43<>'S' AND tipoNC43<>'P' and ocurren43 in ('00','0000')
                             and case when '0'='xclie' then true else codcte43 in ('xclie') end
                         UNION
                         SELECT SUBSTRING(numdoc43,1,7) AS agencia,
@@ -705,7 +705,7 @@ class PacVentasComparaController extends Controller
 						      (SELECT b.desccate AS categoria FROM  jcev.categorias a INNER JOIN   jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
 					      FROM xbase.movcte2
 					      INNER JOIN xbase.maecte ON codcte43=codcte01
-					      WHERE tipodoc43 IN ('53')  AND ((fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin') or (fecdoc43 >= 'yfinicioa'  AND fecdoc43 <= 'yffina')) AND cvanulado43<>'S' AND tipoNC43<>'P'
+					      WHERE tipodoc43 IN ('53')  AND ((fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin') or (fecdoc43 >= 'yfinicioa'  AND fecdoc43 <= 'yffina')) AND cvanulado43<>'S' AND tipoNC43<>'P' and ocurren43 in ('00','0000')
                               and case when '0'='xclie' then true else codcte43 in ('xclie') end";
 
         $queryncmatriz=  str_replace('xbase',$bodega,$queryncmatriz);
