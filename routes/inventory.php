@@ -7,7 +7,7 @@ use App\Http\Controllers\GrupoController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\DestinoController;
 use App\Http\Controllers\MovimientoInventarioController;
-use App\Http\Controllers\KardexController;
+use App\Http\Controllers\InventarioTransitoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -109,8 +109,14 @@ Route::group([
 });
 
 
+
 Route::group([
-    'prefix' => 'kardex',
+    'prefix' => 'transito',
 ], function () {
-    Route::get('list', [KardexController::class, 'consulta_kardex']);
+    Route::get('list', [InventarioTransitoController::class, 'list']);
+    Route::get('list/{id}', [InventarioTransitoController::class, 'findById']);
+    Route::post('create', [InventarioTransitoController::class, 'save']);
+    Route::post('update/{id}', [InventarioTransitoController::class, 'save']);
+    Route::post('delete/{id}', [InventarioTransitoController::class, 'save']);
 });
+
