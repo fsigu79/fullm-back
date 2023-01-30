@@ -6,7 +6,7 @@ use App\Http\Traits\FormatResponseTrait;
 use App\Http\Controllers\AuditoriaController;
 use App\Models\MovimientoInventario;
 use App\Models\MovimientoInventarioDetalle;
-use App\Models\Retencion;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
@@ -65,7 +65,7 @@ class MovimientoInventarioController extends Controller
         if (!$validation->fails()) {
                 try{
                     $input = $request->all();
-
+                    $usuario=Auth::user();
                     DB::beginTransaction();
                     if ($input['accion']!='Eliminar') {
                         //eliminamos el detalle si es modificacion
@@ -128,7 +128,16 @@ class MovimientoInventarioController extends Controller
                             ]);
                         };
                         $audi=new AuditoriaController();
-                        $resAudi=$audi->Create('Inventarios', 'Ingresos','IN',$input['serie'],$input['numero'], 'IN'.$input['serie'].str_pad($input['numero'], 9, "0", STR_PAD_LEFT), new DateTime(), $input['accion'],$input['total'] ,$input['fecha'], 1,'fsigu');
+                        $resAudi=$audi->Create('Inventarios', 'Ingresos','IN',
+                                        $input['serie'],
+                                        $input['numero'],
+                                        'IN'.$input['serie'].str_pad($input['numero'], 9, "0", STR_PAD_LEFT),
+                                        new DateTime(),
+                                        $input['accion'],
+                                        $input['total'] ,
+                                        $input['fecha'],
+                                        $usuario->id,
+                                        $usuario->login);
 
 
                     }else{
@@ -146,7 +155,13 @@ class MovimientoInventarioController extends Controller
                         $input['accion']
                         ]);
                         $audi=new AuditoriaController();
-                        $resAudi=$audi->Create('Inventarios', 'Ingresos','IN',$input['serie'],$input['numero'], 'IN'.$input['serie'].'-'.str_pad($input['numero'], 9, "0", STR_PAD_LEFT), new DateTime(), $input['accion'],$input['total'] ,$input['fecha'], $input['usuario_id'],$input['usuario_login']);
+                        $resAudi=$audi->Create('Inventarios', 'Ingresos','IN',$input['serie'],$input['numero'], 'IN'.$input['serie'].'-'.str_pad($input['numero'], 9, "0", STR_PAD_LEFT),
+                                                new DateTime(),
+                                                $input['accion'],
+                                                $input['total'] ,
+                                                $input['fecha'],
+                                                $usuario->id,
+                                                $usuario->login);
 
                     }
                     //grabar nota contable
