@@ -23,6 +23,7 @@ class InventarioTransito extends Model
         'esactivo',
         'usuario_id',
         'usuario_login',
+        'liquidado',
     ];
 
     protected $hidden = [

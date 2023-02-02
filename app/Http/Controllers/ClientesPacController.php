@@ -161,7 +161,10 @@ class ClientesPacController extends Controller
                 $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
                 $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
                 $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatriz('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+                if ($producto='0'){
+                    $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatriz('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+                }
+
 
         }
         else
@@ -246,6 +249,11 @@ class ClientesPacController extends Controller
 
 
         //return $this->getOk($sql);
+         //fsigu sqls
+         /*$box = new SqlModel();
+            $box->sql= $sql;
+            $box->sql1=$sql;
+            $box->save();*/
 
         //$list = DB::select($sql,[$request['cliente_id']]);
         $list = DB::connection('mysqlpac')->select($sql);
@@ -295,6 +303,7 @@ class ClientesPacController extends Controller
                 $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
                 $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
                 $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatriz('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+
 
         }
         else

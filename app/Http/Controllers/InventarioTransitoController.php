@@ -30,7 +30,7 @@ class InventarioTransitoController extends Controller
         $ffin=$request['ffin'];
         $doc=$request['doc'];
 
-        $sql=  "SELECT c.id,documento, c.numero,fecha,nombre,observacion,
+        $sql=  "SELECT c.id,documento, c.numero,fecha,nombre,observacion,liquidado,
                        c.esactivo
                 FROM inventario_transito c
                 where fecha>=? and fecha<=? and c.documento=?
@@ -157,6 +157,38 @@ class InventarioTransitoController extends Controller
 
         } else {
             return $this->insertErrCustom($validation->messages(), 'Datos inválidos');
+        }
+    }
+
+    public function updateLiquidado(Request $request)
+    {
+        $validation = Validator::make(
+            $request->all(),
+            [
+                'id' => 'required',
+            ],
+            [
+                'id.required' => 'El codigo es requerido.',
+            ]
+        );
+        if (!$validation->fails()) {
+
+            $input = $request->all();
+            $id=$input['id'];
+            $apro=$input['liquidado'];
+
+            $sql="update inventario_transito set liquidado=? where id=?";
+            $order = DB::update($sql,[$apro,$id]);
+
+            return $this->updateOk($input);
+
+            if ($movimiento) {
+                return $this->updateOk(null);
+            } else {
+                return $this->updateErr(null);
+            }
+        } else {
+            return $this->updateErrCustom($validation->messages(), 'Datos inválidos');
         }
     }
 
