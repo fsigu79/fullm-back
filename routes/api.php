@@ -29,6 +29,7 @@ use App\Http\Controllers\EadeController;
 use App\Http\Controllers\PacVentasComparaController;
 use App\Http\Controllers\AuditoriaController;
 use App\Http\Controllers\CuposUsosController;
+use App\Http\Controllers\PACReposicionController;
 
 use App\Http\Controllers\CredimportVentaMensualController;
 use App\Http\Controllers\CredimportSeguroConfianzasController;
@@ -237,6 +238,8 @@ Route::group([
 
     Route::get('searchclipac', [ClientesPacController::class, 'searchClientesPac']);
     Route::get('searchprovepac', [ClientesPacController::class, 'searchProveedorPac']);
+
+    Route::get('reposicion', [PACReposicionController::class, 'reposicionProducto']);
 
 });
 

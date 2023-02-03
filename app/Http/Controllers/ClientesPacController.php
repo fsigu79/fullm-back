@@ -13,6 +13,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use PDF;
 
+
 class ClientesPacController extends Controller
 {
     use FormatResponseTrait;
