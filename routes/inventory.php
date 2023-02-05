@@ -119,5 +119,6 @@ Route::group([
     Route::post('update/{id}', [InventarioTransitoController::class, 'save']);
     Route::post('delete/{id}', [InventarioTransitoController::class, 'save']);
     Route::put('liquidado', [InventarioTransitoController::class, 'updateLiquidado']);
+
 });
 

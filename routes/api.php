@@ -240,6 +240,7 @@ Route::group([
     Route::get('searchprovepac', [ClientesPacController::class, 'searchProveedorPac']);
 
     Route::get('reposicion', [PACReposicionController::class, 'reposicionProducto']);
+    Route::get('reposiciondet', [PACReposicionController::class, 'detalleInventarioTransito']);
 
 });
 
