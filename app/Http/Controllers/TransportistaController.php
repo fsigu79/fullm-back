@@ -22,7 +22,7 @@ class TransportistaController extends Controller
 
     public function list()
     {
-        $list = Transportista::orderBy('nombres', 'asc')->get();
+        $list = Transportista::orderBy('razon_social')->get();
         return $this->getOk($list);
     }
 
@@ -33,18 +33,24 @@ class TransportistaController extends Controller
         return $this->getOk($entidad);
     }
 
+    public function delete($id)
+    {
+        $entidad = Transportista::find($id);
+        $entidad->delete();
+        return $this->getOk($entidad);
+    }
 
     public function create(Request $request)
     {
         $validation = Validator::make(
             $request->all(),
             [
-                'nombres' => 'required',
-                'ruc' => 'required',
+                'razon_social' => 'required|unique:transportistas,razon_social',
+                'ruc' => 'required|unique:transportistas,ruc',
                 'placa' => 'required',
             ],
             [
-                'nombres.required' => 'El nombre es requerido.',
+                'razon_social.required' => 'La razon social es requerido.',
                 'ruc.required' => 'El ruc es requerido.',
                 'placa.required' => 'La laca es requerida.',
             ]
@@ -55,7 +61,7 @@ class TransportistaController extends Controller
             $entidad = new Transportista($input);
             $entidad->save();
             if ($entidad) {
-                return $this->insertOk(null);
+                return $this->insertOk($entidad);
             } else {
                 return $this->insertErr(null);
             }
@@ -66,16 +72,15 @@ class TransportistaController extends Controller
 
     public function edit(Request $request)
     {
-        $input=$request->all();
         $validation = Validator::make(
             $request->all(),
             [
-                 'nombres' => 'required',
+               'razon_social' => 'required',
                 'ruc' => 'required',
                 'placa' => 'required',
             ],
             [
-                'nombres.required' => 'El nombre es requerido.',
+                'razon_social.required' => 'La razon social es requerido.',
                 'ruc.required' => 'El ruc es requerido.',
                 'placa.required' => 'La placa es requerida.',
             ]
@@ -86,7 +91,7 @@ class TransportistaController extends Controller
             $entidad->update($request->all());
 
             if ($entidad) {
-                return $this->updateOk(null);
+                return $this->updateOk($entidad);
             } else {
                 return $this->updateErr(null);
             }

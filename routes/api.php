@@ -39,6 +39,7 @@ use App\Http\Controllers\TodoMotoVentaMensualController;
 use App\Http\Controllers\TodoMotoSeguroConfianzasController;
 use App\Http\Controllers\TodoMotoCuposUsosController;
 
+use App\Http\Controllers\TransportistaController;
 
 
 /*

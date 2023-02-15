@@ -10,14 +10,11 @@ class Transportista extends Model
     protected $table = 'transportistas';
 
     protected $fillable = [
-        'nombres',
+        'razon_social',
+        'chofer',
         'placa',
         'ruc',
-        'tiporuc',
-        'esrise',
-        'llevaconta',
-        'contibuyente_esp',
-        'esactivo',
+        'esactivo'
     ];
 
     protected $hidden = [

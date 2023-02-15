@@ -109,7 +109,7 @@ Route::group([
     Route::get('tranbyId/{id}', [TransportistaController::class, 'getById']);
     Route::post('create', [TransportistaController::class, 'create']);
     Route::put('edit', [TransportistaController::class, 'edit']);
-    Route::delete('delete/{id}', [TransportistaController::class, 'eliminar']);
+    Route::delete('delete/{id}', [TransportistaController::class, 'delete']);
 
 });
 
