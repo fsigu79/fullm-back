@@ -242,7 +242,7 @@ Route::group([
 
     Route::get('reposicion', [PACReposicionController::class, 'reposicionProducto']);
     Route::get('reposiciondet', [PACReposicionController::class, 'detalleInventarioTransito']);
-
+    Route::get('reposicioncate', [PACReposicionController::class, 'categoriaProducto']);
 });
 
 
