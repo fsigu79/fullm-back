@@ -29,8 +29,9 @@ class TransportistaController extends Controller
 
     public function getById($id)
     {
-        $entidad = Transportista::find($id);
-        return $this->getOk($entidad);
+      //  $entidad = Transportista::find($id);
+      $entidad = Transportista::where('user_id',$id)->get();  
+      return $this->getOk($entidad);
     }
 
     public function delete($id)

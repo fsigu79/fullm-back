@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Transportista;
 
 class UserController extends Controller
 {
@@ -118,6 +119,46 @@ class UserController extends Controller
             $user = new User($input);
             //$user->auid = (string) \Str::uuid();
             $user->save();
+
+             //Se obtiene el id del resgistro de la tabla de usuarios
+             $latestId = User::latest('id')->first()->id;
+
+             //Comparamos los roles para crear el rol de transportista    
+             if($request['role'] == "2"){
+                 $validation_t = Validator::make(
+                     $request->all(),
+                     [
+                         'razon_social' => 'required|unique:transportistas,razon_social',
+                         'ruc' => 'required|unique:transportistas,ruc',
+                         'placa' => 'required',
+                     ],
+                     [
+                         'razon_social.required' => 'La razon social es requerido.',
+                         'ruc.required' => 'El ruc es requerido.',
+                         'placa.required' => 'La laca es requerida.',
+                     ]
+                 );
+                 if (!$validation_t->fails()) {
+         
+                     $input = $request->all();
+                     $entidad = new Transportista();
+                     $entidad->razon_social = $request['razon_social'];
+                     $entidad->chofer = $request['chofer'];
+                     $entidad->placa = $request['placa'];
+                     $entidad->ruc = $request['ruc'];
+                     $entidad->esactivo = $request['esactivo'];
+                     $entidad->user_id= $latestId;
+                     $entidad->save();
+                      if (!$entidad) {
+                     //     return $this->insertOk($entidad);
+                     // } else {
+                         return $this->insertErr(null);
+                     }
+                 } else {
+                     return $this->insertErrCustom($validation_t->messages(), 'Datos inválidos');
+                 }
+             }
+
             if ($user) {
                 return $this->insertOk(null);
             } else {
@@ -274,11 +315,21 @@ class UserController extends Controller
     public function userId($id) {
         $user = User::find($id);
         if (is_object($user)) {
-            $data = array(
-                'code' => 200,
-                'status' => 'success',
-                'user' => $user,
-            );
+            if($user->role == '2'){
+                $transportista = Transportista::where('user_id',$user->id)->get();  
+                $data = array(
+                    'code' => 200,
+                    'status' => 'success',
+                    'user' => $user,
+                    'transportista'=> $transportista[0]
+                );
+            }else{
+                $data = array(
+                    'code' => 200,
+                    'status' => 'success',
+                    'user' => $user,
+                );
+            }
         } else {
             $data = array(
                 'code' => 404,

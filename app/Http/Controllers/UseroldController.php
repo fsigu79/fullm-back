@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\User;
-
+use App\Models\Transportista;
 
 
 class UseroldController extends Controller {
@@ -48,7 +48,7 @@ class UseroldController extends Controller {
                     'login' => 'required',
                     'email' => 'required',
                     'password' => 'required',
-
+                    'is_transportista' => 'required',
                 ],
                 [
                     'documento.required' => 'El documento es requerido.',
@@ -79,11 +79,10 @@ class UseroldController extends Controller {
                 $user->iscash = $miArray['iscash'];
                 $user->iscollector = $miArray['iscollector'];
                 $user->isactive = $miArray['isactive'];
+                $user->is_transportista = $miArray['is_transportista'];
                 $user->password = $pwd;
-
                 //guardar el usuario
                 $user->save();
-
                 //confirma en mensaje
                 $data = array(
                     'status' => 'success',

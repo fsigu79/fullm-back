@@ -14,7 +14,8 @@ class Transportista extends Model
         'chofer',
         'placa',
         'ruc',
-        'esactivo'
+        'esactivo',
+        'user_id'
     ];
 
     protected $hidden = [
