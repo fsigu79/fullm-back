@@ -8,6 +8,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\DestinoController;
 use App\Http\Controllers\MovimientoInventarioController;
 use App\Http\Controllers\InventarioTransitoController;
+use App\Http\Controllers\PuertosEmbarqueController;
 
 /*
 |--------------------------------------------------------------------------
@@ -122,3 +123,17 @@ Route::group([
 
 });
 
+
+
+Route::group([
+    'prefix' => 'puerto',
+], function () {
+    Route::get('list', [PuertosEmbarqueController::class, 'list']);
+    Route::get('listact', [PuertosEmbarqueController::class, 'listActivos']);
+    Route::get('list/{id}', [PuertosEmbarqueController::class, 'findById']);
+    Route::post('create', [PuertosEmbarqueController::class, 'create']);
+    Route::put('update/{id}', [PuertosEmbarqueController::class, 'update']);
+    Route::delete('delete/{id}', [PuertosEmbarqueController::class, 'delete']);
+
+
+});
