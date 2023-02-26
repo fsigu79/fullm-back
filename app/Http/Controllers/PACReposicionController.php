@@ -473,21 +473,7 @@ class PACReposicionController extends Controller
         return $query;
     }
 
-
-    public function exportLabel($id)
-    {
-        $sql='SELECT codprod01 as codigo,desprod01 as producto from jcev.maepro where codprod01 in("BICI308A24V","BICI89","BUZ01")';
-        $order = DB::connection('mysqlpac')->select($sql);
-        $customPaper = array(0,0,567.00,283.80);
-        $pdf = PDF::loadView('label',compact('order')
-        )->setPaper([0, 0, 141.73,283.47 ], 'landscape');
-
-        return $pdf->stream('label1.pdf');
-    }
-
-
-
-     public function detalleInventarioTransito(Request $request)
+    public function detalleInventarioTransito(Request $request)
     {
         $input = $request->all();
         //return $this->getOk($input);
@@ -501,6 +487,20 @@ class PACReposicionController extends Controller
 			        order by c.fecha desc";
             //return $this->getOk($sql);
             $list = DB::select($sql,[$cod]);
+            return $this->getOk($list);
+
+        }catch(\Exception $e) {
+            return $this->insertErrCustom($request, $e->getMessage());
+        }
+    }
+
+
+    public function categoriaProducto(Request $request)
+    {
+        $input = $request->all();
+       try{
+            $sql="SELECT codcate,desccate FROM jcev.categorias cc WHERE tipocate='02' order by desccate";
+            $list = DB::connection('mysqlpac')->select($sql);
             return $this->getOk($list);
 
         }catch(\Exception $e) {

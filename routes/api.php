@@ -30,6 +30,7 @@ use App\Http\Controllers\PacVentasComparaController;
 use App\Http\Controllers\AuditoriaController;
 use App\Http\Controllers\CuposUsosController;
 use App\Http\Controllers\PACReposicionController;
+use App\Http\Controllers\PacGuiasEntregaController;
 
 use App\Http\Controllers\CredimportVentaMensualController;
 use App\Http\Controllers\CredimportSeguroConfianzasController;
@@ -241,7 +242,7 @@ Route::group([
 
     Route::get('reposicion', [PACReposicionController::class, 'reposicionProducto']);
     Route::get('reposiciondet', [PACReposicionController::class, 'detalleInventarioTransito']);
-
+    Route::get('reposicioncate', [PACReposicionController::class, 'categoriaProducto']);
 });
 
 
@@ -335,6 +336,8 @@ Route::group([
 ], function () {
     Route::get('guiasvta', [GuiasPacController::class, 'ventaGuias']);
     Route::get('guias/det', [GuiasPacController::class, 'guiasDetalle']);
+    Route::get('guiaprobado', [PacGuiasEntregaController::class, 'Guiasgeneradas']);
+
 });
 
 
