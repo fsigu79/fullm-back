@@ -95,13 +95,12 @@ class PACReposicionController extends Controller
         $inicio=$inicio->format('Y-m-d').' 00:00:00';
         //return $this->getOk($inicio);
         $mes1=Carbon::parse($input['ffin'])->subMonths(1)->month;
-        $mes2=Carbon::parse($input['ffin'])->subMonths(2)->month;
+        $mes2=Carbon::parse($input['ffin'])->subMonths(2)->month;-
         $mes3=Carbon::parse($input['ffin'])->subMonths(3)->month;
 
         $fin=Carbon::parse($input['ffin'])->subMonths(1)->lastOfMonth();
         $fin=$fin->format('Y-m-d').' 23:59:00';
         //return $this->getOk($fin);
-
 
         //consultar si la fecha fin se cosidera los dias en los ue se encuentre o solo el final de los 3 meses completos
         //$fin=$request['ffin'].' 23:59:00';
@@ -115,9 +114,6 @@ class PACReposicionController extends Controller
 
         $sql='';
         $sqlnc='';
-
-
-
 
                 // select de ventas
                 $sql=$this->generaQueryVentas('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
@@ -141,9 +137,7 @@ class PACReposicionController extends Controller
                 $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
                 $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
 
-
-
-
+               
 
             $sql='SELECT 	codigo,
                                 articulo,
@@ -173,7 +167,6 @@ class PACReposicionController extends Controller
                                       ORDER BY SUM(b.cantidad) DESC';
 
 
-
         //echo $sql;
         //fsigu sqls
         /* $box = new SqlModel();
@@ -199,7 +192,7 @@ class PACReposicionController extends Controller
                             $detalle->mes1,
                             $detalle->total
                             ]);
-                        };
+        };
 
         /*foreach ($list as $detalle) {
             $entidad= new ReporteTransito();
