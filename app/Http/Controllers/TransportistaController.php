@@ -26,6 +26,11 @@ class TransportistaController extends Controller
         return $this->getOk($list);
     }
 
+    public function list_active()
+    {
+        $list = Transportista::where('esactivo',1)->get();
+        return $this->getOk($list);
+    }
 
     public function getById($id)
     {
