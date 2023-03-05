@@ -244,6 +244,7 @@ Route::group([
     Route::get('reposicion', [PACReposicionController::class, 'reposicionProducto']);
     Route::get('reposiciondet', [PACReposicionController::class, 'detalleInventarioTransito']);
     Route::get('reposicioncate', [PACReposicionController::class, 'categoriaProducto']);
+
 });
 
 
@@ -337,7 +338,13 @@ Route::group([
 ], function () {
     Route::get('guiasvta', [GuiasPacController::class, 'ventaGuias']);
     Route::get('guias/det', [GuiasPacController::class, 'guiasDetalle']);
-    Route::get('guiaprobado', [PacGuiasEntregaController::class, 'Guiasgeneradas']);
+    Route::get('guiaprobado', [PacGuiasEntregaController::class, 'leeGuiasPac']);
+    Route::put('repoasitra', [PacGuiasEntregaController::class, 'asignaTransportistas']);
+    Route::put('repoinitra', [PacGuiasEntregaController::class, 'inicioTransporte']);
+    Route::put('repofintra', [PacGuiasEntregaController::class, 'finTransporte']);
+    Route::get('guiaslist', [PacGuiasEntregaController::class, 'leeGuiasPac']);
+    Route::get('guiaslisttrans', [PacGuiasEntregaController::class, 'guiasListTransportista']);
+    Route::get('guiaslisttranspen', [PacGuiasEntregaController::class, 'guiasListTransportistaPendientes']);
 
 });
 

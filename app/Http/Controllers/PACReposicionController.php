@@ -137,7 +137,7 @@ class PACReposicionController extends Controller
                 $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
                 $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
 
-               
+
 
             $sql='SELECT 	codigo,
                                 articulo,
@@ -506,6 +506,13 @@ class PACReposicionController extends Controller
             return $this->insertErrCustom($request, $e->getMessage());
         }
     }
+
+
+
+
+
+
+
 
 
 
