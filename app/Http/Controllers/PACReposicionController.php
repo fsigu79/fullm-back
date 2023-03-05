@@ -146,6 +146,7 @@ class PACReposicionController extends Controller
                 // IFNULL((SELECT cantact01 FROM jcevcuenca1.maepro WHERE codigo=jcevcuenca1.maepro.codprod01),0) +
                 // IFNULL((SELECT cantact01 FROM jcevgye10.maepro WHERE codigo=jcevgye10.maepro.codprod01),0)
 
+
             $sql='SELECT 	codigo,
                                 articulo,
                                 marca,
@@ -506,6 +507,13 @@ class PACReposicionController extends Controller
             return $this->insertErrCustom($request, $e->getMessage());
         }
     }
+
+
+
+
+
+
+
 
 
 
