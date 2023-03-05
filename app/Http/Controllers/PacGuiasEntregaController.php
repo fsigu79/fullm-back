@@ -51,7 +51,7 @@ private $sqlg="select g.numero_guia_remision AS numero,
     }
 
 
-    public function Guiasgeneradas(Request $request)
+    public function leeGuiasPac(Request $request)
     {
         $input = $request->all();
         $inicio=$request['finicio'].' 00:00:00';
@@ -71,15 +71,42 @@ private $sqlg="select g.numero_guia_remision AS numero,
         $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevstecvir','jcevstecvir','jcevstecvir',$inicio,$fin);
 
         $list = DB::connection('mysqlpac')->select($sql);
-
+        //return $this->getOk($list);
         //fsigu sqls
-        $box = new SqlModel();
+        /*$box = new SqlModel();
             $box->sql= $sql;
             $box->sql1=$sql;
-            $box->save();
+            $box->save();*/
 
-        return $this->getOk($list);
+        foreach ($list as $detalle) {
+        $results=DB::select('SELECT guias_pac_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',[
+                            $detalle->numero,
+                            $detalle->fecha,
+                            $detalle->nombre_transportista,
+                            $detalle->ruc_transportista,
+                            $detalle->codigo_origen,
+                            $detalle->direccion_origen,
+                            $detalle->motivo_traslado,
+                            $detalle->codigo_destino,
+                            $detalle->direccion_destino,
+                            $detalle->direccion,
+                            $detalle->direccion_establecimiento,
+                            $detalle->fecha_inicio_transporte,
+                            $detalle->fecha_fin_transporte,
+                            $detalle->codigo_cliente,
+                            $detalle->ruc,
+                            $detalle->nombre_cliente,
+                            $detalle->telefono,
+                            $detalle->observacion,
+                            $detalle->numero_documento_origen,
+                            $detalle->usuario
+                            ]);
+        };
+
+        return $this->getOk(null);
     }
+
+
 
     public function generaQueryGuias($bodega,$bodega1,$bodega2,$inicio,$fin)
     {
@@ -90,6 +117,171 @@ private $sqlg="select g.numero_guia_remision AS numero,
     }
 
 
+    public function guiasList(Request $request)
+    {
+        $input = $request->all();
+        $inicio=$request['finicio'].' 00:00:00';
+        $fin=$request['ffin'].' 23:59:00';
+        $sql="SELECT id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
+                    codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
+                    direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
+                    codigo_cliente, ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
+                    usuario, transportista_id, fecha_asignacion, esasignado, fecha_inicio_traslado_transportista,
+                    inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
+                    esactivo
+	        FROM guiaspac
+            WHERE fecha_emision>=? and fecha_emision<=?";
+
+        $list = DB::select($sql,[$inicio,$fin]);
+
+        return $this->getOk($list);
+    }
+
+    public function guiasListTransportista(Request $request)
+    {
+        $input = $request->all();
+        $inicio=$request['finicio'].' 00:00:00';
+        $fin=$request['ffin'].' 23:59:00';
+        $idtran=$request['transportista_id'];
+
+        $sql="SELECT id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
+                    codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
+                    direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
+                    codigo_cliente, ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
+                    usuario, transportista_id, fecha_asignacion, esasignado, fecha_inicio_traslado_transportista,
+                    inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
+                    esactivo
+	        FROM guiaspac
+            WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=?
+            ORDER BY fecha_emision desc";
+
+        $list = DB::select($sql,[$inicio,$fin,$idtran]);
+
+        return $this->getOk($list);
+    }
+
+    public function guiasListTransportistaPendientes(Request $request)
+    {
+        $input = $request->all();
+        $inicio=$request['finicio'].' 00:00:00';
+        $fin=$request['ffin'].' 23:59:00';
+        $idtran=$request['transportista_id'];
+
+        $sql="SELECT id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
+                    codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
+                    direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
+                    codigo_cliente, ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
+                    usuario, transportista_id, fecha_asignacion, esasignado, fecha_inicio_traslado_transportista,
+                    inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
+                    esactivo
+	        FROM guiaspac
+            WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=? and esentregado=0
+            ORDER BY fecha_emision asc";
+
+        $list = DB::select($sql,[$inicio,$fin,$idtran]);
+
+        return $this->getOk($list);
+    }
+
+
+    public function asignaTransportistas(Request $request)
+    {
+        $validation = Validator::make(
+            $request->all(),
+            [
+                'transportista_id' => 'required',
+            ],
+            [
+                'transportista_id.required' => 'El codigo del transportista es requerido.',
+            ]
+        );
+        if (!$validation->fails()) {
+
+            $input = $request->all();
+            $guia=$input['num_guia'];
+            $idtransportista=$input['transportista_id'];
+
+            $sql="update guiaspac set transportista_id=?,fecha_asignacion=current_timestamp,esasignado=1
+                where numero_guia_remision=?";
+            $order = DB::update($sql,[$idtransportista,$guia]);
+
+            return $this->updateOk($input);
+
+            if ($movimiento) {
+                return $this->updateOk(null);
+            } else {
+                return $this->updateErr(null);
+            }
+        } else {
+            return $this->updateErrCustom($validation->messages(), 'Datos inválidos');
+        }
+    }
+
+    public function inicioTransporte(Request $request)
+    {
+        $validation = Validator::make(
+            $request->all(),
+            [
+                'transportista_id' => 'required',
+            ],
+            [
+                'transportista_id.required' => 'El codigo del transportista es requerido.',
+            ]
+        );
+        if (!$validation->fails()) {
+
+            $input = $request->all();
+            $guia=$input['num_guia'];
+            $idtransportista=$input['transportista_id'];
+
+            $sql="update guiaspac set fecha_inicio_traslado_transportista=current_timestamp,inicio_transporte=1
+                where numero_guia_remision=?";
+            $order = DB::update($sql,[$idtransportista,$guia]);
+
+            return $this->updateOk($input);
+
+            if ($movimiento) {
+                return $this->updateOk(null);
+            } else {
+                return $this->updateErr(null);
+            }
+        } else {
+            return $this->updateErrCustom($validation->messages(), 'Datos inválidos');
+        }
+    }
+
+    public function finTransporte(Request $request)
+    {
+        $validation = Validator::make(
+            $request->all(),
+            [
+                'transportista_id' => 'required',
+            ],
+            [
+                'transportista_id.required' => 'El codigo del transportista es requerido.',
+            ]
+        );
+        if (!$validation->fails()) {
+
+            $input = $request->all();
+            $guia=$input['num_guia'];
+            $idtransportista=$input['transportista_id'];
+
+            $sql="update guiaspac set fecha_entrega_transportista=current_timestamp,esentregado=1
+                where numero_guia_remision=?";
+            $order = DB::update($sql,[$idtransportista,$guia]);
+
+            return $this->updateOk($input);
+
+            if ($movimiento) {
+                return $this->updateOk(null);
+            } else {
+                return $this->updateErr(null);
+            }
+        } else {
+            return $this->updateErrCustom($validation->messages(), 'Datos inválidos');
+        }
+    }
 
 
 
