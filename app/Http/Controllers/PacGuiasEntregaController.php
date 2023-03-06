@@ -125,12 +125,12 @@ private $sqlg="select g.numero_guia_remision AS numero,
         $sql="SELECT g.id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
                     codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
                     direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
-                    codigo_cliente, ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
+                    codigo_cliente, g.ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
                     usuario, transportista_id, fecha_asignacion, esasignado, fecha_inicio_traslado_transportista,
                     inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
-                    esactivo,g.razon_social,g.chofer
+                    g.esactivo,t.razon_social,t.chofer
 	        FROM guiaspac g
-                inner join transportistas t on transportista_id=g.id
+                left join transportistas t on transportista_id=g.id
             WHERE fecha_emision>=? and fecha_emision<=?";
 
         $list = DB::select($sql,[$inicio,$fin]);
@@ -157,7 +157,7 @@ private $sqlg="select g.numero_guia_remision AS numero,
             ORDER BY fecha_emision desc";
 
         $list = DB::select($sql,[$inicio,$fin,$idtran]);
-        
+
         return $this->getOk($list);
     }
 
