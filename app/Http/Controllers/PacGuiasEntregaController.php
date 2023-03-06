@@ -51,7 +51,7 @@ private $sqlg="select g.numero_guia_remision AS numero,
     }
 
 
-    public function leeGuiasPac(Request $request)
+    public function importarGuasPac(Request $request)
     {
         $input = $request->all();
         $inicio=$request['finicio'].' 00:00:00';
@@ -102,8 +102,8 @@ private $sqlg="select g.numero_guia_remision AS numero,
                             $detalle->usuario
                             ]);
         };
-
-        return $this->getOk(null);
+        $termino="IMPORTACION OK";
+        return $this->getOk($termino);
     }
 
 
@@ -282,6 +282,41 @@ private $sqlg="select g.numero_guia_remision AS numero,
             return $this->updateErrCustom($validation->messages(), 'Datos inválidos');
         }
     }
+
+    public function getImage($filename){
+        $isset = \Storage::disk('images')->exists($filename);
+        //echo($filename);
+        //echo($isset);
+        if ($isset) {
+            $file = \Storage::disk('images')->get($filename);
+            return Response($file, 200);
+        } else {
+            $data = array(
+                'code' => 404,
+                'status' => 'error',
+                'message' => 'La imagen no existe',
+            );
+            return response()->json($data, $data['code']);
+        }
+    }
+
+    public function addImage(Request $request){
+
+        $image=$request->file('image');
+
+        if($image){
+            $image_path=$image->getClientOriginalName();
+           \Storage::disk('images')->put($image_path, \File::get($image));
+        }
+        $data=array(
+
+           'image'=>$image,
+           'status'=>'success'
+       );
+       return response()->json($data,200);
+
+    }
+
 
 
 
