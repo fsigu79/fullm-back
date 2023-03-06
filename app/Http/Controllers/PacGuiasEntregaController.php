@@ -130,7 +130,7 @@ private $sqlg="select g.numero_guia_remision AS numero,
                     inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
                     g.esactivo,t.razon_social,t.chofer
 	        FROM guiaspac g
-                inner join transportistas t on transportista_id=g.id
+                left join transportistas t on transportista_id=g.id
             WHERE fecha_emision>=? and fecha_emision<=?";
 
         $list = DB::select($sql,[$inicio,$fin]);
