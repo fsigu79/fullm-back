@@ -51,7 +51,7 @@ private $sqlg="select g.numero_guia_remision AS numero,
     }
 
 
-    public function leeGuiasPac(Request $request)
+    public function importarGuasPac(Request $request)
     {
         $input = $request->all();
         $inicio=$request['finicio'].' 00:00:00';

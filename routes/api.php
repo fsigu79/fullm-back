@@ -338,7 +338,7 @@ Route::group([
 ], function () {
     Route::get('guiasvta', [GuiasPacController::class, 'ventaGuias']);
     Route::get('guias/det', [GuiasPacController::class, 'guiasDetalle']);
-    Route::get('guiaprobado', [PacGuiasEntregaController::class, 'leeGuiasPac']);
+    Route::get('guiasimporta', [PacGuiasEntregaController::class, 'importarGuasPac']);
     Route::put('repoasitra', [PacGuiasEntregaController::class, 'asignaTransportistas']);
     Route::put('repoinitra', [PacGuiasEntregaController::class, 'inicioTransporte']);
     Route::put('repofintra', [PacGuiasEntregaController::class, 'finTransporte']);
