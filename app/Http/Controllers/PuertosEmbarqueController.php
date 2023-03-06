@@ -78,7 +78,7 @@ class PuertosEmbarqueController extends Controller{
         );
         if (!$validation->fails()) {
 
-            $entidad = PuertoEmbarque::find($request->all()['id']);
+            $entidad = PuertoEmbarque::find($request['id']);
             $entidad->update($request->all());
 
             if ($entidad) {
