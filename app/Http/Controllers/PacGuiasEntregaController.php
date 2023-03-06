@@ -122,14 +122,15 @@ private $sqlg="select g.numero_guia_remision AS numero,
         $input = $request->all();
         $inicio=$request['finicio'].' 00:00:00';
         $fin=$request['ffin'].' 23:59:00';
-        $sql="SELECT id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
+        $sql="SELECT g.id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
                     codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
                     direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
                     codigo_cliente, ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
                     usuario, transportista_id, fecha_asignacion, esasignado, fecha_inicio_traslado_transportista,
                     inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
-                    esactivo
-	        FROM guiaspac
+                    esactivo,g.razon_social,g.chofer
+	        FROM guiaspac g
+                inner join transportistas t on transportista_id=g.id
             WHERE fecha_emision>=? and fecha_emision<=?";
 
         $list = DB::select($sql,[$inicio,$fin]);
@@ -235,8 +236,10 @@ private $sqlg="select g.numero_guia_remision AS numero,
             $idtransportista=$input['transportista_id'];
 
             $sql="update guiaspac set fecha_inicio_traslado_transportista=current_timestamp,inicio_transporte=1
-                where numero_guia_remision=? and transportista_id=?";
-            $order = DB::update($sql,[$guia,$idtransportista]);
+
+                where numero_guia_remision=?";
+            $order = DB::update($sql,[$guia]);
+
 
             return $this->updateOk($input);
 
@@ -266,10 +269,15 @@ private $sqlg="select g.numero_guia_remision AS numero,
             $input = $request->all();
             $guia=$input['num_guia'];
             $idtransportista=$input['transportista_id'];
+            $longitud=$input['longitud'];
+            $latitud=$input['latitud'];
 
-            $sql="update guiaspac set fecha_entrega_transportista=current_timestamp,esentregado=1
-                where numero_guia_remision=? and transportista_id=?";
-            $order = DB::update($sql,[$guia,$idtransportista]);
+
+            $sql="update guiaspac set fecha_entrega_transportista=current_timestamp,esentregado=1,
+                        longitud=?,latitud=?
+                where numero_guia_remision=?";
+            $order = DB::update($sql,[$longitud,$latitud,$guia]);
+
 
             return $this->updateOk($input);
 
