@@ -60,15 +60,15 @@ private $sqlg="select g.numero_guia_remision AS numero,
 
         // select de guias
         $sql=$this->generaQueryGuias('jcev','jcev','jcev',$inicio,$fin);
-        $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevcuenca2','jcevcuenca2','jcevcuenca2',$inicio,$fin);
-        $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevcuenca1','jcevcuenca1','jcevcuenca1',$inicio,$fin);
-        $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevgye1','jcevgye1','jcevgye1',$inicio,$fin);
-        $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevgye10','jcevgye10','jcevgye10',$inicio,$fin);
-        $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevuio1','jcevuio1','jcevuio1',$inicio,$fin);
-        $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevconsigvirt','jcevuio1','jcevuio1',$inicio,$fin);
-        $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevgyeassem','jcevgyeassem','jcevgyeassem',$inicio,$fin);
-        $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevconsigvirt','jcevconsigvirt','jcevgyeassem',$inicio,$fin);
-        $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevstecvir','jcevstecvir','jcevstecvir',$inicio,$fin);
+        // $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevcuenca2','jcevcuenca2','jcevcuenca2',$inicio,$fin);
+        // $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevcuenca1','jcevcuenca1','jcevcuenca1',$inicio,$fin);
+        // $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevgye1','jcevgye1','jcevgye1',$inicio,$fin);
+        // $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevgye10','jcevgye10','jcevgye10',$inicio,$fin);
+        // $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevuio1','jcevuio1','jcevuio1',$inicio,$fin);
+        // $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevconsigvirt','jcevuio1','jcevuio1',$inicio,$fin);
+        // $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevgyeassem','jcevgyeassem','jcevgyeassem',$inicio,$fin);
+        // $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevconsigvirt','jcevconsigvirt','jcevgyeassem',$inicio,$fin);
+        // $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevstecvir','jcevstecvir','jcevstecvir',$inicio,$fin);
 
         $list = DB::connection('mysqlpac')->select($sql);
         //return $this->getOk($list);
@@ -157,7 +157,7 @@ private $sqlg="select g.numero_guia_remision AS numero,
             ORDER BY fecha_emision desc";
 
         $list = DB::select($sql,[$inicio,$fin,$idtran]);
-
+        
         return $this->getOk($list);
     }
 
@@ -236,8 +236,10 @@ private $sqlg="select g.numero_guia_remision AS numero,
             $idtransportista=$input['transportista_id'];
 
             $sql="update guiaspac set fecha_inicio_traslado_transportista=current_timestamp,inicio_transporte=1
+
                 where numero_guia_remision=?";
             $order = DB::update($sql,[$guia]);
+
 
             return $this->updateOk($input);
 
@@ -270,10 +272,12 @@ private $sqlg="select g.numero_guia_remision AS numero,
             $longitud=$input['longitud'];
             $latitud=$input['latitud'];
 
+
             $sql="update guiaspac set fecha_entrega_transportista=current_timestamp,esentregado=1,
                         longitud=?,latitud=?
                 where numero_guia_remision=?";
             $order = DB::update($sql,[$longitud,$latitud,$guia]);
+
 
             return $this->updateOk($input);
 

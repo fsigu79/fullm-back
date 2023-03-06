@@ -106,6 +106,7 @@ Route::group([
     'prefix' => 'trans',
 ], function () {
     Route::get('list', [TransportistaController::class, 'list']);
+    Route::get('listActive', [TransportistaController::class, 'list_active']);
     Route::get('tranbyId/{id}', [TransportistaController::class, 'getById']);
     Route::post('create', [TransportistaController::class, 'create']);
     Route::put('edit', [TransportistaController::class, 'edit']);
