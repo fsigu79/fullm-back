@@ -156,7 +156,7 @@ private $sqlg="select g.numero_guia_remision AS numero,
             ORDER BY fecha_emision desc";
 
         $list = DB::select($sql,[$inicio,$fin,$idtran]);
-
+        
         return $this->getOk($list);
     }
 
@@ -235,8 +235,8 @@ private $sqlg="select g.numero_guia_remision AS numero,
             $idtransportista=$input['transportista_id'];
 
             $sql="update guiaspac set fecha_inicio_traslado_transportista=current_timestamp,inicio_transporte=1
-                where numero_guia_remision=?";
-            $order = DB::update($sql,[$idtransportista,$guia]);
+                where numero_guia_remision=? and transportista_id=?";
+            $order = DB::update($sql,[$guia,$idtransportista]);
 
             return $this->updateOk($input);
 
@@ -268,8 +268,8 @@ private $sqlg="select g.numero_guia_remision AS numero,
             $idtransportista=$input['transportista_id'];
 
             $sql="update guiaspac set fecha_entrega_transportista=current_timestamp,esentregado=1
-                where numero_guia_remision=?";
-            $order = DB::update($sql,[$idtransportista,$guia]);
+                where numero_guia_remision=? and transportista_id=?";
+            $order = DB::update($sql,[$guia,$idtransportista]);
 
             return $this->updateOk($input);
 
