@@ -342,10 +342,10 @@ Route::group([
     Route::put('repoasitra', [PacGuiasEntregaController::class, 'asignaTransportistas']);
     Route::put('repoinitra', [PacGuiasEntregaController::class, 'inicioTransporte']);
     Route::put('repofintra', [PacGuiasEntregaController::class, 'finTransporte']);
-    Route::get('guiaslist', [PacGuiasEntregaController::class, 'leeGuiasPac']);
+    Route::get('guiaslist', [PacGuiasEntregaController::class, 'guiasList']);
     Route::get('guiaslisttrans', [PacGuiasEntregaController::class, 'guiasListTransportista']);
     Route::get('guiaslisttranspen', [PacGuiasEntregaController::class, 'guiasListTransportistaPendientes']);
-
+    Route::post('add-image', [PacGuiasEntregaController::class, 'addImage']);
 });
 
 
