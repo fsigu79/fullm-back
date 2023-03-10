@@ -122,19 +122,38 @@ private $sqlg="select g.numero_guia_remision AS numero,
         $input = $request->all();
         $inicio=$request['finicio'].' 00:00:00';
         $fin=$request['ffin'].' 23:59:00';
-        $sql="SELECT g.id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
-                    codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
-                    direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
-                    codigo_cliente, g.ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
-                    usuario, transportista_id, fecha_asignacion, esasignado, fecha_inicio_traslado_transportista,
-                    inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
-                    g.esactivo,t.razon_social,t.chofer
-	        FROM guiaspac g
-                left join transportistas t on transportista_id=g.id
+        $transportista_id = $request['transportista_id'];
+        $list = [];
+        if($transportista_id == 0){
+            $sql="SELECT g.id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
+            codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
+            direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
+            codigo_cliente, g.ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
+            usuario, transportista_id, fecha_asignacion, esasignado, fecha_inicio_traslado_transportista,
+            inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
+            g.esactivo,t.razon_social,t.chofer
+            FROM guiaspac g
+                left join transportistas t on t.user_id=g.transportista_id
             WHERE fecha_emision>=? and fecha_emision<=?";
+             $list = DB::select($sql,[$inicio,$fin]);
 
-        $list = DB::select($sql,[$inicio,$fin]);
+        }else{
+            $sql="SELECT g.id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
+            codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
+            direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
+            codigo_cliente, g.ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
+            usuario, transportista_id, fecha_asignacion, esasignado, fecha_inicio_traslado_transportista,
+            inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
+            g.esactivo,t.razon_social,t.chofer
+            FROM guiaspac g
+                left join transportistas t on t.user_id=g.transportista_id
+            WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=?";
+             $list = DB::select($sql,[$inicio,$fin,$transportista_id]);
+    
+    }
+       
 
+       
         return $this->getOk($list);
     }
 
@@ -151,7 +170,7 @@ private $sqlg="select g.numero_guia_remision AS numero,
                     codigo_cliente, ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
                     usuario, transportista_id, fecha_asignacion, esasignado, fecha_inicio_traslado_transportista,
                     inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
-                    esactivo
+                    esactivo, longitud, latitud
 	        FROM guiaspac
             WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=?
             ORDER BY fecha_emision desc";
@@ -184,6 +203,28 @@ private $sqlg="select g.numero_guia_remision AS numero,
         return $this->getOk($list);
     }
 
+    public function guiasListTransportistaFinalizado(Request $request)
+    {
+        $input = $request->all();
+        $inicio=$request['finicio'].' 00:00:00';
+        $fin=$request['ffin'].' 23:59:00';
+        $idtran=$request['transportista_id'];
+
+        $sql="SELECT id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
+                    codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
+                    direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
+                    codigo_cliente, ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
+                    usuario, transportista_id, fecha_asignacion, esasignado, fecha_inicio_traslado_transportista,
+                    inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
+                    esactivo
+	        FROM guiaspac
+            WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=? and esentregado=1
+            ORDER BY fecha_emision asc";
+
+        $list = DB::select($sql,[$inicio,$fin,$idtran]);
+
+        return $this->getOk($list);
+    }
 
     public function asignaTransportistas(Request $request)
     {
@@ -309,7 +350,6 @@ private $sqlg="select g.numero_guia_remision AS numero,
     }
 
     public function addImage(Request $request){
-
         $image=$request->file('image');
 
         if($image){
