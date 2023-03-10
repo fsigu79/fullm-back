@@ -345,6 +345,7 @@ Route::group([
     Route::get('guiaslist', [PacGuiasEntregaController::class, 'guiasList']);
     Route::get('guiaslisttrans', [PacGuiasEntregaController::class, 'guiasListTransportista']);
     Route::get('guiaslisttranspen', [PacGuiasEntregaController::class, 'guiasListTransportistaPendientes']);
+    Route::get('guiaslisttransfin', [PacGuiasEntregaController::class, 'guiasListTransportistaFinalizado']);
     Route::post('add-image', [PacGuiasEntregaController::class, 'addImage']);
 });
 
