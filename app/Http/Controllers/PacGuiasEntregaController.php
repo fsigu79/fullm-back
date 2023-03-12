@@ -9,6 +9,8 @@ use App\Models\SeriePac;
 use App\Models\SqlModel;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\EmailController;
+use Illuminate\Support\Facades\Mail;
 
 
 class PacGuiasEntregaController extends Controller
@@ -312,12 +314,13 @@ private $sqlg="select g.numero_guia_remision AS numero,
             $idtransportista=$input['transportista_id'];
             $longitud=$input['longitud'];
             $latitud=$input['latitud'];
+            $image=$input['image'];
 
 
             $sql="update guiaspac set fecha_entrega_transportista=current_timestamp,esentregado=1,
-                        longitud=?,latitud=?
+                        longitud=?,latitud=?,foto_entrega=?
                 where numero_guia_remision=?";
-            $order = DB::update($sql,[$longitud,$latitud,$guia]);
+            $order = DB::update($sql,[$longitud,$latitud,$image,$guia]);
 
 
             return $this->updateOk($input);
@@ -366,6 +369,87 @@ private $sqlg="select g.numero_guia_remision AS numero,
     }
 
 
+    public function email_send_guias(Request $request){
+        $validation = Validator::make(
+            $request->all(),
+            [
+                'fecha' => 'required',
+            ],
+            [
+                'fecha.required' => 'La fecha es requerido.',
+            ]
+        );
+
+        if (!$validation->fails()) {
+            $input = $request->all();
+
+            //send email verification
+  try {
+    //variable que contiene la plantilla en HTML
+    $emailTemplate = "<!DOCTYPE html>
+    <html lang='en'>
+    
+    <head>
+        <meta charset='UTF-8'>
+        <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+        <title>Document</title>
+    </head>
+    
+    <body>
+        <div style='width: 100%;'>
+            <div style='width:100%;background-color:#243A5F ;color:white;padding:1rem;font-family:arial;'>
+                <h1 style='text-align:center;'>La siguiente guia {Numguia} a finalizado te mostramos mas detalles a
+                    continuacion</h1>
+            </div><br />
+            <div style='font-family:Arial;font-size:medium;margin-top:2rem;'>
+                <h4 style='text-align:center;'>La siguiente guia a finalizado con el registro de la fecha: {fecha_fin}</h4>
+            </div>
+            <div style='font-family:Arial;font-size:medium;margin-top:0.5rem;'>
+                <p>Imagen de finalizacion:</p>
+            </div>
+            <div style='font-family:Arial;font-size:medium;margin:3rem; text-align: center;'>
+                <img src='{imagen_url}' alt=''>
+            </div>
+    
+            <div style='font-family:Arial;font-size:medium;margin-top:0.5rem;border-bottom:1px solid gray;'>
+                <h4>Gracias por preferirnos.</h4>
+            </div>
+            <div style='font-family:Arial;font-size:medium;margin-top:1rem;padding-bottom:0.5rem;'>
+            </div>
+    
+        </div>
+    </body>
+    </html>";
+    $html = str_replace("{Numguia}", $input['numero_guia'], $emailTemplate);
+    $html = str_replace("{fecha_fin}", $input['fecha'], $html);
+    $email = new EmailController();
+    $email->sendEmail($html, $input['email'], "Guia Finalizada");
+    //confirma en mensaje
+    $data = array(
+        'status' => 'success',
+        'code' => 200,
+        'message' => 'Correo enviado exitosamente',
+        'error'=> false
+    );
+
+    return $data;
+    
+}catch(\Throwable $th) {
+  $data = array(
+                'code' => 404,
+                'status' => 'error',
+                'message' => 'La error al enviar el correo',
+                'error message' => $th->getMessage()
+            );
+            return response()->json($data, $data['code']);
+}
+
+        } else {
+            return $this->updateErrCustom($validation->messages(), 'Datos inválidos');
+        }
+  
+    }
 
 
 
