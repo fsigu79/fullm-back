@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 
 class EmailController extends Controller
 {
@@ -17,8 +17,9 @@ class EmailController extends Controller
         //         ->from('my@email.com')
         //         ->html($html, 'text/html');
         // });
+        
 
-        Mail::send([], [], function ($message) use ($html, $email, $subject) {
+        Mail::send( [], [],function ($message) use ($html, $email, $subject) {
             $message->subject($subject)
             ->from(env('MAIL_FROM_ADDRESS'))
                 ->setTo($email)

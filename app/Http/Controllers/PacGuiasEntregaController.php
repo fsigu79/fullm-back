@@ -10,6 +10,7 @@ use App\Models\SqlModel;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\EmailController;
+use Illuminate\Support\Facades\Mail;
 
 
 class PacGuiasEntregaController extends Controller
@@ -313,12 +314,13 @@ private $sqlg="select g.numero_guia_remision AS numero,
             $idtransportista=$input['transportista_id'];
             $longitud=$input['longitud'];
             $latitud=$input['latitud'];
+            $image=$input['image'];
 
 
             $sql="update guiaspac set fecha_entrega_transportista=current_timestamp,esentregado=1,
-                        longitud=?,latitud=?
+                        longitud=?,latitud=?,foto_entrega=?
                 where numero_guia_remision=?";
-            $order = DB::update($sql,[$longitud,$latitud,$guia]);
+            $order = DB::update($sql,[$longitud,$latitud,$image,$guia]);
 
 
             return $this->updateOk($input);
