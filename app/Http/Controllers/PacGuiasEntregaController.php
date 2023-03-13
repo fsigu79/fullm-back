@@ -382,7 +382,6 @@ private $sqlg="select g.numero_guia_remision AS numero,
 
         if (!$validation->fails()) {
             $input = $request->all();
-
             //send email verification
   try {
     //variable que contiene la plantilla en HTML
@@ -423,6 +422,7 @@ private $sqlg="select g.numero_guia_remision AS numero,
     </html>";
     $html = str_replace("{Numguia}", $input['numero_guia'], $emailTemplate);
     $html = str_replace("{fecha_fin}", $input['fecha'], $html);
+    $html = str_replace("{imagen_url}", $input['image'], $html);
     $email = new EmailController();
     $email->sendEmail($html, $input['email'], "Guia Finalizada");
     //confirma en mensaje
