@@ -17,8 +17,9 @@ class EmailController extends Controller
         //         ->from('my@email.com')
         //         ->html($html, 'text/html');
         // });
-        
         var_dump(env('MAIL_FROM_ADDRESS'));
+        var_dump(env('DB_DATABASE'));
+
         Mail::send( [], [],function ($message) use ($html, $email, $subject) {
             $message->subject($subject)
             ->from(env('MAIL_FROM_ADDRESS'))

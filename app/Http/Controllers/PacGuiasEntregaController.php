@@ -385,24 +385,37 @@ private $sqlg="select g.numero_guia_remision AS numero,
             //send email verification
   try {
     //variable que contiene la plantilla en HTML
+
     $emailTemplate = "<!DOCTYPE html>
     <html lang='en'>
-    
     <head>
         <meta charset='UTF-8'>
         <meta http-equiv='X-UA-Compatible' content='IE=edge'>
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
         <title>Document</title>
+    
     </head>
     
     <body>
         <div style='width: 100%;'>
             <div style='width:100%;background-color:#243A5F ;color:white;padding:1rem;font-family:arial;'>
-                <h1 style='text-align:center;'>La siguiente guia {Numguia} a finalizado te mostramos mas detalles a
-                    continuacion</h1>
+                <h1 style='text-align:center;'>Ver detalles asumidos a la siguiente guia {Numguia}</h1>
             </div><br />
             <div style='font-family:Arial;font-size:medium;margin-top:2rem;'>
-                <h4 style='text-align:center;'>La siguiente guia a finalizado con el registro de la fecha: {fecha_fin}</h4>
+                <h3> Detallles de la guia: </h3>
+                <label class='label' style='text-align:center;'>Fecha de emision: {fecha_emision}</label>
+                <br><br>
+                <label class='label' style='text-align:center;'>Fecha de asignacion: {fecha_asignacion}</label>
+                <br><br>
+                <label class='label' style='text-align:center;'>Fecha inicio transporte: {fecha_inicio}</label>
+                <br><br>
+                <label class='label' style='text-align:center; font-weight: bold;'>Fecha fin transporte: {fecha_fin}</label>
+                <br><br>
+                <label class='label style='text-align:center;'>Transportista: {transportista}</label>
+                <br><br>
+                <label class='label' style='text-align:center;'>Nombre Cliente: {codigo_cliente}</label>
+                <br><br>
+                <label class='label' style='text-align:center;'>RUC: {ruc}</label>
             </div>
             <div style='font-family:Arial;font-size:medium;margin-top:0.5rem;'>
                 <p>Imagen de finalizacion:</p>
@@ -410,19 +423,29 @@ private $sqlg="select g.numero_guia_remision AS numero,
             <div style='font-family:Arial;font-size:medium;margin:3rem; text-align: center;'>
                 <img src='{imagen_url}' alt=''>
             </div>
-    
             <div style='font-family:Arial;font-size:medium;margin-top:0.5rem;border-bottom:1px solid gray;'>
                 <h4>Gracias por preferirnos.</h4>
             </div>
             <div style='font-family:Arial;font-size:medium;margin-top:1rem;padding-bottom:0.5rem;'>
             </div>
-    
         </div>
     </body>
     </html>";
+    
+    $sql ='SELECT * from guiaspac where numero_guia_remision =?';
+    $request_db = DB::select($sql,[$input['numero_guia']]);
+    
     $html = str_replace("{Numguia}", $input['numero_guia'], $emailTemplate);
     $html = str_replace("{fecha_fin}", $input['fecha'], $html);
     $html = str_replace("{imagen_url}", $input['image'], $html);
+    
+    $html = str_replace("{fecha_emision}", $request_db[0]->fecha_emision, $html);
+    $html = str_replace("{fecha_asignacion}", $request_db[0]->fecha_asignacion, $html);
+    $html = str_replace("{fecha_inicio}", $request_db[0]->fecha_inicio_transporte, $html);
+    $html = str_replace("{transportista}", $request_db[0]->nombre_transportista, $html);
+    $html = str_replace("{codigo_cliente}", $request_db[0]->codigo_cliente, $html); 
+    $html = str_replace("{ruc}", $request_db[0]->ruc, $html);
+    
     $email = new EmailController();
     $email->sendEmail($html, $input['email'], "Guia Finalizada");
     //confirma en mensaje
