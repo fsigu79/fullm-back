@@ -23,6 +23,7 @@ class PACReposicionController extends Controller
 	                        NOCOMP03 AS documento,
                             fecmov03 AS fecha,
                             cantid03 AS cantidad,
+                            ybase1.maepro.reposicion,
 	                        marca01 AS marcod,
   					        (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '4530' AND codtab <> '' AND codtab = marca01) AS marca,
 					        catcte01 AS catcod,
@@ -34,13 +35,14 @@ class PACReposicionController extends Controller
                WHERE tipotra03 IN ('80') AND cvanulado03 <>'S' AND fecmov03 >= 'xfinicio'  AND fecmov03 <= 'xffin' AND  tipprod01='S'
                     and case when '0'='xmarc' then true else marca01 in ('xmarc') end
                     and case when '0'='xprod' then true else codprod01 in ('xprod') end
-                    and case when '0'='xclie' then true else nocte31 in ('xclie') end";
+                    and case when '0'='xclie' then true else catcte01 in ('xclie') end";
 
     private $sqlgennc="SELECT IFNULL(codprod01,'-') AS codigo,
 						        desprod01 AS articulo,
 						        numdoc43 AS documento,
                                 fecdoc43 AS fecha,
                                 IFNULL(cantid03*-1,0) AS cantidad,
+                                xbase.maepro.reposicion,
 						        marca01 AS marcod,
 						        (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '4530' AND codtab <> '' AND codtab = marca01) AS marca,
 						        catcte01 AS catcod,
@@ -52,7 +54,7 @@ class PACReposicionController extends Controller
 					      WHERE tipodoc43 IN ('53')  AND fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin' AND cvanulado43<>'S' AND tipoNC43='P' and ocurren43 in ('00','0000')
                                 and case when '0'='xmarc' then true else marca01 in ('xmarc') end
                                 and case when '0'='xprod' then true else codprod01 in ('xprod') end
-                                and case when '0'='xclie' then true else codcte43 in ('xclie') end";
+                                and case when '0'='xclie' then true else catcte01 in ('xclie') end";
 
 
     private $sqlgennc1="SELECT IFNULL(codprod01,'-') AS codigo,
@@ -60,6 +62,7 @@ class PACReposicionController extends Controller
 						        numdoc43 AS documento,
                                 fecdoc43 AS fecha,
 						        IFNULL(cantid03*-1,0) AS cantidad,
+                                xbase.maepro.reposicion,
 						        marca01 AS marcod,
 						        (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '4530' AND codtab <> '' AND codtab = marca01) AS marca,
 						        catcte01 AS catcod,
@@ -71,7 +74,7 @@ class PACReposicionController extends Controller
 					      WHERE tipodoc43 IN ('53')  AND fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin' AND cvanulado43<>'S' AND tipoNC43='P'  and ocurren43 in ('00','0000')
                                 and case when '0'='xmarc' then true else marca01 in ('xmarc') end
                                 and case when '0'='xprod' then true else codprod01 in ('xprod') end
-                                and case when '0'='xclie' then true else codcte43 in ('xclie') end";
+                                and case when '0'='xclie' then true else catcte01 in ('xclie') end";
 
 
 
@@ -87,6 +90,7 @@ class PACReposicionController extends Controller
     {
         $input = $request->all();
         $bodega_filtro='';
+        $dias_entrega=$input['dias_entrega'];
 
         $fechai=Carbon::parse($input['ffin']);
         //$inicio = Carbon::create($fechai->year,$fechai->month, 1, 0, 0, 0);
@@ -107,7 +111,7 @@ class PACReposicionController extends Controller
 
         $marca=isset($request['marca_id']) ?$request['marca_id']:'0';
         $producto=isset($request['producto_id']) ?$request['producto_id']:'0';
-        $cliente=isset($request['cliente_id']) ?$request['cliente_id']:'0';
+        $cliente=isset($request['categoria_id']) ?$request['categoria_id']:'0';
         $vendedor='';
 
         //return $this->getOk($inicio);
@@ -128,31 +132,30 @@ class PACReposicionController extends Controller
                 // $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
                 // select de notas de credito
                 $sqlnc=$this->generaQueryNC('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                // $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                // $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                // //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                // $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                // $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                // $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                // $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
-                // $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
 
-                // IFNULL((SELECT cantact01 FROM jcevcuenca2.maepro WHERE codigo=jcevcuenca2.maepro.codprod01),0)+
-                // IFNULL((SELECT cantact01 FROM jcevgye1.maepro WHERE codigo=jcevgye1.maepro.codprod01),0)+
-                // IFNULL((SELECT cantact01 FROM jcevuio1.maepro WHERE codigo=jcevuio1.maepro.codprod01),0)+
-                // IFNULL((SELECT cantact01 FROM jcevconsigvirt.maepro WHERE codigo=jcevconsigvirt.maepro.codprod01),0) +
-                // IFNULL((SELECT cantact01 FROM jcevstecvir.maepro WHERE codigo=jcevstecvir.maepro.codprod01),0) +
-                // IFNULL((SELECT cantact01 FROM jcevgyeassem.maepro WHERE codigo=jcevgyeassem.maepro.codprod01),0) +
-                // IFNULL((SELECT cantact01 FROM jcevcuenca1.maepro WHERE codigo=jcevcuenca1.maepro.codprod01),0) +
-                // IFNULL((SELECT cantact01 FROM jcevgye10.maepro WHERE codigo=jcevgye10.maepro.codprod01),0)
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+
 
 
             $sql='SELECT 	codigo,
-                                articulo,
+                                articulo,reposicion,
                                 marca,
                                 (
-                                    IFNULL((SELECT cantact01 FROM jcev.maepro WHERE codigo=jcev.maepro.codprod01),0)
-                                    
+                                    IFNULL((SELECT cantact01 FROM jcev.maepro WHERE codigo=jcev.maepro.codprod01),0)+
+                                    IFNULL((SELECT cantact01 FROM jcevcuenca2.maepro WHERE codigo=jcevcuenca2.maepro.codprod01),0)+
+                                    IFNULL((SELECT cantact01 FROM jcevgye1.maepro WHERE codigo=jcevgye1.maepro.codprod01),0)+
+                                    IFNULL((SELECT cantact01 FROM jcevuio1.maepro WHERE codigo=jcevuio1.maepro.codprod01),0)+
+                                    IFNULL((SELECT cantact01 FROM jcevconsigvirt.maepro WHERE codigo=jcevconsigvirt.maepro.codprod01),0) +
+                                    IFNULL((SELECT cantact01 FROM jcevgyeassem.maepro WHERE codigo=jcevgyeassem.maepro.codprod01),0) +
+                                    IFNULL((SELECT cantact01 FROM jcevcuenca1.maepro WHERE codigo=jcevcuenca1.maepro.codprod01),0) +
+                                    IFNULL((SELECT cantact01 FROM jcevgye10.maepro WHERE codigo=jcevgye10.maepro.codprod01),0)
                                 ) as stock,
 					            ROUND(SUM(IF(MONTH(fecha) = '.$mes3.',  cantidad, 0)),2) AS mes3,
 								ROUND(SUM(IF(MONTH(fecha) = '.$mes2.',  cantidad, 0)),2) AS mes2,
@@ -160,17 +163,17 @@ class PACReposicionController extends Controller
 								ROUND(SUM(cantidad),2) AS total
                             FROM
                                  (  '.$sql.' UNION ALL SELECT codigo, articulo,
-	                            documento,fecha,cantidad,
+	                            documento,fecha,cantidad,reposicion,
 	                            marcod,marca,
 					            catcod,cate
                         FROM ( '.$sqlnc.') a'.') b
-                                      GROUP BY b.codigo,b.articulo,b.marca
+                                      GROUP BY b.codigo,b.articulo,b.marca,b.reposicion
                                       ORDER BY SUM(b.cantidad) DESC';
 
 
         //echo $sql;
         //fsigu sqls
-        /* $box = new SqlModel();
+         /*$box = new SqlModel();
             $box->sql= $sql;
             $box->sql1=$sql;
             $box->save();*/
@@ -210,9 +213,7 @@ class PACReposicionController extends Controller
         };*/
 
 
-        $results=DB::select('SELECT * from reporte_reposicion(?,?)',[ 'marca',
-                            'categoria'
-                            ]);
+        $results=DB::select('SELECT * from reporte_reposicion(?,?,?)',[ 'marca','categoria',$dias_entrega]);
         return $this->getOk($results);
     }
 
@@ -414,7 +415,7 @@ class PACReposicionController extends Controller
 						     0 AS descliente,
 						     0 AS vtaNeta,
 						     (valorabono43/1.12)*-1 AS net,
-						      '0' AS marcod,
+						      '0' AS marcod,0 as reposicion,
 						     '-' AS marca,
 						      numvencob43 AS vencod,
 						      (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
