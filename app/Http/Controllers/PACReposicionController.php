@@ -185,7 +185,7 @@ class PACReposicionController extends Controller
         //elimina datos de la tabla tmporal
         $elimina = DB::select("delete from reporte_reposicion");
         foreach ($list as $detalle) {
-            $results=DB::select('SELECT reporte_reposicion_grabar(?,?,?,?,?,?,?,?,?)',[
+            $results=DB::select('SELECT reporte_reposicion_grabar(?,?,?,?,?,?,?,?,?,?)',[
                             $detalle->codigo,
                             $detalle->articulo,
                             $detalle->marca,
@@ -194,7 +194,8 @@ class PACReposicionController extends Controller
                             $detalle->mes3,
                             $detalle->mes2,
                             $detalle->mes1,
-                            $detalle->total
+                            $detalle->total,
+                            $detalle->reposicion
                             ]);
         };
 

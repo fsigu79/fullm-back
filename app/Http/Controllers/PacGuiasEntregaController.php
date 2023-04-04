@@ -40,6 +40,9 @@ private $sqlg="select g.numero_guia_remision AS numero,
             g.telefono AS telefono,
             g.observacion AS observacion,
             g.numero_documento_origen AS numero_documento_origen,
+            (select fecfact31 from xbase.maefac where nofact31=g.numero_documento_origen) as fecha_factura,
+            (select nopedido31 from xbase.maefac where nofact31=g.numero_documento_origen) as numero_pedido,
+            (select distinct fecpedido30 from xbase.maeped30 where nopedido30=(select nopedido31 from xbase.maefac where nofact31=g.numero_documento_origen)) as fecha_pedido,
             g.usuario AS usuario
         from (xbase.guia_remision_electronica g join xbase.series_electronicas e on(((convert(substr(g.numero_guia_remision,1,7) using binary) = convert(e.serie using binary))
             and (e.tipodoc = '99'))))
@@ -81,7 +84,7 @@ private $sqlg="select g.numero_guia_remision AS numero,
             $box->save();*/
 
         foreach ($list as $detalle) {
-        $results=DB::select('SELECT guias_pac_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',[
+        $results=DB::select('SELECT guias_pac_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',[
                             $detalle->numero,
                             $detalle->fecha,
                             $detalle->nombre_transportista,
@@ -101,6 +104,9 @@ private $sqlg="select g.numero_guia_remision AS numero,
                             $detalle->telefono,
                             $detalle->observacion,
                             $detalle->numero_documento_origen,
+                            $detalle->fecha_factura,
+                            $detalle->numero_pedido,
+                            $detalle->fecha_pedido,
                             $detalle->usuario
                             ]);
         };
@@ -126,11 +132,13 @@ private $sqlg="select g.numero_guia_remision AS numero,
         $fin=$request['ffin'].' 23:59:00';
         $transportista_id = $request['transportista_id'];
         $list = [];
+
         if($transportista_id == 0){
             $sql="SELECT g.id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
             codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
             direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
             codigo_cliente, g.ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
+            fecha_factura,numero_pedido,fecha_pedido,
             usuario, transportista_id, fecha_asignacion, esasignado, fecha_inicio_traslado_transportista,
             inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
             g.esactivo,t.razon_social,t.chofer
@@ -144,6 +152,7 @@ private $sqlg="select g.numero_guia_remision AS numero,
             codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
             direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
             codigo_cliente, g.ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
+            fecha_factura,numero_pedido,fecha_pedido,
             usuario, transportista_id, fecha_asignacion, esasignado, fecha_inicio_traslado_transportista,
             inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
             g.esactivo,t.razon_social,t.chofer
@@ -151,11 +160,11 @@ private $sqlg="select g.numero_guia_remision AS numero,
                 left join transportistas t on t.user_id=g.transportista_id
             WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=?";
              $list = DB::select($sql,[$inicio,$fin,$transportista_id]);
-    
-    }
-       
 
-       
+    }
+
+
+
         return $this->getOk($list);
     }
 
@@ -170,6 +179,7 @@ private $sqlg="select g.numero_guia_remision AS numero,
                     codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
                     direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
                     codigo_cliente, ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
+                    fecha_factura,numero_pedido,fecha_pedido,
                     usuario, transportista_id, fecha_asignacion, esasignado, fecha_inicio_traslado_transportista,
                     inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
                     esactivo, longitud, latitud
@@ -193,6 +203,7 @@ private $sqlg="select g.numero_guia_remision AS numero,
                     codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
                     direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
                     codigo_cliente, ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
+                    fecha_factura,numero_pedido,fecha_pedido,
                     usuario, transportista_id, fecha_asignacion, esasignado, fecha_inicio_traslado_transportista,
                     inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
                     esactivo
@@ -216,6 +227,7 @@ private $sqlg="select g.numero_guia_remision AS numero,
                     codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
                     direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
                     codigo_cliente, ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
+                    fecha_factura,numero_pedido,fecha_pedido,
                     usuario, transportista_id, fecha_asignacion, esasignado, fecha_inicio_traslado_transportista,
                     inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
                     esactivo
@@ -393,9 +405,9 @@ private $sqlg="select g.numero_guia_remision AS numero,
         <meta http-equiv='X-UA-Compatible' content='IE=edge'>
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
         <title>Document</title>
-    
+
     </head>
-    
+
     <body>
         <div style='width: 100%;'>
             <div style='width:100%;background-color:#243A5F ;color:white;padding:1rem;font-family:arial;'>
@@ -431,21 +443,21 @@ private $sqlg="select g.numero_guia_remision AS numero,
         </div>
     </body>
     </html>";
-    
+
     $sql ='SELECT * from guiaspac where numero_guia_remision =?';
     $request_db = DB::select($sql,[$input['numero_guia']]);
-    
+
     $html = str_replace("{Numguia}", $input['numero_guia'], $emailTemplate);
     $html = str_replace("{fecha_fin}", $input['fecha'], $html);
     $html = str_replace("{imagen_url}", $input['image'], $html);
-    
+
     $html = str_replace("{fecha_emision}", $request_db[0]->fecha_emision, $html);
     $html = str_replace("{fecha_asignacion}", $request_db[0]->fecha_asignacion, $html);
     $html = str_replace("{fecha_inicio}", $request_db[0]->fecha_inicio_transporte, $html);
     $html = str_replace("{transportista}", $request_db[0]->nombre_transportista, $html);
-    $html = str_replace("{codigo_cliente}", $request_db[0]->codigo_cliente, $html); 
+    $html = str_replace("{codigo_cliente}", $request_db[0]->codigo_cliente, $html);
     $html = str_replace("{ruc}", $request_db[0]->ruc, $html);
-    
+
     $email = new EmailController();
     $email->sendEmail($html, $input['email'], "Guia Finalizada");
     //confirma en mensaje
@@ -457,7 +469,7 @@ private $sqlg="select g.numero_guia_remision AS numero,
     );
 
     return $data;
-    
+
 }catch(\Throwable $th) {
   $data = array(
                 'code' => 404,
@@ -471,7 +483,7 @@ private $sqlg="select g.numero_guia_remision AS numero,
         } else {
             return $this->updateErrCustom($validation->messages(), 'Datos inválidos');
         }
-  
+
     }
 
 
