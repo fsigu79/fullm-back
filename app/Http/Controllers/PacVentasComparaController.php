@@ -36,7 +36,8 @@ class PacVentasComparaController extends Controller
 	 				        vendcte01 AS vencod,
   					        (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab =novend31) AS vendedor,
 					        catcte01 AS catcod,
-  					        (SELECT b.desccate AS categoria FROM jcev.categorias a INNER JOIN  jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
+  					        (SELECT b.desccate AS categoria FROM jcev.categorias a INNER JOIN  jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
+                            (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = jcev.maecte.canton) AS ciudad
                FROM xbase.movpro
                INNER JOIN ybase1.maepro ON codprod03 = codprod01
                INNER JOIN zbase1.maefac ON NOCOMP03=nofact31 AND cvanulado31!=9
@@ -68,7 +69,8 @@ class PacVentasComparaController extends Controller
 						      vendcte01 AS vencod,
 						      (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM jcev.categorias a INNER JOIN  jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
+						      (SELECT b.desccate AS categoria FROM jcev.categorias a INNER JOIN  jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
+                              (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = jcev.maecte.canton) AS ciudad
 					      FROM jcev.movcte
 					      INNER JOIN jcev.maecte ON codcte43=codcte01
 					      INNER JOIN xbase.movpro  ON NOCOMP03=numdoc43 AND tipotra03 IN ('22') AND cvanulado03 <>'S'
@@ -101,7 +103,8 @@ class PacVentasComparaController extends Controller
 						      vendcte01 AS vencod,
 						      (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM jcev.categorias a INNER JOIN  jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
+						      (SELECT b.desccate AS categoria FROM jcev.categorias a INNER JOIN  jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
+                              (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = jcev.maecte.canton) AS ciudad
 					      FROM jcev.movcte2
 					      INNER JOIN jcev.maecte ON codcte43=codcte01
 					      INNER JOIN xbase.movpro  ON NOCOMP03=numdoc43 AND tipotra03 IN ('22') AND cvanulado03 <>'S'
@@ -186,7 +189,7 @@ class PacVentasComparaController extends Controller
             //return $this->getOk('trueeeee');
             $sql='SELECT 	codigocliente AS codigo,
 				                        cliente AS articulo,
-				                        cate AS categoria,
+				                        cate AS categoria,ciudad,
 					                    ROUND(SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)),2) AS anterior,
 					                    ROUND(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)),2) AS actual,
 					                    ROUND(ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)),0)*100,2) as incremento
@@ -200,17 +203,19 @@ class PacVentasComparaController extends Controller
 	                            IF(codigo="-",net,vtaNeta) AS vtaNeta,
 	                            marcod,marca,
 					            vencod,vendedor,
-					            catcod,cate
+					            catcod,cate,ciudad
                         FROM ( '.$sqlnc.') a'.') b
-                                      GROUP BY b.codigocliente,b.cliente,b.cate
+                                      GROUP BY b.codigocliente,b.cliente,b.cate,b.ciudad
                                       ORDER BY SUM(b.cantidad) DESC';
         }
         else
         {
             //return $this->getOk('falseeee');
-            $sql='SELECT 	codigocliente AS codigo,
+            //DB::statement(DB::raw('SET @i = 0;'));
+
+            $sql='SELECT 1 as numreg,codigocliente AS codigo,
 				                        cliente AS articulo,
-				                        cate AS categoria,
+				                        cate AS categoria,ciudad,
 					                    ROUND(SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0)),2) AS anterior,
 					                    ROUND(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)),2) AS actual,
                                         ROUND(ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0)),0)*100,2) as incremento
@@ -224,9 +229,9 @@ class PacVentasComparaController extends Controller
 	                            IF(codigo="-",net,vtaNeta) AS vtaNeta,
 	                            marcod,marca,
 					            vencod,vendedor,
-					            catcod,cate
+					            catcod,cate,ciudad
                         FROM ( '.$sqlnc.') a'.') b
-                                      GROUP BY b.codigocliente,b.cliente,b.cate
+                                      GROUP BY b.codigocliente,b.cliente,b.cate,b.ciudad
                                       ORDER BY SUM(b.vtaneta) DESC';
         }
 
@@ -317,7 +322,7 @@ class PacVentasComparaController extends Controller
 	                            IF(codigo="-",net,vtaNeta) AS vtaNeta,
 	                            marcod,marca,
 					            vencod,vendedor,
-					            catcod,cate
+					            catcod,cate,ciudad
                         FROM ( '.$sqlnc.') a'.') b
                                       GROUP BY b.vendedor
                                       ORDER BY SUM(b.cantidad) DESC';
@@ -338,7 +343,7 @@ class PacVentasComparaController extends Controller
 	                            IF(codigo="-",net,vtaNeta) AS vtaNeta,
 	                            marcod,marca,
 					            vencod,vendedor,
-					            catcod,cate
+					            catcod,cate,ciudad
                         FROM ( '.$sqlnc.') a'.') b
                                       GROUP BY b.vendedor
                                       ORDER BY SUM(b.vtaneta) DESC';
@@ -431,7 +436,7 @@ class PacVentasComparaController extends Controller
 	                            IF(codigo="-",net,vtaNeta) AS vtaNeta,
 	                            marcod,marca,
 					            vencod,vendedor,
-					            catcod,cate
+					            catcod,cate,ciudad
                         FROM ( '.$sqlnc.') a'.') b
                                       GROUP BY b.codigo,b.articulo,b.marca
                                       ORDER BY SUM(b.cantidad) DESC';
@@ -454,7 +459,7 @@ class PacVentasComparaController extends Controller
 	                            IF(codigo="-",net,vtaNeta) AS vtaNeta,
 	                            marcod,marca,
 					            vencod,vendedor,
-					            catcod,cate
+					            catcod,cate,ciudad
                         FROM ( '.$sqlnc.') a'.') b
                                       GROUP BY b.codigo,b.articulo,b.marca
                                       ORDER BY SUM(b.vtaneta) DESC';
@@ -546,7 +551,7 @@ class PacVentasComparaController extends Controller
 	                            IF(codigo="-",net,vtaNeta) AS vtaNeta,
 	                            marcod,marca,
 					            vencod,vendedor,
-					            catcod,cate
+					            catcod,cate,ciudad
                         FROM ( '.$sqlnc.') a'.') b
                                       GROUP BY b.marca
                                       ORDER BY SUM(b.cantidad) DESC';
@@ -567,7 +572,7 @@ class PacVentasComparaController extends Controller
 	                            IF(codigo="-",net,vtaNeta) AS vtaNeta,
 	                            marcod,marca,
 					            vencod,vendedor,
-					            catcod,cate
+					            catcod,cate,ciudad
                         FROM ( '.$sqlnc.') a'.') b
                                       GROUP BY b.marca
                                       ORDER BY SUM(b.vtaneta) DESC';
@@ -675,7 +680,8 @@ class PacVentasComparaController extends Controller
 						      vendcte01 AS vencod,
 						      (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM jcev.categorias a INNER JOIN  jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
+						      (SELECT b.desccate AS categoria FROM jcev.categorias a INNER JOIN  jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
+                              (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = jcev.maecte.canton) AS ciudad
 					    FROM xbase.movcte
 					    INNER JOIN xbase.maecte ON codcte43=codcte01
 					    WHERE tipodoc43 IN ('53')  AND ((fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin') or (fecdoc43 >= 'yfinicioa'  AND fecdoc43 <= 'yffina'))  AND cvanulado43<>'S' AND tipoNC43<>'P' and ocurren43 in ('00','0000')
@@ -702,7 +708,8 @@ class PacVentasComparaController extends Controller
 						      vendcte01 AS vencod,
 						      (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM  jcev.categorias a INNER JOIN   jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
+						      (SELECT b.desccate AS categoria FROM  jcev.categorias a INNER JOIN   jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
+                              (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = jcev.maecte.canton) AS ciudad
 					      FROM xbase.movcte2
 					      INNER JOIN xbase.maecte ON codcte43=codcte01
 					      WHERE tipodoc43 IN ('53')  AND ((fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin') or (fecdoc43 >= 'yfinicioa'  AND fecdoc43 <= 'yffina')) AND cvanulado43<>'S' AND tipoNC43<>'P' and ocurren43 in ('00','0000')
