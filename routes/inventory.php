@@ -9,6 +9,7 @@ use App\Http\Controllers\DestinoController;
 use App\Http\Controllers\MovimientoInventarioController;
 use App\Http\Controllers\InventarioTransitoController;
 use App\Http\Controllers\PuertosEmbarqueController;
+use App\Http\Controllers\SiniestroController;
 
 /*
 |--------------------------------------------------------------------------
@@ -80,6 +81,7 @@ Route::group([
     Route::put('update/{id}', [DestinoController::class, 'update']);
     Route::delete('delete/{id}', [DestinoController::class, 'delete']);
     Route::get('listnum', [DestinoController::class, 'listNumeros']);
+    Route::get('listnumsin', [DestinoController::class, 'listNumerosSiniestros']);
 });
 
 
@@ -136,4 +138,20 @@ Route::group([
     Route::delete('delete/{id}', [PuertosEmbarqueController::class, 'delete']);
 
 
+});
+
+
+Route::group([
+    'prefix' => 'sin',
+], function () {
+    Route::get('list', [SiniestroController::class, 'list']);
+    Route::get('list/{id}', [SiniestroController::class, 'findById']);
+    Route::post('create', [SiniestroController::class, 'save']);
+    //Route::put('update/{id}', [MovimientoInventarioController::class, 'updatePac']);
+    Route::post('update/{id}', [SiniestroController::class, 'save']);
+    Route::post('delete/{id}', [SiniestroController::class, 'save']);
+    //Route::delete('delete/{id}', [MovimientoInventarioController::class, 'deleteEgreso']);
+    Route::put('approve', [SiniestroController::class, 'updateAprobar']);
+    Route::put('register', [SiniestroController::class, 'updateRegistrado']);
+    Route::put('negar', [SiniestroController::class, 'updateNegado']);
 });

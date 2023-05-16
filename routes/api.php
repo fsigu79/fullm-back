@@ -31,7 +31,7 @@ use App\Http\Controllers\AuditoriaController;
 use App\Http\Controllers\CuposUsosController;
 use App\Http\Controllers\PACReposicionController;
 use App\Http\Controllers\PacGuiasEntregaController;
-
+use App\Http\Controllers\RetencionController;
 use App\Http\Controllers\CredimportVentaMensualController;
 use App\Http\Controllers\CredimportSeguroConfianzasController;
 use App\Http\Controllers\CredimportCuposUsosController;
@@ -245,7 +245,10 @@ Route::group([
     Route::get('reposiciondet', [PACReposicionController::class, 'detalleInventarioTransito']);
     Route::get('reposicioncate', [PACReposicionController::class, 'categoriaProducto']);
 
+    Route::get('retclientes', [RetencionController::class, 'retencionesClientes']);
+
 });
+
 
 
 
@@ -333,6 +336,15 @@ Route::group([
     Route::get('search', [CobuController::class, 'searchProductsCobus']);
 });
 
+
+Route::group([
+    'prefix' => 'ret',
+], function () {
+    Route::get('list', [CobuController::class, 'list']);
+    Route::post('create', [CobuController::class, 'create']);
+    Route::get('search', [CobuController::class, 'searchProductsCobus']);
+});
+
 Route::group([
     'prefix' => 'pacg',
 ], function () {
@@ -361,7 +373,7 @@ Route::group([
     Route::get('catsfechafac', [ConsultaExtPacController::class, 'catalogoSeriesByFechaFactura']);
     Route::get('catschasis', [ConsultaExtPacController::class, 'catalogoSeriesByChasis']);
     Route::get('protodomoto', [ConsultaExtPacController::class, 'productosTodomoto']);
-
+    Route::get('prolist', [ConsultaExtPacController::class, 'productosJcevList']);
 
 });
 

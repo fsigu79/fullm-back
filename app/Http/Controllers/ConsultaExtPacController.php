@@ -444,6 +444,51 @@ class ConsultaExtPacController extends Controller
     }
 
 
+    public function productosJcevList(Request $request)
+    {
+        $input = $request->all();
+        $chasis = $request['codigo'];
+        $serie = $request['serie'];
+            try{
+                //consulta catalog de series
+                $sql="  select
+                        codprod01 as codigo,
+                        desprod01 as nombre,
+                        (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab='46' AND codtab<>'' AND codtab=maepro.orden01) AS tipo_producto,
+                        (SELECT desccate FROM categorias cc WHERE tipocate='02' AND codcate=catprod01) as categoria,
+                        (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab='4530' AND codtab<>'' AND codtab=maepro.marca01) AS marca,
+                        precvta01 as precio1,
+                        precio201 as precio2,
+                        precio301 as precio3,
+                        (cantact01+
+                        IFNULL((SELECT cantact01 FROM jcevcuenca2.maepro WHERE jcev.maepro.codprod01=jcevcuenca2.maepro.codprod01),0) +
+                            IFNULL((SELECT cantact01 FROM jcevgye1.maepro WHERE jcev.maepro.codprod01=jcevgye1.maepro.codprod01),0) +
+                            IFNULL((SELECT cantact01 FROM jcevuio1.maepro WHERE jcev.maepro.codprod01=jcevuio1.maepro.codprod01),0) +
+                            IFNULL((SELECT cantact01 FROM jcevconsigvirt.maepro WHERE jcev.maepro.codprod01=jcevconsigvirt.maepro.codprod01),0) +
+                            IFNULL((SELECT cantact01 FROM jcevstecvir.maepro WHERE jcev.maepro.codprod01=jcevstecvir.maepro.codprod01),0) +
+                            IFNULL((SELECT cantact01 FROM jcevgyeassem.maepro WHERE jcev.maepro.codprod01=jcevgyeassem.maepro.codprod01),0) +
+                            IFNULL((SELECT cantact01 FROM jcevcuenca1.maepro WHERE jcev.maepro.codprod01=jcevcuenca1.maepro.codprod01),0)  +
+                            IFNULL((SELECT cantact01 FROM jcevgye10.maepro WHERE jcev.maepro.codprod01=jcevgye10.maepro.codprod01),0)
+                        ) as stock_total,
+                        cantact01 AS smatriz,
+                        IFNULL((SELECT cantact01 FROM jcevcuenca2.maepro WHERE jcev.maepro.codprod01=jcevcuenca2.maepro.codprod01),0) AS scuenca2,
+                            IFNULL((SELECT cantact01 FROM jcevgye1.maepro WHERE jcev.maepro.codprod01=jcevgye1.maepro.codprod01),0) AS sguay1,
+                            IFNULL((SELECT cantact01 FROM jcevuio1.maepro WHERE jcev.maepro.codprod01=jcevuio1.maepro.codprod01),0) AS squito1,
+                            IFNULL((SELECT cantact01 FROM jcevconsigvirt.maepro WHERE jcev.maepro.codprod01=jcevconsigvirt.maepro.codprod01),0) AS sconsvirt,
+                            IFNULL((SELECT cantact01 FROM jcevstecvir.maepro WHERE jcev.maepro.codprod01=jcevstecvir.maepro.codprod01),0) AS sservtecn,
+                            IFNULL((SELECT cantact01 FROM jcevgyeassem.maepro WHERE jcev.maepro.codprod01=jcevgyeassem.maepro.codprod01),0) AS sgyeasse,
+                            IFNULL((SELECT cantact01 FROM jcevcuenca1.maepro WHERE jcev.maepro.codprod01=jcevcuenca1.maepro.codprod01),0) AS sunicomer,
+                            IFNULL((SELECT cantact01 FROM jcevgye10.maepro WHERE jcev.maepro.codprod01=jcevgye10.maepro.codprod01),0) AS sguay2
+                    from jcev.maepro
+                    order by desprod01";
+                $list = DB::connection('mysqlpac')->select($sql,[]);
+                return $this->getOk($list);
+            } catch (\Exception $e) {
+                return $this->insertErrCustom($input, $e->getMessage());
+            }
+    }
+
+
 
 
 

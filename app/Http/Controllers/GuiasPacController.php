@@ -42,7 +42,9 @@ class GuiasPacController extends Controller
 	                        cantid03 AS cantidad,
                             (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '4530' AND codtab <> '' AND codtab = marca01) AS marca,
                             (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab =novend31) AS vendedor,
-                            numero_guia_remision
+                            numero_guia_remision,
+                            ruc_transportista,
+                            nombre_transportista
                     FROM xbase.movpro
                     INNER JOIN ybase.maepro ON codprod03 = codprod01
                     INNER JOIN zbase.maefac ON NOCOMP03=nofact31 AND cvanulado31!=9
@@ -106,7 +108,7 @@ class GuiasPacController extends Controller
         $fin=$request['ffin'].' 23:59:00';
         $sql='';
 
-        // select de guias
+        // select de guias detalle
         $sql=$this->generaQueryGuiasDetalle('jcev','jcev','jcev',$inicio,$fin);
         $sql=$sql.' UNION ALL '.$this->generaQueryGuiasDetalle('jcevcuenca2','jcevcuenca2','jcevcuenca2',$inicio,$fin);
         $sql=$sql.' UNION ALL '.$this->generaQueryGuiasDetalle('jcevcuenca1','jcevcuenca1','jcevcuenca1',$inicio,$fin);
