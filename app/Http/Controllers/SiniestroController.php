@@ -33,7 +33,8 @@ class SiniestroController extends Controller
 
 
         $sql=  "SELECT c.id,c.serie, documento, c.numero as numero,cliente_id,destino_id,cliente_codigo,cliente_ruc,cliente_nombre,d.nombre as destino,
-                        transportista,referencia,observacion,fecha, total,c.esactivo,aprobado,registrado,referencia_pac,negado,referencia_negado
+                        transportista,referencia,observacion,fecha, total,c.esactivo,aprobado,registrado,referencia_pac,negado,referencia_negado,
+                        facturado,factura_pac
                 FROM movimientos c
                 inner join destinos d on c.destino_id=d.id
                 where fecha>=? and fecha<=? and c.documento=?
@@ -79,7 +80,7 @@ class SiniestroController extends Controller
                                 ]);
                         };
 
-                        $results=DB::select('SELECT movimiento_ingreso_grabar_cabecera(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                        $results=DB::select('SELECT movimiento_ingreso_grabar_cabecera_siniestro(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                                     [$input['id'],
                                     $input['documento'],
                                     $input['serie'],
@@ -105,7 +106,7 @@ class SiniestroController extends Controller
                                 ]);
 
                         //obtenemos el numero de nota contable y numero actual de la factura
-                        $valor_retorno =$results[0]->movimiento_ingreso_grabar_cabecera;
+                        $valor_retorno =$results[0]->movimiento_ingreso_grabar_cabecera_siniestro;
                         $valor_retorno = trim($valor_retorno, '()');
                         $valor_array = explode (",", $valor_retorno);
                         $input['id']=$valor_array[0];
@@ -457,6 +458,40 @@ class SiniestroController extends Controller
 
             $sql="update movimientos set registrado=?,referencia_pac=? where id=?";
             $order = DB::update($sql,[$regis,$ref,$id]);
+
+            return $this->updateOk($input);
+
+            if ($movimiento) {
+                return $this->updateOk(null);
+            } else {
+                return $this->updateErr(null);
+            }
+        } else {
+            return $this->updateErrCustom($validation->messages(), 'Datos inválidos');
+        }
+    }
+
+
+    public function updateFacturado(Request $request)
+    {
+        $validation = Validator::make(
+            $request->all(),
+            [
+                'id' => 'required',
+            ],
+            [
+                'id.required' => 'El codigo es requerido.',
+            ]
+        );
+        if (!$validation->fails()) {
+
+            $input = $request->all();
+            $id=$input['id'];
+            $fac=$input['factura_pac'];
+            $regis=$input['registrado'];
+
+            $sql="update movimientos set facturado=?,factura_pac=? where id=?";
+            $order = DB::update($sql,[$regis,$fac,$id]);
 
             return $this->updateOk($input);
 

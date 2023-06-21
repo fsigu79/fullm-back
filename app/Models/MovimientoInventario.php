@@ -35,6 +35,9 @@ class MovimientoInventario extends Model
         'descripcion',
         'esactivo',
         'usuario_id',
+        'transportista',
+        'facturado',
+        'factura_pac',
 
     ];
 
