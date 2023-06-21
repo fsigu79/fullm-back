@@ -39,8 +39,11 @@ use App\Http\Controllers\CredimportCuposUsosController;
 use App\Http\Controllers\TodoMotoVentaMensualController;
 use App\Http\Controllers\TodoMotoSeguroConfianzasController;
 use App\Http\Controllers\TodoMotoCuposUsosController;
-
 use App\Http\Controllers\TransportistaController;
+use App\Http\Controllers\BalancesController;
+use App\Http\Controllers\TodoMotoPyGController;
+use App\Http\Controllers\GastoJcevController;
+
 
 
 /*
@@ -250,6 +253,26 @@ Route::group([
 });
 
 
+
+Route::group([
+    'prefix' => 'bal',
+], function () {
+
+    Route::get('pyg', [BalancesController::class, 'balanceByG']);
+    Route::get('pygcompara', [BalancesController::class, 'balanceByGCompara']);
+    Route::get('pygtm', [TodoMotoPyGController::class, 'balanceByGTodoMoto']);
+});
+
+Route::group([
+    'prefix' => 'gas',
+], function () {
+
+    Route::get('list', [GastoJcevController   ::class, 'list']);
+    Route::post('create', [GastoJcevController::class, 'save']);
+    Route::post('edit', [GastoJcevController::class, 'save']);
+    Route::get('list/{id}', [GastoJcevController::class, 'findById']);
+    Route::delete('delete/{id}', [GastoJcevController::class, 'delete']);
+});
 
 
 Route::group([

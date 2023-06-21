@@ -153,5 +153,6 @@ Route::group([
     //Route::delete('delete/{id}', [MovimientoInventarioController::class, 'deleteEgreso']);
     Route::put('approve', [SiniestroController::class, 'updateAprobar']);
     Route::put('register', [SiniestroController::class, 'updateRegistrado']);
+    Route::put('facturado', [SiniestroController::class, 'updateFacturado']);
     Route::put('negar', [SiniestroController::class, 'updateNegado']);
 });
