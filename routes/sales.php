@@ -12,7 +12,7 @@ use App\Http\Controllers\CreditoClienteController;
 use App\Http\Controllers\TransportistaController;
 use App\Http\Controllers\AbonoController;
 use App\Http\Controllers\GuiaRemisionController;
-
+use App\Http\Controllers\GuiasProductosController;
 
 
 /*
@@ -84,12 +84,12 @@ Route::group([
 Route::group([
     'prefix' => 'debito',
  ], function () {
- 
+
     Route::get('list', [DebitoClienteController::class, 'list']);
     Route::post('create', [DebitoClienteController::class, 'save']);
     Route::get('list/{id}', [DebitoClienteController::class, 'findById']);
  });
- 
+
 
 Route::group([
    'prefix' => 'credito',
@@ -130,9 +130,10 @@ Route::group([
 Route::group([
     'prefix' => 'guiar',
  ], function () {
- 
+
     Route::get('list', [GuiaRemisionController::class, 'list']);
     Route::post('create', [GuiaRemisionController::class, 'save']);
     Route::get('list/{id}', [GuiaRemisionController::class, 'findById']);
+    Route::get('catseries', [GuiasProductosController::class, 'importaCatalogoSeries']);
  });
- 
+
