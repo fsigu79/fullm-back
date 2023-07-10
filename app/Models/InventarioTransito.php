@@ -24,6 +24,19 @@ class InventarioTransito extends Model
         'usuario_id',
         'usuario_login',
         'liquidado',
+
+        'proveedor_codigo',
+        'proveedor_nombre',
+        'forwarder',
+        'contenedor',
+        'contenedor_numero',
+        'ro',
+        'flete',
+        'ejecutivo_id',
+        'fecha_etd',
+        'fecha_eta',
+        'fecha_apb',
+        'status',
     ];
 
     protected $hidden = [

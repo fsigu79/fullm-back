@@ -12,7 +12,7 @@ use App\Http\Controllers\CreditoClienteController;
 use App\Http\Controllers\TransportistaController;
 use App\Http\Controllers\AbonoController;
 use App\Http\Controllers\GuiaRemisionController;
-
+use App\Http\Controllers\GuiasProductosController;
 
 
 /*
@@ -134,9 +134,13 @@ Route::group([
     Route::get('list', [GuiaRemisionController::class, 'list']);
     Route::post('create', [GuiaRemisionController::class, 'save']);
     Route::get('list/{id}', [GuiaRemisionController::class, 'findById']);
+
+    Route::get('catseries', [GuiasProductosController::class, 'importaCatalogoSeries']);
+
     Route::get('download_xml/{id}', [GuiaRemisionController::class, 'downloadXML']);
     Route::get('download_pdf/{id}', [GuiaRemisionController::class, 'downloadPdf']);
     Route::get('resend_email/{id}', [GuiaRemisionController::class, 'resendEmail']);
     Route::get('resend_sri/{id}', [GuiaRemisionController::class, 'findById']);
+
  });
 
