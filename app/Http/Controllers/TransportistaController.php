@@ -22,7 +22,7 @@ class TransportistaController extends Controller
 
     public function list()
     {
-        $list = Transportista::orderBy('razon_social')->get();
+        $list = Transportista::orderBy('id')->get();
         return $this->getOk($list);
     }
 
@@ -35,7 +35,7 @@ class TransportistaController extends Controller
     public function getById($id)
     {
       //  $entidad = Transportista::find($id);
-      $entidad = Transportista::where('user_id',$id)->get();  
+      $entidad = Transportista::find($id);
       return $this->getOk($entidad);
     }
 
@@ -51,12 +51,12 @@ class TransportistaController extends Controller
         $validation = Validator::make(
             $request->all(),
             [
-                'razon_social' => 'required|unique:transportistas,razon_social',
+                'nombres' => 'required',
                 'ruc' => 'required|unique:transportistas,ruc',
                 'placa' => 'required',
             ],
             [
-                'razon_social.required' => 'La razon social es requerido.',
+                'nombres.required' => 'La razon social es requerido.',
                 'ruc.required' => 'El ruc es requerido.',
                 'placa.required' => 'La laca es requerida.',
             ]

@@ -86,6 +86,8 @@ Route::group([
 ], function () {
     Route::get('lista/{id}', [CompanyController::class, 'findById']);
     Route::put('editar/{id}', [CompanyController::class, 'edit']);
+    Route::post('signature/{id}', [CompanyController::class, 'uploadEditSignature']);
+    Route::put('email/{id}', [CompanyController::class, 'updateEmailServer']);
 });
 
 

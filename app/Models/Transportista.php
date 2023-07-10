@@ -10,12 +10,15 @@ class Transportista extends Model
     protected $table = 'transportistas';
 
     protected $fillable = [
-        'razon_social',
-        'chofer',
+        'nombres',
         'placa',
         'ruc',
+        'tiporuc',
+        'esrise',
+        'llevaconta',
+        'contibuyente_esp',
         'esactivo',
-        'user_id'
+        //'user_id'
     ];
 
     protected $hidden = [
@@ -25,6 +28,10 @@ class Transportista extends Model
 
     protected $casts = [
         'id' => 'integer',
+        'esrise' => 'integer',
+        'llevaconta' => 'integer',
+        'contibuyente_esp' => 'integer',
+        'esactivo' => 'integer',
     ];
 
 
