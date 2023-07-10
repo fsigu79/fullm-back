@@ -8,14 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class GuiaRemisionDetalle extends Model
 {
     protected $table = 'guias_remisiond';
-
+    public $timestamps = false;
     protected $fillable = [
         'documento',
         'numero',
         'guiar_id',
         'producto_id',
         'descripcion',
-        'cantidad'
+        'cantidad',
+        'codigo',
 
     ];
 

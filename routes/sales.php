@@ -84,12 +84,12 @@ Route::group([
 Route::group([
     'prefix' => 'debito',
  ], function () {
- 
+
     Route::get('list', [DebitoClienteController::class, 'list']);
     Route::post('create', [DebitoClienteController::class, 'save']);
     Route::get('list/{id}', [DebitoClienteController::class, 'findById']);
  });
- 
+
 
 Route::group([
    'prefix' => 'credito',
@@ -130,9 +130,13 @@ Route::group([
 Route::group([
     'prefix' => 'guiar',
  ], function () {
- 
+
     Route::get('list', [GuiaRemisionController::class, 'list']);
     Route::post('create', [GuiaRemisionController::class, 'save']);
     Route::get('list/{id}', [GuiaRemisionController::class, 'findById']);
+    Route::get('download_xml/{id}', [GuiaRemisionController::class, 'downloadXML']);
+    Route::get('download_pdf/{id}', [GuiaRemisionController::class, 'downloadPdf']);
+    Route::get('resend_email/{id}', [GuiaRemisionController::class, 'resendEmail']);
+    Route::get('resend_sri/{id}', [GuiaRemisionController::class, 'findById']);
  });
- 
+

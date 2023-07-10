@@ -4,13 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Traits\FormatResponseTrait;
+use App\Mail\InvoiceEmail;
+use App\Models\Company;
 use App\Models\GuiaRemision;
 use App\Models\GuiaRemisionDetalle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
-
+use RuntimeException;
+use DOMDocument;
+use PDF;
+use Illuminate\Support\Facades\Mail;
 
 class GuiaRemisionController extends Controller
 {
@@ -23,28 +28,97 @@ class GuiaRemisionController extends Controller
 
     public function list(Request $request)
     {
-        $input = $request->all();
+
         $finicio = $request['finicio'];
         $ffin = $request['ffin'];
         $doc = $request['doc'];
-        $cli_id = $request['cli_id'];
 
-        $sql =  "SELECT gr.id,gr.documento,gr.serie,gr.numero,gr.cliente_id,c.ruc,c.apellido||' '||c.nombre as nombre,
-                        gr.fecha_inicio,gr.fecha_fin,gr.transportista_id,t.nombres as transportista ,gr.observacion
-                        FROM guias_remision gr
-                        INNER JOIN clientes c on gr.cliente_id=c.id
-                        INNER JOIN transportistas t on gr.transportista_id=t.id
-                        WHERE gr.fecha_inicio >= ? and gr.fecha_fin<=?  and gr.documento=? and gr.cliente_id = coalesce(?, gr.cliente_id)";
 
-        $list = DB::select($sql, [$finicio, $ffin, $doc,$cli_id]);
+        $sql = "SELECT gr.id, gr.ruc, gr.cliente, gr.status, gr.autorizacion, gr.status_code, gr.message_error, gr.aditional_message_error, gr.documento, gr.serie, gr.numero,
+                gr.fecha_inicio, gr.fecha_fin, gr.transportista_id, t.nombres as transportista, gr.observacion
+                FROM guias_remision gr
+                INNER JOIN transportistas t ON gr.transportista_id = t.id
+                WHERE gr.fecha_inicio >= ? AND gr.fecha_fin <= ? AND gr.documento = ?
+                ORDER BY gr.id DESC";
+
+        $list = DB::select($sql, [$finicio, $ffin, $doc]);
 
         return $this->getOk($list);
     }
 
     public function findById($id)
     {
-        $invoice = GuiaRemision::with(['guiaDetalle','guiaDetalle.product','customer','transportista'])->find($id);
+        $invoice = GuiaRemision::with(['detalle', 'transportista'])->find($id);
         return $this->getOk($invoice);
+    }
+
+    public function downloadXML($id)
+    {
+        $invoice = GuiaRemision::select("xml")->find($id);
+        return $this->getOk($invoice->xml);
+    }
+
+    public function downloadPdf($id)
+    {
+        try {
+            $company = Company::find(1);
+            $invoice = GuiaRemision::with(['detalle', 'transportista'])->find($id);
+
+            if (!$invoice) {
+                return response()->json([
+                    'status' => 'error',
+                    'code' => 'error',
+                    'message' => "Invoice not found",
+                ], 404);
+            }
+
+            $data = [
+                'invoice' => $invoice,
+                'company' => $company
+            ];
+
+            $pdf = PDF::loadView('guides', $data);
+            return response($pdf->output(), 200)->header('Content-Type', 'application/pdf');
+            //return $this->getOk($data);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'code' => 'error',
+                'message' => $th->getMessage(),
+            ], 400);
+        }
+    }
+
+    public function resendEmail($id)
+    {
+        try {
+            $company = Company::find(1);
+            $invoice = GuiaRemision::with(['detalle', 'transportista'])->find($id);
+
+            if (!$invoice) {
+                return response()->json([
+                    'status' => 'error',
+                    'code' => 'error',
+                    'message' => "Invoice not found",
+                ], 404);
+            }
+
+            //Mail::to($invoice->email)->send(new InvoiceEmail($invoice->xml, $company, $invoice, 'guides'));
+            $email = new InvoiceEmail($invoice->xml, $company, $invoice, 'guides');
+            $email->build();
+
+            return response()->json([
+                'status' => 'ok',
+                'code' => 'ok',
+                'message' => "Email sent success",
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'code' => 'error',
+                'message' => $th->getMessage(),
+            ], 400);
+        }
     }
 
     public function save(Request $request)
@@ -52,12 +126,12 @@ class GuiaRemisionController extends Controller
         $validation = Validator::make(
             $request->all(),
             [
-                'cliente_id' => 'required',
+                'ruc' => 'required',
                 'fecha_inicio' => 'required',
                 'fecha_fin' => 'required',
             ],
             [
-                'cliente_id.required' => 'El cliente es requerido.',
+                'ruc.required' => 'El cliente es requerido.',
                 'fecha_inicio.required' => 'Fecha inicio es requerido.',
                 'fecha_fin.required' => 'Fecha fin es requerido.',
             ]
@@ -67,97 +141,218 @@ class GuiaRemisionController extends Controller
                 $input = $request->all();
                 DB::beginTransaction();
                 if ($input['accion'] != 'Eliminar') {
-                    //eliminamos el detalle de la guia de remisión si es modificacion
-                    if ($input['accion'] === 'Modificar') {
-                        $results = DB::select(
-                            'SELECT guias_remision_elimina_detalle(?,?)',
-                            [
-                                $input['id'],
-                                $input['accion']
-                            ]
-                        );
-                    };
+
+                    $guia = GuiaRemision::find($input['id']);
+
+                    if (!$guia) {
+                        $numero = DB::select("SELECT numero + 1 AS numero FROM documentos WHERE codigo = ? AND modulo = 'Ventas'", [
+                            $input['documento']
+                        ]);
 
 
-                    $results = DB::select(
-                        'SELECT guias_remision_grabar_cabecera(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-                        [
-                            $input['id'],
-                            $input['documento'],
-                            $input['serie'],
-                            $input['numero'],
-                            $input['factura_id'],
-                            $input['factura_cliente'],
-                            $input['cliente_id'],
-                            $input['partida'],
-                            $input['fecha_inicio'],
-                            $input['fecha_fin'],
-                            $input['direccion'],
-                            $input['ruta'],
-                            $input['motivo'],
-                            $input['documento_aduanero'],
-                            $input['placa'],
-                            $input['transportista_id'],
-                            $input['observacion'],
-                            $input['autorizacion'],
-                            $input['esactivo'],
-                            $input['usuario_id'],
-                            $input['accion'],
-                        ]
-                    );
-                    //obtenemos el numero de nota contable y numero actual de la factura
-                    $valor_retorno = $results[0]->guias_remision_grabar_cabecera;
-                    $valor_retorno = trim($valor_retorno, '()');
-                    $valor_array = explode(",", $valor_retorno);
-                    $input['id'] = $valor_array[0];
-                    $input['numero'] = $valor_array[1];
+                        $guia = new GuiaRemision($input);
+                        $guia->numero = $numero[0]->numero;
+                        $input['numero'] = $numero[0]->numero;
+                        $guia->save();
 
-                    //grabamos el detalle de la guia de remision
+                        DB::update("update documentos set numero = numero + 1 where codigo = ? and modulo = 'Ventas'", [
+                            $input['documento']
+                        ]);
+                    } else {
+                        $guia->update($input);
+                    }
+
+                    $guia->detalle()->delete();
                     foreach ($input['detalle'] as $detalle) {
-                        $results = DB::select(
-                            'SELECT guias_remision_grabar_detalle(?,?,?,?,?,?,?)',
-                            [
-                                $input['documento'],
-                                $input['numero'],
-                                $input['id'],
-                                $detalle['producto_id'],
-                                $detalle['descripcion'],
-                                $detalle['cantidad'],
-                                $input['accion'],
-                            ]
-                        );
+                        $detalleObj =  new GuiaRemisionDetalle($detalle);
+                        $detalleObj->guiar_id = $guia->id;
+                        $detalleObj->documento = $guia->documento;
+                        $detalleObj->numero = $guia->numero;
+                        $detalleObj->save();
                     };
+
+
+                    $sri = new SriFunctionsController("06", $input);
+                    $xml = $sri->getXml();
+                    $key = $sri->getAccessKey();
+                    $guia->xml = $xml;
+                    $guia->autorizacion = $key;
+                    $guia->save();
+
+                    DB::commit();
+                    //return $this->insertOk($guia);
+                } else {
+                    //Eliminar
                 }
-                else
-                {
-
-                    $results = DB::select(
-                        'SELECT guias_remision_elimina_detalle(?,?)',
-                        [
-                            $input['id'],
-                            $input['accion'],
-                        ]
-                    );
-
-                    $results = DB::select(
-                        'SELECT guias_remision_elimina_cabecera(?,?,?)',
-                        [
-                            $input['id'],
-                            $input['usuario_id'],
-                            $input['accion'],
-                        ]
-                    );
-                }
-                //grabar nota contable
-                DB::commit();
-
-                return $this->insertOk($input);
             } catch (\Exception $e) {
                 DB::rollBack();
                 return $this->insertErrCustom($input, $e->getMessage());
             }
-        }else{
-            return $this->insertErrCustom($validation->messages(), 'Datos inválidos');
+
+            try {
+                $result = $this->requestToSri($sri, $guia);
+
+                return response([
+                    'err' => false,
+                    'data' => $guia,
+                    'result' => $result,
+                ], 200);
+            } catch (\Throwable $th) {
+                return $this->insertErrCustom($input, $th->getMessage());
+            }
+        } else {
+            return $this->insertErrCustom($validation->getMessageBag(), 'Datos inválidos');
         }
     }
+
+    private function requestToSri($sri, $guia)
+    {
+        try {
+            //peticion a sri
+            $result = $sri->soapRecuestRc($guia->xml);
+            if (!$result) {
+                //retornar error
+                $guia->status = $result->estado;
+                $guia->status_code = "500";
+                $guia->message_error = "SRI FUERA DE LINEA";
+                $guia->aditional_message_error = "Los servicios del SRI no estan disponibles por el momento.";
+                $guia->save();
+                throw new RuntimeException("Los servicios del SRI no estan disponibles por el momento.");
+            }
+
+            //return $result;
+
+            if ($result->estado == "DEVUELTA") {
+                if (
+                    is_array($result->comprobantes->comprobante->mensajes->mensaje) &&
+                    isset($result->comprobantes->comprobante->mensajes->mensaje[0]->identificador) &&
+                    $result->comprobantes->comprobante->mensajes->mensaje[0]->identificador == "43"
+                ) {
+                    $guia->status = "AUTORIZADO";
+                    $guia->status_code = "200";
+                    $guia->message_error = "";
+                    $guia->aditional_message_error = "";
+                    $guia->autorizado = 1;
+                    $guia->save();
+                    return true;
+                } elseif (
+                    is_object($result->comprobantes->comprobante->mensajes->mensaje) &&
+                    isset($result->comprobantes->comprobante->mensajes->mensaje->identificador) &&
+                    $result->comprobantes->comprobante->mensajes->mensaje->identificador == "43"
+                ) {
+                    $guia->status = "AUTORIZADO";
+                    $guia->status_code = "200";
+                    $guia->message_error = "";
+                    $guia->aditional_message_error = "";
+                    $guia->autorizado = 1;
+                    $guia->save();
+                    return true;
+                }
+
+                if (is_array($result->comprobantes->comprobante->mensajes->mensaje)) {
+                    $guia->status = $result->estado;
+                    $guia->status_code = $result->comprobantes->comprobante->mensajes->mensaje[0]->identificador;
+                    $guia->message_error = $result->comprobantes->comprobante->mensajes->mensaje[0]->mensaje;
+                    if (isset($result->comprobantes->comprobante->mensajes->mensaje[0]->informacionAdicional)) {
+                        $guia->aditional_message_error =  $result->comprobantes->comprobante->mensajes->mensaje[0]->informacionAdicional;
+                    }
+                    $guia->save();
+                    throw new RuntimeException($result->comprobantes->comprobante->mensajes->mensaje[0]->informacionAdicional);
+                } else {
+                    $guia->status = $result->estado;
+                    $guia->status_code = $result->comprobantes->comprobante->mensajes->mensaje->identificador;
+                    $guia->message_error = $result->comprobantes->comprobante->mensajes->mensaje->mensaje;
+                    if ($result->comprobantes->comprobante->mensajes->mensaje->informacionAdicional) {
+                        $guia->aditional_message_error =  $result->comprobantes->comprobante->mensajes->mensaje->informacionAdicional;
+                    }
+                    $guia->save();
+                    throw new RuntimeException($result->comprobantes->comprobante->mensajes->mensaje->informacionAdicional);
+                }
+            }
+
+            if ($result->estado == "RECIBIDA") {
+                sleep(4);
+                $resultAc = $sri->soapRecuestAc($guia->autorizacion);
+
+                if ($resultAc->autorizaciones->autorizacion->estado == "EN PROCESO") {
+                    $guia->status = $resultAc->autorizaciones->autorizacion->estado;
+                    $guia->status_code = "400";
+                    $guia->message_error = "Factura en proceso.";
+                    $guia->aditional_message_error = "Reenviar mas tarde.";
+                    $guia->save();
+                    throw new RuntimeException("Factura en proceso.");
+                }
+
+                if ($resultAc->autorizaciones->autorizacion->estado == "AUTORIZADO") {
+                    $guia->status = $resultAc->autorizaciones->autorizacion->estado;
+                    $guia->status_code = "200";
+                    $guia->message_error = "";
+                    $guia->aditional_message_error = "";
+                    $guia->autorizado = 1;
+                    $guia->xml = $resultAc->autorizaciones->autorizacion->comprobante; //$this->parseToXml($resultAc->autorizaciones->autorizacion);
+                    $guia->fecha_autorizacion = $resultAc->autorizaciones->autorizacion->fechaAutorizacion;
+                    $guia->save();
+                    return $resultAc;
+                }
+
+
+                return $resultAc;
+            }
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+
+    private function parseToXml($data)
+    {
+        // // Obtener la cadena de texto desde la propiedad del objeto si es necesario
+        // if (is_object($data)) {
+        //     // Asegúrate de ajustar 'propertyName' al nombre de la propiedad correcta
+        //     $data = $data->propertyName;
+        // }
+
+        // // Decodificar las entidades HTML
+        // $decodedData = html_entity_decode($data);
+
+        // // Crear un nuevo documento DOM
+        // $dom = new DOMDocument('1.0', 'UTF-8');
+        // // Cargar el XML en el documento DOM
+        // $dom->loadXML($decodedData);
+
+        // // Obtener el elemento <autorizacion>
+        // $autorizacion = $dom->getElementsByTagName('autorizacion')->item(0);
+
+        // // Crear un nuevo documento DOM solo con el elemento <autorizacion>
+        // $autorizacionDom = new DOMDocument('1.0', 'UTF-8');
+        // $autorizacionNode = $autorizacionDom->importNode($autorizacion, true);
+        // $autorizacionDom->appendChild($autorizacionNode);
+
+        // // Obtener el XML como string
+        // $xmlString = $autorizacionDom->saveXML();
+
+        // // Guardar el XML en la variable $xml
+        //$xml = htmlspecialchars($xmlString);
+
+        //return $this->arrayToXml($data);;
+    }
+
+    // private function arrayToXml($array, $rootElement = null, $xml = null)
+    // {
+    //     $xml = $xml ?: new \SimpleXMLElement($rootElement ? '<' . $rootElement . '/>' : '<root/>');
+
+    //     foreach ($array as $key => $value) {
+    //         if (is_array($value)) {
+    //             $this->arrayToXml($value, $key, $xml->addChild($key));
+    //         } else {
+    //             if (is_numeric($key)) {
+    //                 $xml->addChild('item' . $key, $value);
+    //             } else {
+    //                 $xml->addChild($key, $value);
+    //             }
+    //         }
+    //     }
+
+    //     return $xml->asXML();
+    // }
 }

@@ -15,7 +15,7 @@ class GuiaRemision extends Model
         'numero',
         'factura_id',
         'factura_cliente',
-        'cliente_id',       
+        'cliente_id',
         'partida',
         'fecha_inicio',
         'fecha_fin',
@@ -28,7 +28,16 @@ class GuiaRemision extends Model
         'observacion',
         'autorizacion',
         'esactivo',
-        'usuario_id'
+        'usuario_id',
+        'xml',
+        'fecha_autorizacion',
+        'email',
+        'status',
+        'status_code',
+        'message_error',
+        'aditional_message_error',
+        'ruc',
+        'cliente',
     ];
 
     protected $hidden = [
@@ -47,7 +56,7 @@ class GuiaRemision extends Model
     }
 
 
-    public function guiaDetalle()
+    public function detalle()
     {
         return $this->hasMany(GuiaRemisionDetalle::class,'guiar_id','id');
 
