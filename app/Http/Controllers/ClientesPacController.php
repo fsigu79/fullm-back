@@ -839,8 +839,6 @@ class ClientesPacController extends Controller
             $des=$input['name'];
         }
 
-        //return $this->getOk($input);
-
        try{
 
             $sql="select 1 as id,codcte01 as codigo, nomcte01 as nombre, cascte01 as ruc,'.' as apellido,
