@@ -97,8 +97,11 @@ class SriFunctionsController extends Controller
             //return $command;
             $output = shell_exec($command);
 
-            if ($output === null) {
-                throw new Exception("Error executing Python file");
+            $parts = explode("\n", $output);
+            $firstWord = $parts[0];
+            //return $firstWord;
+            if ($firstWord == "None") {
+                throw new Exception("Error executing Python file: " . $parts[1]);
             }
             return trim($output); // Devuelve la salida sin espacios en blanco adicionales
         } catch (\Throwable $th) {
@@ -108,10 +111,10 @@ class SriFunctionsController extends Controller
 
     public function soapRecuestRc($xml)
     {
-        if ($this->company["environment"] == 0) {
-            $wsdl = env('WS_SRI_RC_TEST');
-        } else {
+        if ($this->company["environment"] == 1) {
             $wsdl = env('WS_SRI_RC');
+        } else {
+            $wsdl = env('WS_SRI_RC_TEST');
         }
         // Construir la solicitud SOAP
         $request = new stdClass();
@@ -129,10 +132,10 @@ class SriFunctionsController extends Controller
 
     public function soapRecuestAc($key)
     {
-        if ($this->company["environment"] == 0) {
-            $wsdl = env('WS_SRI_AC_TEST');
-        } else {
+        if ($this->company["environment"] == 1) {
             $wsdl = env('WS_SRI_AC');
+        } else {
+            $wsdl = env('WS_SRI_AC_TEST');
         }
         // Construir la solicitud SOAP
         $request = new stdClass();
