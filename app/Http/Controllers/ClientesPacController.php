@@ -843,7 +843,8 @@ class ClientesPacController extends Controller
 
        try{
 
-            $sql="select 1 as id,codcte01 as codigo, nomcte01 as nombre, cascte01 as ruc,'.' as apellido
+            $sql="select 1 as id,codcte01 as codigo, nomcte01 as nombre, cascte01 as ruc,'.' as apellido,
+                dircte01,telcte01,if (isnull(emailaltcte01) or emailaltcte01='',emailcte01,concat(emailcte01,',',emailaltcte01)) as email
                 from jcev.maecte
                 where if ('".$cod."'='0',true,cascte01 like '%".$cod."%') and
                         if ('".$des."'='0',true,nomcte01 like '%".$des."%')";

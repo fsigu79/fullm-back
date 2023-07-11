@@ -57,6 +57,22 @@ class GuiasProductosController extends Controller
         $list = DB::connection('mysqlpac')->select($this->sqlgen,[$inicio,$fin,]);
 
         foreach ($list as $detalle) {
+
+            /*if (is_null($detalle->estado)) {
+                $detalle->estado='0';
+            }
+            if (is_null($detalle->pedido)) {
+                $detalle->pedido='.';
+            }
+            if (is_null($detalle->notransfer04)) {
+                $detalle->notransfer04='.';
+            }
+            if (is_null($detalle->cliente_codigo)) {
+                $detalle->cliente_codigo='.';
+            }
+            if (is_null($detalle->cliente)) {
+                $detalle->cliente='.';
+            }*/
             $results=DB::select('SELECT catalogo_series_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',[
                             $detalle->serie,
                             $detalle->tipo_transaccion,

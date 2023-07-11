@@ -101,8 +101,12 @@ class SriFunctionsController extends Controller
             $firstWord = $parts[0];
             //return $firstWord;
             if ($firstWord == "None") {
-                throw new Exception("Error executing Python file: " . $parts[1]);
+                throw new Exception("Error executing Python file: ".$parts[1]);
             }
+
+            /*if ($output === null) {
+                throw new Exception("Error executing Python file ".$output);
+            }*/
             return trim($output); // Devuelve la salida sin espacios en blanco adicionales
         } catch (\Throwable $th) {
             throw $th;
@@ -116,6 +120,7 @@ class SriFunctionsController extends Controller
         } else {
             $wsdl = env('WS_SRI_RC_TEST');
         }
+
         // Construir la solicitud SOAP
         $request = new stdClass();
         $request->xml = $xml;
