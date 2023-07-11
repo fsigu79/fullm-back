@@ -355,4 +355,40 @@ class GuiaRemisionController extends Controller
 
     //     return $xml->asXML();
     // }
+
+    public function resendToSri($id)
+    {
+        try {
+            $guia = GuiaRemision::with(['detalle', 'transportista'])->find($id);
+
+            if (!$guia) {
+                return response()->json([
+                    'status' => 'error',
+                    'code' => 'error',
+                    'message' => "Invoice not found",
+                ], 404);
+            }
+
+            $sri = new SriFunctionsController("06", $guia);
+            $xml = $sri->getXml();
+            $key = $sri->getAccessKey();
+            $guia->xml = $xml;
+            $guia->autorizacion = $key;
+            $guia->save();
+
+            $result = $this->requestToSri($sri, $guia);
+
+            return response([
+                'err' => false,
+                'data' => $guia,
+                'result' => $result,
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'code' => 'error',
+                'message' => $th->getMessage(),
+            ], 400);
+        }
+    }
 }
