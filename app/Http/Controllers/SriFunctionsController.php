@@ -115,10 +115,10 @@ class SriFunctionsController extends Controller
 
     public function soapRecuestRc($xml)
     {
-        if ($this->company["environment"] == 0) {
-            $wsdl = env('WS_SRI_RC_TEST');
-        } else {
+        if ($this->company["environment"] == 1) {
             $wsdl = env('WS_SRI_RC');
+        } else {
+            $wsdl = env('WS_SRI_RC_TEST');
         }
 
         // Construir la solicitud SOAP
@@ -137,10 +137,10 @@ class SriFunctionsController extends Controller
 
     public function soapRecuestAc($key)
     {
-        if ($this->company["environment"] == 0) {
-            $wsdl = env('WS_SRI_AC_TEST');
-        } else {
+        if ($this->company["environment"] == 1) {
             $wsdl = env('WS_SRI_AC');
+        } else {
+            $wsdl = env('WS_SRI_AC_TEST');
         }
         // Construir la solicitud SOAP
         $request = new stdClass();
