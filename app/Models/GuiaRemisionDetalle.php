@@ -17,6 +17,8 @@ class GuiaRemisionDetalle extends Model
         'descripcion',
         'cantidad',
         'codigo',
+        'chasis',
+        'serie',
 
     ];
 
