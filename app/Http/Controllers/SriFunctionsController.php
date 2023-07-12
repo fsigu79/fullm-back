@@ -94,7 +94,7 @@ class SriFunctionsController extends Controller
             $p12 = storage_path("app/public/" . $this->company["signature_file"]);
             $password = $this->company->decriptPassword($this->company["signature_password"]);
             $escapedXml = base64_encode($xml);
-            $command = "python $basePath --xml=$escapedXml --p12=$p12 --password=$password";
+            $command = "python3 $basePath --xml=$escapedXml --p12=$p12 --password=$password";
             //return $command;
             $output = shell_exec($command);
 
