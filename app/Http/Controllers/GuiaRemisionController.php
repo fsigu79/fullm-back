@@ -210,6 +210,9 @@ class GuiaRemisionController extends Controller
         try {
             //peticion a sri
             $result = $sri->soapRecuestRc($guia->xml);
+
+            //return $result;
+
             if (!$result) {
                 //retornar error
                 $guia->status = $result->estado;
@@ -220,7 +223,7 @@ class GuiaRemisionController extends Controller
                 throw new RuntimeException("Los servicios del SRI no estan disponibles por el momento.");
             }
 
-            //return $result;
+           // return $result;
 
             if ($result->estado == "DEVUELTA") {
                 if (
@@ -249,6 +252,8 @@ class GuiaRemisionController extends Controller
                     return true;
                 }
 
+
+
                 if (is_array($result->comprobantes->comprobante->mensajes->mensaje)) {
                     $guia->status = $result->estado;
                     $guia->status_code = $result->comprobantes->comprobante->mensajes->mensaje[0]->identificador;
@@ -271,7 +276,7 @@ class GuiaRemisionController extends Controller
             }
 
             if ($result->estado == "RECIBIDA") {
-                sleep(4);
+                sleep(2);
                 $resultAc = $sri->soapRecuestAc($guia->autorizacion);
 
                 if ($resultAc->autorizaciones->autorizacion->estado == "EN PROCESO") {
@@ -281,6 +286,15 @@ class GuiaRemisionController extends Controller
                     $guia->aditional_message_error = "Reenviar mas tarde.";
                     $guia->save();
                     throw new RuntimeException("Factura en proceso.");
+                }
+
+                if ($resultAc->autorizaciones->autorizacion->estado == "NO AUTORIZADO") {
+                    $guia->status = $resultAc->autorizaciones->autorizacion->estado;
+                    $guia->status_code =  $resultAc->autorizaciones->autorizacion->mensajes->mensaje->identificador;
+                    $guia->message_error = $resultAc->autorizaciones->autorizacion->mensajes->mensaje->mensaje;
+                    $guia->aditional_message_error = $resultAc->autorizaciones->autorizacion->mensajes->mensaje->informacionAdicional;
+                    $guia->save();
+                    throw new RuntimeException($resultAc->autorizaciones->autorizacion->mensajes->mensaje->mensaje);
                 }
 
                 if ($resultAc->autorizaciones->autorizacion->estado == "AUTORIZADO") {
@@ -381,7 +395,7 @@ class GuiaRemisionController extends Controller
             return response([
                 'err' => false,
                 'data' => $guia,
-                'result' => $result,
+                'resultsri' => $result,
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([

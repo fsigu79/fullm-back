@@ -101,7 +101,7 @@ class SriFunctionsController extends Controller
             $firstWord = $parts[0];
             //return $firstWord;
             if ($firstWord == "None") {
-                throw new Exception("Error executing Python file: ".$parts[1]);
+                throw new Exception("Error executing Python file: " . $parts[1]);
             }
 
             /*if ($output === null) {
@@ -127,6 +127,9 @@ class SriFunctionsController extends Controller
         $soapClient = new SoapClient($wsdl, [
             'trace' => true, // Habilitar el seguimiento de la solicitud SOAP
             // Agrega cualquier configuración adicional requerida
+            'connection_timeout' => 5000,
+            'cache_wsdl' => WSDL_CACHE_NONE,
+            'keep_alive' => false,
         ]);
         // Enviar la solicitud SOAP
         $response = $soapClient->__soapCall('validarComprobante', [$request]);
@@ -147,7 +150,9 @@ class SriFunctionsController extends Controller
         $request->claveAccesoComprobante = $key;
         $soapClient = new SoapClient($wsdl, [
             'trace' => true, // Habilitar el seguimiento de la solicitud SOAP
-            // Agrega cualquier configuración adicional requerida
+            'connection_timeout' => 5000,
+            'cache_wsdl' => WSDL_CACHE_NONE,
+            'keep_alive' => false,
         ]);
         // Enviar la solicitud SOAP
         $response = $soapClient->__soapCall('autorizacionComprobante', [$request]);
