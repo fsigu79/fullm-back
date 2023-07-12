@@ -16,6 +16,7 @@ use RuntimeException;
 use DOMDocument;
 use PDF;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class GuiaRemisionController extends Controller
 {
@@ -170,13 +171,14 @@ class GuiaRemisionController extends Controller
                         $detalleObj->numero = $guia->numero;
                         $detalleObj->save();
 
-                        if ($input['origen'] != 'PAC') {
+
+                        if ($input['origen'] == 'PAC') {
                             $guia_numero=$guia->serie.Str::padLeft($guia->numero, 9,'0');;
                             $result=DB::update('update catalogo_series set guia_remision_id=?, guia_remision_numero=? where chasis=? and serie=?',[
                                 $guia->id,
                                 $guia_numero,
-                                $detalle->chasis,
-                                $detalle->serie,
+                                $detalleObj->chasis,
+                                $detalleObj->serie,
                                 ]);
                         }
                     };
