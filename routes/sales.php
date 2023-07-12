@@ -136,7 +136,7 @@ Route::group([
     Route::get('list/{id}', [GuiaRemisionController::class, 'findById']);
 
     Route::get('catseries', [GuiasProductosController::class, 'importaCatalogoSeries']);
-
+    Route::get('getcatalogo', [GuiasProductosController::class, 'obtenerCatalogoSeries']);
     Route::get('download_xml/{id}', [GuiaRemisionController::class, 'downloadXML']);
     Route::get('download_pdf/{id}', [GuiaRemisionController::class, 'downloadPdf']);
     Route::get('resend_email/{id}', [GuiaRemisionController::class, 'resendEmail']);

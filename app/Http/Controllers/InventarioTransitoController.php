@@ -30,7 +30,7 @@ class InventarioTransitoController extends Controller
         $ffin=$request['ffin'];
         $doc=$request['doc'];
 
-        $sql=  "SELECT c.id,documento,proveedor_codigo,proveedor_nombre c.numero,fecha,nombre,observacion,liquidado,
+        $sql=  "SELECT c.id,documento,proveedor_codigo,proveedor_nombre, c.numero,fecha,nombre,observacion,liquidado,
                        c.esactivo
                 FROM inventario_transito c
                 where fecha>=? and fecha<=? and c.documento=?

@@ -175,6 +175,7 @@ class GuiaRemisionController extends Controller
                     $sri = new SriFunctionsController("06", $input);
                     $xml = $sri->getXml();
                     $key = $sri->getAccessKey();
+                    
                     $guia->xml = $xml;
                     $guia->autorizacion = $key;
                     $guia->save();
@@ -191,7 +192,7 @@ class GuiaRemisionController extends Controller
 
             try {
                 $result = $this->requestToSri($sri, $guia);
-
+                //$result='nose';
                 return response([
                     'err' => false,
                     'data' => $guia,
@@ -209,6 +210,7 @@ class GuiaRemisionController extends Controller
     {
         try {
             //peticion a sri
+            //return $guia;
             $result = $sri->soapRecuestRc($guia->xml);
             if (!$result) {
                 //retornar error
