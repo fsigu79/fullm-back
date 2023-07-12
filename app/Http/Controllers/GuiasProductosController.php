@@ -53,57 +53,74 @@ class GuiasProductosController extends Controller
         $inicio=$request['finicio'].' 00:00:00';
         $fin=$request['ffin'].' 23:59:00';
         $usuario=Auth::user();
+        try{
+            $list = DB::connection('mysqlpac')->select($this->sqlgen,[$inicio,$fin,]);
 
-        $list = DB::connection('mysqlpac')->select($this->sqlgen,[$inicio,$fin,]);
+            foreach ($list as $detalle) {
 
-        foreach ($list as $detalle) {
+                /*if (is_null($detalle->estado)) {
+                    $detalle->estado='0';
+                }
+                if (is_null($detalle->pedido)) {
+                    $detalle->pedido='.';
+                }
+                if (is_null($detalle->notransfer04)) {
+                    $detalle->notransfer04='.';
+                }
+                if (is_null($detalle->cliente_codigo)) {
+                    $detalle->cliente_codigo='.';
+                }
+                if (is_null($detalle->cliente)) {
+                    $detalle->cliente='.';
+                }*/
+                $results=DB::select('SELECT catalogo_series_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',[
+                                $detalle->serie,
+                                $detalle->tipo_transaccion,
+                                $detalle->documento,
+                                $detalle->codigo,
+                                $detalle->descripcion,
+                                $detalle->chasis,
+                                $detalle->destino,
+                                $detalle->valor,
+                                $detalle->fecha,
+                                $detalle->categoria,
+                                $detalle->anio,
+                                $detalle->color,
+                                $detalle->cpn,
+                                $detalle->ramv04,
+                                $detalle->cvanulada04,
+                                $detalle->estado,
+                                $detalle->numero_factura_pac,
+                                $detalle->pedido,
+                                $detalle->catprod01,
+                                $detalle->notransfer04,
+                                $detalle->cliente_codigo,
+                                $detalle->cliente,
+                                $usuario->id,
+                                ]);
 
-            /*if (is_null($detalle->estado)) {
-                $detalle->estado='0';
             }
-            if (is_null($detalle->pedido)) {
-                $detalle->pedido='.';
-            }
-            if (is_null($detalle->notransfer04)) {
-                $detalle->notransfer04='.';
-            }
-            if (is_null($detalle->cliente_codigo)) {
-                $detalle->cliente_codigo='.';
-            }
-            if (is_null($detalle->cliente)) {
-                $detalle->cliente='.';
-            }*/
-            $results=DB::select('SELECT catalogo_series_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',[
-                            $detalle->serie,
-                            $detalle->tipo_transaccion,
-                            $detalle->documento,
-                            $detalle->codigo,
-                            $detalle->descripcion,
-                            $detalle->chasis,
-                            $detalle->destino,
-                            $detalle->valor,
-                            $detalle->fecha,
-                            $detalle->categoria,
-                            $detalle->anio,
-                            $detalle->color,
-                            $detalle->cpn,
-                            $detalle->ramv04,
-                            $detalle->cvanulada04,
-                            $detalle->estado,
-                            $detalle->numero_factura_pac,
-                            $detalle->pedido,
-                            $detalle->catprod01,
-                            $detalle->notransfer04,
-                            $detalle->cliente_codigo,
-                            $detalle->cliente,
-                            $usuario->id,
-                            ]);
+            $catalogo=DB::select('SELECT * from catalogo_series');
+            return $this->getOk($catalogo);
 
+         } catch (\Exception $e) {
+            return $this->insertErrCustom($request, $e->getMessage());
         }
+    }
 
-        $catalogo=DB::select('SELECT * from catalogo_series');
 
-        return $this->getOk($catalogo);
+    public function obtenerCatalogoSeries(Request $request)
+    {
+        $input = $request->all();
+        $inicio=$request['finicio'].' 00:00:00';
+        $fin=$request['ffin'].' 23:59:00';
+        try{
+            $catalogo=DB::select('SELECT * from catalogo_series');
+            return $this->getOk($catalogo);
+
+        } catch (\Exception $e) {
+            return $this->insertErrCustom($request, $e->getMessage());
+        }
     }
 
 

@@ -81,12 +81,12 @@ class TransportistaController extends Controller
         $validation = Validator::make(
             $request->all(),
             [
-               'razon_social' => 'required',
+               'nombres' => 'required',
                 'ruc' => 'required',
                 'placa' => 'required',
             ],
             [
-                'razon_social.required' => 'La razon social es requerido.',
+                'nombres.required' => 'La razon social es requerido.',
                 'ruc.required' => 'El ruc es requerido.',
                 'placa.required' => 'La placa es requerida.',
             ]
