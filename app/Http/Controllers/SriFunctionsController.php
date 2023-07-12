@@ -77,6 +77,7 @@ class SriFunctionsController extends Controller
                 case '06':
                     $xml = $this->getRemisionXML();
                     $xmlSign = $this->signXml($xml);
+                    //$xmlSign =$xml;
                     return $xmlSign;
                 default:
                     return "null";
@@ -100,13 +101,13 @@ class SriFunctionsController extends Controller
             $parts = explode("\n", $output);
             $firstWord = $parts[0];
             //return $firstWord;
-            if ($firstWord == "None") {
+            /*if ($firstWord == "None") {
                 throw new Exception("Error executing Python file: ".$parts[1]);
-            }
-
-            /*if ($output === null) {
-                throw new Exception("Error executing Python file ".$output);
             }*/
+
+            if ($output === null) {
+                throw new Exception("Error executing Python file ".$command);
+            }
             return trim($output); // Devuelve la salida sin espacios en blanco adicionales
         } catch (\Throwable $th) {
             throw $th;
