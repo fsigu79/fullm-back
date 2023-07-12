@@ -169,13 +169,23 @@ class GuiaRemisionController extends Controller
                         $detalleObj->documento = $guia->documento;
                         $detalleObj->numero = $guia->numero;
                         $detalleObj->save();
+
+                        if ($input['origen'] != 'PAC') {
+                            $guia_numero=$guia->serie.Str::padLeft($guia->numero, 9,'0');;
+                            $result=DB::update('update catalogo_series set guia_remision_id=?, guia_remision_numero=? where chasis=? and serie=?',[
+                                $guia->id,
+                                $guia_numero,
+                                $detalle->chasis,
+                                $detalle->serie,
+                                ]);
+                        }
                     };
 
 
                     $sri = new SriFunctionsController("06", $input);
                     $xml = $sri->getXml();
                     $key = $sri->getAccessKey();
-                    
+
                     $guia->xml = $xml;
                     $guia->autorizacion = $key;
                     $guia->save();

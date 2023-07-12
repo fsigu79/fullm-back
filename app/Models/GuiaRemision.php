@@ -38,6 +38,7 @@ class GuiaRemision extends Model
         'aditional_message_error',
         'ruc',
         'cliente',
+        'origen',
     ];
 
     protected $hidden = [
