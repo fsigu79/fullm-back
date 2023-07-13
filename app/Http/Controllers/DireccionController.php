@@ -34,7 +34,7 @@ class DireccionController extends Controller{
 
     public function getByCodigoPac($codpac)
     {
-        $list = Direccion::where('codigo_cliente_pac', '=',$codpac);
+        $list = Direccion::where('codigo_cliente_pac', '=',$codpac)->get();
         return $this->getOk($list);
     }
 
