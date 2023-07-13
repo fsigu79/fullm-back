@@ -13,7 +13,7 @@ use App\Http\Controllers\TransportistaController;
 use App\Http\Controllers\AbonoController;
 use App\Http\Controllers\GuiaRemisionController;
 use App\Http\Controllers\GuiasProductosController;
-
+use App\Http\Controllers\DireccionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -144,3 +144,14 @@ Route::group([
 
  });
 
+
+Route::group([
+   'prefix' => 'dir',
+], function () {
+   Route::get('list', [DireccionController::class, 'list']);
+   Route::get('list/{id}', [DireccionController::class, 'getById']);
+   Route::get('codpac/{codcli}', [DireccionController::class, 'getByCodigoPac']);
+   Route::post('create', [DireccionController::class, 'create']);
+   Route::put('edit', [DireccionController::class, 'update']);
+   Route::delete('delete/{id}', [DireccionController::class, 'delete']);
+});

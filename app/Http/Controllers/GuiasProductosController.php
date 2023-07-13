@@ -101,6 +101,8 @@ class GuiasProductosController extends Controller
 
             }
             $catalogo=DB::select('SELECT * from catalogo_series');
+            //guia_remision_numero
+            //guia_remision_id
             return $this->getOk($catalogo);
 
          } catch (\Exception $e) {
