@@ -290,7 +290,7 @@ class GuiaRemisionController extends Controller
             }
 
             if ($result->estado == "RECIBIDA") {
-                sleep(2);
+                //sleep(2);
                 $resultAc = $sri->soapRecuestAc($guia->autorizacion);
 
                 if ($resultAc->autorizaciones->autorizacion->estado == "EN PROCESO") {

@@ -39,6 +39,7 @@ class GuiaRemision extends Model
         'ruc',
         'cliente',
         'origen',
+        'direccion_id'
     ];
 
     protected $hidden = [
