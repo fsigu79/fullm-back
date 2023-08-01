@@ -38,14 +38,14 @@
             <div class="company-info" style="margin-right: 5px; width: 49.2%; float: left;">
                 <figure style="width: 100%; text-align: center; margin: 0;">
                     @if ($company->logo !== null)
-                        <img src="{{ $company->logo }}" alt="" style="max-width: 30em; max-height: 10em;">
+                        <img src="{{Storage::disk('images')->url($company->logo)}}" alt="" style="max-width: 30em; max-height: 8.5em;">
                     @else
                         <h1 style="font-size: 3.5em; color: red; margin-bottom: 0.5em">Sin Logo</h1>
                     @endif
                 </figure>
                 <div class="company" style="border: 1px solid rgba(0, 0, 0, .5); padding:0.2em; ">
                     <h1 style="margin: 0; padding:0; text-transform: uppercase;">{{ $company->social_name }}</h1>
-                    <p style="font-weight: bold;">Matriz: {{ $company->address }}</p>
+                    <p style="font-weight: bold;">Matriz: {{ $company->address }} </p>
                     <p>Telf: {{ $company->phone }}</p>
                     @if ($company->city !== null)
                         <p>{{ $company->city }}</p>
