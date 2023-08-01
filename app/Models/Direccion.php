@@ -11,6 +11,8 @@ class Direccion  extends Model
 
      protected $fillable = [
         'codigo_cliente_pac',
+        'nombre_cliente_pac',
+        'nombre_comercial',
         'nombre',
         'ciudad',
         'direccion',

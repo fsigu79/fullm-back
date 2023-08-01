@@ -121,8 +121,10 @@ class SriFunctionsController extends Controller
     {
         if ($this->company["environment"] == 1) {
             $wsdl = env('WS_SRI_RC');
+            $wsdl='https://cel.sri.gob.ec/comprobantes-electronicos-ws/RecepcionComprobantesOffline?wsdl';
         } else {
             $wsdl = env('WS_SRI_RC_TEST');
+            $wsdl='https://celcer.sri.gob.ec/comprobantes-electronicos-ws/RecepcionComprobantesOffline?wsdl';
         }
 
         // Construir la solicitud SOAP
@@ -146,9 +148,12 @@ class SriFunctionsController extends Controller
     {
         if ($this->company["environment"] == 1) {
             $wsdl = env('WS_SRI_AC');
+            $wsdl ='https://cel.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl';
         } else {
             $wsdl = env('WS_SRI_AC_TEST');
+            $wsdl ='https://celcer.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl';
         }
+
         // Construir la solicitud SOAP
         $request = new stdClass();
         $request->claveAccesoComprobante = $key;
