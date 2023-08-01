@@ -109,6 +109,7 @@ Route::group([
     Route::put('approve', [MovimientoInventarioController::class, 'updateAprobar']);
     Route::put('register', [MovimientoInventarioController::class, 'updateRegistrado']);
     Route::put('negar', [MovimientoInventarioController::class, 'updateNegado']);
+    Route::get('movdetalle', [MovimientoInventarioController::class, 'detalleMovimientos']);
 });
 
 

@@ -49,6 +49,33 @@ class MovimientoInventarioController extends Controller
         return $this->getOk($invoice);
     }
 
+     public function detalleMovimientos(Request $request)
+    {
+        $input = $request->all();
+        $finicio=$request['finicio'];
+        $ffin=$request['ffin'];
+        $doc=$request['doc'];
+
+
+
+        $sql=  "SELECT c.id,c.serie, c.documento, c.numero as numero,(c.serie||''||LPAD(c.numero::text,9,'0'))as movimiento,destino_id,cliente_ruc,cliente_nombre,
+                        d.nombre as destino,referencia,observacion,fecha,
+                        CASE aprobado WHEN 1 THEN 'SI' ELSE 'NO' END as aprobado,
+                        CASE registrado WHEN 1 THEN 'SI' ELSE 'NO' END as registrado,referencia_pac,
+                        CASE negado WHEN 1 THEN 'SI' ELSE 'NO' END as negado,referencia_negado,
+                        det.producto_codigo,det.producto_nombre as producto,det.cantidad
+                FROM movimientos c
+                inner join destinos d on c.destino_id=d.id
+				inner join movimientosd det on c.id=det.movimiento_id
+                where fecha>=? and fecha<=? and c.documento=?
+                    and c.esactivo=1
+                order by fecha desc,numero desc";
+
+        $list = DB::select($sql,[$finicio,$ffin,$doc]);
+
+        return $this->getOk($list);
+    }
+
 
     public function save(Request $request)
     {
