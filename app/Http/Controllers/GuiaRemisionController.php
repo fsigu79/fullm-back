@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Traits\FormatResponseTrait;
+use App\Jobs\SenderEmail;
 use App\Mail\InvoiceEmail;
 use App\Models\Company;
 use App\Models\GuiaRemision;
@@ -104,9 +105,10 @@ class GuiaRemisionController extends Controller
                 ], 404);
             }
 
-            //Mail::to($invoice->email)->send(new InvoiceEmail($invoice->xml, $company, $invoice, 'guides'));
-            $email = new InvoiceEmail($invoice->xml, $company, $invoice, 'guides');
-            $email->build();
+            //$email = new InvoiceEmail($invoice->xml, $company, $invoice, 'guides');
+            // $email->build();
+
+            dispatch(new SenderEmail($invoice, 'guides'));
 
             return response()->json([
                 'status' => 'ok',
@@ -174,13 +176,13 @@ class GuiaRemisionController extends Controller
 
 
                         if ($input['origen'] == 'PAC') {
-                            $guia_numero=$guia->serie.Str::padLeft($guia->numero, 9,'0');;
-                            $result=DB::update('update catalogo_series set guia_remision_id=?, guia_remision_numero=? where chasis=? and serie=?',[
+                            $guia_numero = $guia->serie . Str::padLeft($guia->numero, 9, '0');;
+                            $result = DB::update('update catalogo_series set guia_remision_id=?, guia_remision_numero=? where chasis=? and serie=?', [
                                 $guia->id,
                                 $guia_numero,
                                 $detalleObj->chasis,
                                 $detalleObj->serie,
-                                ]);
+                            ]);
                         }
                     };
 
@@ -214,7 +216,6 @@ class GuiaRemisionController extends Controller
             } catch (\Throwable $th) {
                 return $this->insertErrCustom($input, $th->getMessage());
             }
-
         } else {
             return $this->insertErrCustom($validation->getMessageBag(), 'Datos inválidos');
         }
@@ -239,7 +240,7 @@ class GuiaRemisionController extends Controller
                 throw new RuntimeException("Los servicios del SRI no estan disponibles por el momento.");
             }
 
-           // return $result;
+            // return $result;
 
             if ($result->estado == "DEVUELTA") {
                 if (
@@ -322,6 +323,16 @@ class GuiaRemisionController extends Controller
                     $guia->xml = $resultAc->autorizaciones->autorizacion->comprobante; //$this->parseToXml($resultAc->autorizaciones->autorizacion);
                     $guia->fecha_autorizacion = $resultAc->autorizaciones->autorizacion->fechaAutorizacion;
                     $guia->save();
+
+                    //envio de email en hilo
+                    //$email = new InvoiceEmail($invoice->xml, $company, $invoice, 'guides');
+                    //$email->build();
+                    try {
+                        dispatch(new SenderEmail($guia, 'guides'));
+                    } catch (\Throwable $th) {
+                        //throw $th;
+                    }
+
                     return $resultAc;
                 }
 
