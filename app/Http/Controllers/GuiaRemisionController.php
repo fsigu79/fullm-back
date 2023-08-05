@@ -113,6 +113,7 @@ class GuiaRemisionController extends Controller
                 'status' => 'ok',
                 'code' => 'ok',
                 'message' => "Email sent success",
+                'data' => $invoice,
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
@@ -214,6 +215,7 @@ class GuiaRemisionController extends Controller
             } catch (\Throwable $th) {
                 return $this->insertErrCustom($input, $th->getMessage());
             }
+
         } else {
             return $this->insertErrCustom($validation->getMessageBag(), 'Datos inválidos');
         }
