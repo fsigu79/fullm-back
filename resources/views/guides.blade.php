@@ -38,7 +38,8 @@
             <div class="company-info" style="margin-right: 5px; width: 49.2%; float: left;">
                 <figure style="width: 100%; text-align: center; margin: 0;">
                     @if ($company->logo !== null)
-                        <img src="{{Storage::disk('images')->url($company->logo)}}" alt="" style="max-width: 30em; max-height: 8.5em;">
+                     <!--<img src="{{Storage::disk('images')->url($company->logo)}}" alt="" style="max-width: 30em; max-height: 8.5em;">-->
+                     <img src="http://190.95.225.90:8086/jcev-back//storage/app/images/logo-jcev.jpeg" alt="" style="max-width: 30em; max-height: 8.5em;">
                     @else
                         <h1 style="font-size: 3.5em; color: red; margin-bottom: 0.5em">Sin Logo</h1>
                     @endif

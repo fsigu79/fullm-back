@@ -16,7 +16,7 @@ class GuiasProductosController extends Controller
 {
     use FormatResponseTrait;
 
-    private $sqlgen="Select serie04 as serie,tipotra04 as tipo_transaccion,nocomp04 as documento,
+    private $sqlgen="Select serie04 as serie,tipotra04 as tipo_transaccion,nocomp04 as documento1,
                         codprod04 as codigo,desprod01 as descripcion,
                         chasis04 as chasis,coddest04 as destino,valor04 as valor,
                         fecmov04 as fecha,
@@ -32,13 +32,14 @@ class GuiasProductosController extends Controller
                         catprod01,
                         notransfer04,
                         nocte31 as cliente_codigo,
-                        nomcte31 as cliente
+                        nomcte31 as cliente,
+                        if (cvanulada04='F',(select concat('FAC-',nocomp05) from jcevgyeassem.hisser where serie05=serie04 and tipotra05=80 and fecmov05=(select max(fecmov05) from jcevgyeassem.hisser where  serie05=serie04 and tipotra05=80 )),
+                           (select concat('TRA-',nocomp05) from jcevgyeassem.hisser where serie05=serie04 and tipotra05=61 and fecmov05=(select max(fecmov05) from jcevgyeassem.hisser where  serie05=serie04 and tipotra05=61))) as documento
                     from jcevgyeassem.maeser
                     inner join jcevgyeassem.maepro on codprod04=codprod01
                     left join jcevgyeassem.maefac on jcevgyeassem.maefac.nofact31=jcevgyeassem.maeser.nofact04
-                    where  fecmov04>=? and fecmov04<=? and (cvanulada04 BETWEEN '' AND 'zzz')
-                    order by serie04 ASC
-";
+                    where  fecmov04>=? and fecmov04<=? and (cvanulada04 in ('F','T'))
+                    order by documento ASC";
 
     public function __construct()
     {

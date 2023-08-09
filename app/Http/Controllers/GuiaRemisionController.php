@@ -18,6 +18,7 @@ use DOMDocument;
 use PDF;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use App\Models\SqlModel;
 
 class GuiaRemisionController extends Controller
 {
@@ -145,6 +146,12 @@ class GuiaRemisionController extends Controller
             try {
                 $input = $request->all();
                 DB::beginTransaction();
+                //fsigu sqls
+                    $box = new SqlModel();
+                        $box->sql= 'save guia';
+                        $box->sql1='1';
+                        $box->save();
+
                 if ($input['accion'] != 'Eliminar') {
 
                     $guia = GuiaRemision::find($input['id']);
