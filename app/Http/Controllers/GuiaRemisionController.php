@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\InvoiceEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Traits\FormatResponseTrait;
+use App\Jobs\RequestSri;
 use App\Jobs\SenderEmail;
 use App\Mail\InvoiceEmail;
 use App\Models\Company;
@@ -16,8 +18,8 @@ use Illuminate\Support\Facades\DB;
 use RuntimeException;
 use DOMDocument;
 use PDF;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+
 
 class GuiaRemisionController extends Controller
 {
@@ -105,10 +107,21 @@ class GuiaRemisionController extends Controller
                 ], 404);
             }
 
-            //$email = new InvoiceEmail($invoice->xml, $company, $invoice, 'guides');
-            // $email->build();
+            $email = new InvoiceEmail($invoice->xml, $company, $invoice, 'guides');
+            $email->build();
 
-            dispatch(new SenderEmail($invoice, 'guides'));
+            //dispatch(new SenderEmail($invoice, 'guides'));
+
+            // $data = [
+            //     'id' => $invoice->id,
+            //     'status' => $invoice->status,
+            //     'status_code' => $invoice->status_code,
+            //     'message_error' => $invoice->message_error,
+            //     'aditional_message_error' => $invoice->aditional_message_error,
+            //     'autorizacion' => $invoice->autorizacion,
+            // ];
+
+            // event(new InvoiceEvent($data));
 
             return response()->json([
                 'status' => 'ok',
@@ -206,12 +219,13 @@ class GuiaRemisionController extends Controller
             }
 
             try {
-                $result = $this->requestToSri($sri, $guia);
+                //$result = $this->requestToSri($sri, $guia);
+                $this->requestToSri($sri);
                 //$result='nose';
                 return response([
                     'err' => false,
                     'data' => $guia,
-                    'result' => $result,
+                    //'result' => $result,
                 ], 200);
             } catch (\Throwable $th) {
                 return $this->insertErrCustom($input, $th->getMessage());
@@ -221,124 +235,122 @@ class GuiaRemisionController extends Controller
         }
     }
 
-    private function requestToSri($sri, $guia)
+    private function requestToSri($guia)
     {
         try {
-            //peticion a sri
-            //return $guia;
-            $result = $sri->soapRecuestRc($guia->xml);
+            // //peticion a sri
+            // //return $guia;
+            // $result = $sri->soapRecuestRc($guia->xml);
 
-            //return $result;
+            // //return $result;
 
-            if (!$result) {
-                //retornar error
-                $guia->status = $result->estado;
-                $guia->status_code = "500";
-                $guia->message_error = "SRI FUERA DE LINEA";
-                $guia->aditional_message_error = "Los servicios del SRI no estan disponibles por el momento.";
-                $guia->save();
-                throw new RuntimeException("Los servicios del SRI no estan disponibles por el momento.");
-            }
+            // if (!$result) {
+            //     //retornar error
+            //     $guia->status = $result->estado;
+            //     $guia->status_code = "500";
+            //     $guia->message_error = "SRI FUERA DE LINEA";
+            //     $guia->aditional_message_error = "Los servicios del SRI no estan disponibles por el momento.";
+            //     $guia->save();
+            //     throw new RuntimeException("Los servicios del SRI no estan disponibles por el momento.");
+            // }
 
-            // return $result;
+            // // return $result;
 
-            if ($result->estado == "DEVUELTA") {
-                if (
-                    is_array($result->comprobantes->comprobante->mensajes->mensaje) &&
-                    isset($result->comprobantes->comprobante->mensajes->mensaje[0]->identificador) &&
-                    $result->comprobantes->comprobante->mensajes->mensaje[0]->identificador == "43"
-                ) {
-                    $guia->status = "AUTORIZADO";
-                    $guia->status_code = "200";
-                    $guia->message_error = "";
-                    $guia->aditional_message_error = "";
-                    $guia->autorizado = 1;
-                    $guia->save();
-                    return true;
-                } elseif (
-                    is_object($result->comprobantes->comprobante->mensajes->mensaje) &&
-                    isset($result->comprobantes->comprobante->mensajes->mensaje->identificador) &&
-                    $result->comprobantes->comprobante->mensajes->mensaje->identificador == "43"
-                ) {
-                    $guia->status = "AUTORIZADO";
-                    $guia->status_code = "200";
-                    $guia->message_error = "";
-                    $guia->aditional_message_error = "";
-                    $guia->autorizado = 1;
-                    $guia->save();
-                    return true;
-                }
+            // if ($result->estado == "DEVUELTA") {
+            //     if (
+            //         is_array($result->comprobantes->comprobante->mensajes->mensaje) &&
+            //         isset($result->comprobantes->comprobante->mensajes->mensaje[0]->identificador) &&
+            //         $result->comprobantes->comprobante->mensajes->mensaje[0]->identificador == "43"
+            //     ) {
+            //         $guia->status = "AUTORIZADO";
+            //         $guia->status_code = "200";
+            //         $guia->message_error = "";
+            //         $guia->aditional_message_error = "";
+            //         $guia->autorizado = 1;
+            //         $guia->save();
+            //         return true;
+            //     } elseif (
+            //         is_object($result->comprobantes->comprobante->mensajes->mensaje) &&
+            //         isset($result->comprobantes->comprobante->mensajes->mensaje->identificador) &&
+            //         $result->comprobantes->comprobante->mensajes->mensaje->identificador == "43"
+            //     ) {
+            //         $guia->status = "AUTORIZADO";
+            //         $guia->status_code = "200";
+            //         $guia->message_error = "";
+            //         $guia->aditional_message_error = "";
+            //         $guia->autorizado = 1;
+            //         $guia->save();
+            //         return true;
+            //     }
 
+            //     if (is_array($result->comprobantes->comprobante->mensajes->mensaje)) {
+            //         $guia->status = $result->estado;
+            //         $guia->status_code = $result->comprobantes->comprobante->mensajes->mensaje[0]->identificador;
+            //         $guia->message_error = $result->comprobantes->comprobante->mensajes->mensaje[0]->mensaje;
+            //         if (isset($result->comprobantes->comprobante->mensajes->mensaje[0]->informacionAdicional)) {
+            //             $guia->aditional_message_error =  $result->comprobantes->comprobante->mensajes->mensaje[0]->informacionAdicional;
+            //         }
+            //         $guia->save();
+            //         throw new RuntimeException($result->comprobantes->comprobante->mensajes->mensaje[0]->informacionAdicional);
+            //     } else {
+            //         $guia->status = $result->estado;
+            //         $guia->status_code = $result->comprobantes->comprobante->mensajes->mensaje->identificador;
+            //         $guia->message_error = $result->comprobantes->comprobante->mensajes->mensaje->mensaje;
+            //         if ($result->comprobantes->comprobante->mensajes->mensaje->informacionAdicional) {
+            //             $guia->aditional_message_error =  $result->comprobantes->comprobante->mensajes->mensaje->informacionAdicional;
+            //         }
+            //         $guia->save();
+            //         throw new RuntimeException($result->comprobantes->comprobante->mensajes->mensaje->informacionAdicional);
+            //     }
+            // }
 
+            // if ($result->estado == "RECIBIDA") {
+            //     //sleep(2);
+            //     $resultAc = $sri->soapRecuestAc($guia->autorizacion);
 
-                if (is_array($result->comprobantes->comprobante->mensajes->mensaje)) {
-                    $guia->status = $result->estado;
-                    $guia->status_code = $result->comprobantes->comprobante->mensajes->mensaje[0]->identificador;
-                    $guia->message_error = $result->comprobantes->comprobante->mensajes->mensaje[0]->mensaje;
-                    if (isset($result->comprobantes->comprobante->mensajes->mensaje[0]->informacionAdicional)) {
-                        $guia->aditional_message_error =  $result->comprobantes->comprobante->mensajes->mensaje[0]->informacionAdicional;
-                    }
-                    $guia->save();
-                    throw new RuntimeException($result->comprobantes->comprobante->mensajes->mensaje[0]->informacionAdicional);
-                } else {
-                    $guia->status = $result->estado;
-                    $guia->status_code = $result->comprobantes->comprobante->mensajes->mensaje->identificador;
-                    $guia->message_error = $result->comprobantes->comprobante->mensajes->mensaje->mensaje;
-                    if ($result->comprobantes->comprobante->mensajes->mensaje->informacionAdicional) {
-                        $guia->aditional_message_error =  $result->comprobantes->comprobante->mensajes->mensaje->informacionAdicional;
-                    }
-                    $guia->save();
-                    throw new RuntimeException($result->comprobantes->comprobante->mensajes->mensaje->informacionAdicional);
-                }
-            }
+            //     if ($resultAc->autorizaciones->autorizacion->estado == "EN PROCESO") {
+            //         $guia->status = $resultAc->autorizaciones->autorizacion->estado;
+            //         $guia->status_code = "400";
+            //         $guia->message_error = "Factura en proceso.";
+            //         $guia->aditional_message_error = "Reenviar mas tarde.";
+            //         $guia->save();
+            //         throw new RuntimeException("Factura en proceso.");
+            //     }
 
-            if ($result->estado == "RECIBIDA") {
-                //sleep(2);
-                $resultAc = $sri->soapRecuestAc($guia->autorizacion);
+            //     if ($resultAc->autorizaciones->autorizacion->estado == "NO AUTORIZADO") {
+            //         $guia->status = $resultAc->autorizaciones->autorizacion->estado;
+            //         $guia->status_code =  $resultAc->autorizaciones->autorizacion->mensajes->mensaje->identificador;
+            //         $guia->message_error = $resultAc->autorizaciones->autorizacion->mensajes->mensaje->mensaje;
+            //         $guia->aditional_message_error = $resultAc->autorizaciones->autorizacion->mensajes->mensaje->informacionAdicional;
+            //         $guia->save();
+            //         throw new RuntimeException($resultAc->autorizaciones->autorizacion->mensajes->mensaje->mensaje);
+            //     }
 
-                if ($resultAc->autorizaciones->autorizacion->estado == "EN PROCESO") {
-                    $guia->status = $resultAc->autorizaciones->autorizacion->estado;
-                    $guia->status_code = "400";
-                    $guia->message_error = "Factura en proceso.";
-                    $guia->aditional_message_error = "Reenviar mas tarde.";
-                    $guia->save();
-                    throw new RuntimeException("Factura en proceso.");
-                }
+            //     if ($resultAc->autorizaciones->autorizacion->estado == "AUTORIZADO") {
+            //         $guia->status = $resultAc->autorizaciones->autorizacion->estado;
+            //         $guia->status_code = "200";
+            //         $guia->message_error = "";
+            //         $guia->aditional_message_error = "";
+            //         $guia->autorizado = 1;
+            //         $guia->xml = $resultAc->autorizaciones->autorizacion->comprobante; //$this->parseToXml($resultAc->autorizaciones->autorizacion);
+            //         $guia->fecha_autorizacion = $resultAc->autorizaciones->autorizacion->fechaAutorizacion;
+            //         $guia->save();
 
-                if ($resultAc->autorizaciones->autorizacion->estado == "NO AUTORIZADO") {
-                    $guia->status = $resultAc->autorizaciones->autorizacion->estado;
-                    $guia->status_code =  $resultAc->autorizaciones->autorizacion->mensajes->mensaje->identificador;
-                    $guia->message_error = $resultAc->autorizaciones->autorizacion->mensajes->mensaje->mensaje;
-                    $guia->aditional_message_error = $resultAc->autorizaciones->autorizacion->mensajes->mensaje->informacionAdicional;
-                    $guia->save();
-                    throw new RuntimeException($resultAc->autorizaciones->autorizacion->mensajes->mensaje->mensaje);
-                }
-
-                if ($resultAc->autorizaciones->autorizacion->estado == "AUTORIZADO") {
-                    $guia->status = $resultAc->autorizaciones->autorizacion->estado;
-                    $guia->status_code = "200";
-                    $guia->message_error = "";
-                    $guia->aditional_message_error = "";
-                    $guia->autorizado = 1;
-                    $guia->xml = $resultAc->autorizaciones->autorizacion->comprobante; //$this->parseToXml($resultAc->autorizaciones->autorizacion);
-                    $guia->fecha_autorizacion = $resultAc->autorizaciones->autorizacion->fechaAutorizacion;
-                    $guia->save();
-
-                    //envio de email en hilo
-                    //$email = new InvoiceEmail($invoice->xml, $company, $invoice, 'guides');
-                    //$email->build();
-                    try {
-                        dispatch(new SenderEmail($guia, 'guides'));
-                    } catch (\Throwable $th) {
-                        //throw $th;
-                    }
-
-                    return $resultAc;
-                }
-
-
-                return $resultAc;
-            }
+            //         //envio de email en hilo
+            //         //$email = new InvoiceEmail($invoice->xml, $company, $invoice, 'guides');
+            //         //$email->build();
+            //         try {
+            //             dispatch(new SenderEmail($guia, 'guides'));
+            //         } catch (\Throwable $th) {
+            //             //throw $th;
+            //         }
+            //         return $resultAc;
+            //     }
+            //     return $resultAc;
+            // }
+            //dispatch(new \App\Jobs\RequestSri($guia, 'guides'));
+            RequestSri::dispatch($guia, 'guides');
+            //return true;
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -415,14 +427,22 @@ class GuiaRemisionController extends Controller
             $key = $sri->getAccessKey();
             $guia->xml = $xml;
             $guia->autorizacion = $key;
-            $guia->save();
 
-            $result = $this->requestToSri($sri, $guia);
+            //retornar error
+            $guia->status = "ENVIANDO";
+            $guia->status_code = null;
+            $guia->message_error = null;
+            $guia->aditional_message_error = null;
+            $guia->save();
+            //throw new RuntimeException("Los servicios del SRI no estan disponibles por el momento.");
+            //$this->dispachEvent($guia);
+            //$result = $this->requestToSri($sri, $guia);
+            $this->requestToSri($guia);
 
             return response([
                 'err' => false,
                 'data' => $guia,
-                'resultsri' => $result,
+                'resultsri' => "ok",
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([
