@@ -305,7 +305,6 @@ class PacVentasComparaController extends Controller
             // select de notas de credito
             $sqlnc=$this->generaQueryNC($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
         }
-
         if ($unidades=="true")
         {
             $sql='SELECT 	vendedor,

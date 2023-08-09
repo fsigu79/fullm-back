@@ -320,22 +320,22 @@
 
   <body>
     @foreach($order as $prod)
-      <div class="row text-center" style="font-size: 11px;">
-        <b>JCEV</b>
+      <div class="row text-center" style="font-size: 10px;">
+        <b>UNIVERSIDAD DE CUENCA</b>
       </div>
 
-      <div class="row text-center" style="font-size: 11px;">
+      <div class="row text-center" style="font-size: 9px;">
        <b>{{ $prod->producto}}</b>
       </div>
 
       <div class="row text-center">
           @if($prod->codigo != null)
-            <img src="data:image/png;base64,{{DNS1D::getBarcodePNG($prod->codigo, 'C39')}}" alt="barcode"  height="50" width="300"/>
+            <img src="data:image/png;base64,{{DNS1D::getBarcodePNG($prod->codigo, 'C39')}}" alt="barcode"  height="30" width="200"/>
           @endif
       </div>
 
-      <div class="row text-center" style="font-size: 12px;">
-        <b>{{ $prod->codigo}}</b>
+      <div class="row text-center" style="font-size: 8px;">
+        <b>{{ $prod->codigo}}ABCDE0012</b>
       </div>
 
 

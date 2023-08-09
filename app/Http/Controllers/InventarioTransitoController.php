@@ -76,7 +76,7 @@ class InventarioTransitoController extends Controller
                                 ]);
                         };
 
-                        $results=DB::select('SELECT inventario_transito_grabar_cabecera(?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                        $results=DB::select('SELECT inventario_transito_grabar_cabecera(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                                     [$input['id'],
                                     $input['documento'],
                                     $input['numero'],

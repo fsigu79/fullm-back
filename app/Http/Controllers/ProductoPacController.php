@@ -78,10 +78,18 @@ class ProductoPacController extends Controller
         $sql='SELECT codprod01 as codigo,desprod01 as producto from jcev.maepro where codprod01=?';
         $order = DB::connection('mysqlpac')->select($sql,[$id]);
 
+        /*//para definir un papel de tamaño de 10 cm x 20 cm
+        1 inch = 72 point
+        1 inch = 2.54 cm
+        10 cm = 10/2.54*72 = 283.464566929
+        20 cm = 20/2.54*72 = 566.929133858*/
 
         $customPaper = array(0,0,567.00,283.80);
+        //$pdf = PDF::loadView('label',compact('order')
+        //)->setPaper([0, 0, 141.73,283.47 ], 'landscape');
+        //tamaño 7cm * 3.1
         $pdf = PDF::loadView('label',compact('order')
-        )->setPaper([0, 0, 141.73,283.47 ], 'landscape');
+        )->setPaper([0, 0, 87.87,198.43 ], 'landscape');
 
         return $pdf->stream('label1.pdf');
     }

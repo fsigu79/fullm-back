@@ -141,7 +141,7 @@ private $sqlg="select g.numero_guia_remision AS numero,
             fecha_factura,numero_pedido,fecha_pedido,
             usuario, transportista_id, fecha_asignacion, esasignado, fecha_inicio_traslado_transportista,
             inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
-            g.esactivo,t.razon_social,t.chofer
+            g.esactivo,t.nombres as razon_social,t.chofer
             FROM guiaspac g
                 left join transportistas t on t.user_id=g.transportista_id
             WHERE fecha_emision>=? and fecha_emision<=?";
@@ -155,7 +155,7 @@ private $sqlg="select g.numero_guia_remision AS numero,
             fecha_factura,numero_pedido,fecha_pedido,
             usuario, transportista_id, fecha_asignacion, esasignado, fecha_inicio_traslado_transportista,
             inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
-            g.esactivo,t.razon_social,t.chofer
+            g.esactivo,t.nombres as razon_social,t.chofer
             FROM guiaspac g
                 left join transportistas t on t.user_id=g.transportista_id
             WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=?";

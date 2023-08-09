@@ -87,8 +87,160 @@ class BalancesController extends Controller
                 order by cod";
 
 
+     private $sqlcompara="select distinct  p.cod,p.des,p.pad,p.mov,coalesce(s.r_ene,0) as r_ene,
+                    coalesce(s.a_ene,0) as a_ene,
+                    coalesce(s.r_ene,0) as r_ene,
+                    coalesce(s.a_feb,0) as a_feb,
+                    coalesce(s.r_feb,0) as r_feb,
+                    coalesce(s.a_mar,0) as a_mar,
+                    coalesce(s.r_mar,0) as r_mar,
+                    coalesce(s.a_abr,0) as a_abr,
+                    coalesce(s.r_abr,0) as r_abr,
+                    coalesce(s.a_may,0) as a_may,
+                    coalesce(s.r_may,0) as r_may,
+                    coalesce(s.a_jun,0) as a_jun,
+                    coalesce(s.r_jun,0) as r_jun,
+                    coalesce(s.a_jul,0) as a_jul,
+                    coalesce(s.r_jul,0) as r_jul,
+                    coalesce(s.a_ago,0) as a_ago,
+                    coalesce(s.r_ago,0) as r_ago,
+                    coalesce(s.a_sep,0) as a_sep,
+                    coalesce(s.r_sep,0) as r_sep,
+                    coalesce(s.a_oct,0) as a_oct,
+                    coalesce(s.r_oct,0) as r_oct,
+                    coalesce(s.a_nov,0) as a_nov,
+                    coalesce(s.r_nov,0) as r_nov,
+                    coalesce(s.a_dic,0) as a_dic,
+                    coalesce(s.r_dic,0) as r_dic,
+                    coalesce(s.a_tot,0) as a_tot,
+                    coalesce(s.r_tot,0) as r_tot
+            from(
+                select codcate as cod,desccate as des,codcatep as pad,0 as mov
+                from jcev.categorias
+                where tipocate='01' and codcate!='0' and (codcate like '4%' or  codcate like '5%' )
+                union
+                select ctamaecon,nomcta,catctamaecon,1 as mov
+                from jcev.maecon where (ctamaecon like '4%' or  ctamaecon like '5%' ) ) as p
+            left join
 
-   private $sqlcompara="select distinct  p.cod,p.des,p.pad,p.mov,coalesce(s.anterior,0) as anterior,
+                (select t1.ctamaecon,nomcta,
+                            (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=1 and year(fechahis)='xano' AND dethis  NOT LIKE 'CIERRE DE EJERCICIO%'
+                            ) as r_ene,
+
+                            (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=1 and year(fechahis)='yanoa' AND dethis  NOT LIKE 'CIERRE DE EJERCICIO%'
+                            ) as a_ene,
+
+
+                            (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=2 and year(fechahis)='xano'
+                            ) as r_feb,
+
+                            (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=2 and year(fechahis)='yanoa'
+                            ) as a_feb,
+
+                            (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=3 and year(fechahis)='xano') as r_mar,
+
+                             (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=3 and year(fechahis)='yanoa') as a_mar,
+
+                            (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=4 and year(fechahis)='xano') as r_abr,
+
+                             (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=4 and year(fechahis)='yanoa') as a_abr,
+
+                             (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=5 and year(fechahis)='xano') as r_may,
+
+                             (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=5 and year(fechahis)='yanoa') as a_may,
+
+                            (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=6 and year(fechahis)='xano') as r_jun,
+
+                             (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=6 and year(fechahis)='yanoa') as a_jun,
+
+                            (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=7 and year(fechahis)='xano') as r_jul,
+
+                              (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=7 and year(fechahis)='yanoa') as a_jul,
+
+
+                            (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=8 and year(fechahis)='xano') as r_ago,
+
+                             (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=8 and year(fechahis)='yanoa') as a_ago,
+
+                            (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=9 and year(fechahis)='xano') as r_sep,
+
+                             (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=9 and year(fechahis)='yanoa') as a_sep,
+
+                            (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=10 and year(fechahis)='xano') as r_oct,
+
+                             (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=10 and year(fechahis)='yanoa') as a_oct,
+
+                            (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=11 and year(fechahis)='xano') as r_nov,
+
+                             (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=11 and year(fechahis)='yanoa') as a_nov,
+
+                            (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=12 and year(fechahis)='xano') as r_dic,
+
+                             (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                             FROM jcev.movcon
+                             WHERE ctahiscon=t1.ctamaecon and MONTH(fechahis)=12 and year(fechahis)='yanoa') as a_dic,
+
+                            (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                            FROM jcev.movcon
+                            WHERE ctahiscon=t1.ctamaecon and year(fechahis)='xano'  AND dethis  NOT LIKE 'CIERRE DE EJERCICIO%') as r_tot,
+                            (select ifnull(sum(if(SUBSTR(t1.ctamaecon,1,1)='4',if(db1cr2his='2',valorhis,valorhis*-1),if(db1cr2his='2',valorhis*-1,valorhis))),0)
+                            FROM jcev.movcon
+                            WHERE ctahiscon=t1.ctamaecon and year(fechahis)='yanoa'  AND dethis  NOT LIKE 'CIERRE DE EJERCICIO%') as a_tot
+
+                from jcev.maecon t1
+                where (ctamaecon like '4%' or  ctamaecon like '5%' )
+                ) as s
+                on p.cod=s.ctamaecon
+                order by cod";
+
+
+   private $sqlcompara1="select distinct  p.cod,p.des,p.pad,p.mov,coalesce(s.anterior,0) as anterior,
                     coalesce(s.actual,0) as actual
             from(
                 select codcate as cod,desccate as des,codcatep as pad,0 as mov
@@ -194,6 +346,68 @@ class BalancesController extends Controller
         $mesfin=$request['mfin'];
         $aini=$request['aini'];
         $afin=$request['afin'];
+
+        $sql=  str_replace('xano',$afin,$this->sqlcompara);
+        $sql=  str_replace('yanoa',$aini,$sql);
+        //$sql=  str_replace('xmes',$mesfin,$sql);
+        //$sql=  str_replace('xano',$afin,$sql);
+
+        $list = DB::connection('mysqlpac')->select($sql);
+        //return $this->getOk($list);
+        //elimina datos de la tabla tmporal
+        $elimina = DB::select("delete from tmp_balhor_pyg_compara");
+
+        foreach ($list as $detalle) {
+            $results=DB::select('SELECT balance_pyg_compara_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',[
+                            $detalle->cod,
+                            $detalle->des,
+                            $detalle->pad,
+                            $detalle->mov,
+                            $detalle->a_ene,
+                            $detalle->r_ene,
+                            $detalle->a_feb,
+                            $detalle->r_feb,
+                            $detalle->a_mar,
+                            $detalle->r_mar,
+                            $detalle->a_abr,
+                            $detalle->r_abr,
+                            $detalle->a_may,
+                            $detalle->r_may,
+                            $detalle->a_jun,
+                            $detalle->r_jun,
+                            $detalle->a_jul,
+                            $detalle->r_jul,
+                            $detalle->a_ago,
+                            $detalle->r_ago,
+                            $detalle->a_sep,
+                            $detalle->r_sep,
+                            $detalle->a_oct,
+                            $detalle->r_oct,
+                            $detalle->a_nov,
+                            $detalle->r_nov,
+                            $detalle->a_dic,
+                            $detalle->r_dic,
+                            $detalle->a_tot,
+                            $detalle->r_tot
+                            ]);
+
+        }
+        //return $this->getOk($list);
+        $balance=DB::select('SELECT * from balance_pyg_compara_reporte('.$aini.')');
+        return $this->getOk($balance);
+    }
+
+
+
+     public function balanceByGComparaAnt(Request $request)
+    {
+        $input = $request->all();
+        $inicio=$request['finicio'].' 00:00:00';
+        $fin=$request['ffin'].' 23:59:00';
+        $mesini=$request['mini'];
+        $mesfin=$request['mfin'];
+        $aini=$request['aini'];
+        $afin=$request['afin'];
         $anio='2020';
         $sql=  str_replace('xmesa',$mesini,$this->sqlcompara);
         $sql=  str_replace('xanoa',$aini,$sql);
@@ -219,6 +433,8 @@ class BalancesController extends Controller
         $balance=DB::select('SELECT * from balance_pyg_compara_reporte('.$anio.')');
         return $this->getOk($balance);
     }
+
+
 
     public function presupuestoPacCompara(Request $request)
     {

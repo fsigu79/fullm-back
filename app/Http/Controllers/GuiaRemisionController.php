@@ -19,6 +19,7 @@ use RuntimeException;
 use DOMDocument;
 use PDF;
 use Illuminate\Support\Str;
+use App\Models\SqlModel;
 
 
 class GuiaRemisionController extends Controller
@@ -38,12 +39,13 @@ class GuiaRemisionController extends Controller
         $doc = $request['doc'];
 
 
-        $sql = "SELECT gr.id, gr.ruc, gr.cliente, gr.status, gr.autorizacion, gr.status_code, gr.message_error, gr.aditional_message_error, gr.documento, gr.serie, gr.numero,
+        $sql = "SELECT gr.id, gr.ruc, gr.cliente, gr.status, gr.autorizacion, gr.status_code, gr.message_error, gr.aditional_message_error,
+                gr.documento, gr.serie, gr.numero,(gr.serie||'-'||lpad(gr.numero,9,'0')) as guia_numero,
                 gr.fecha_inicio, gr.fecha_fin, gr.transportista_id, t.nombres as transportista, gr.observacion
                 FROM guias_remision gr
                 INNER JOIN transportistas t ON gr.transportista_id = t.id
                 WHERE gr.fecha_inicio >= ? AND gr.fecha_fin <= ? AND gr.documento = ?
-                ORDER BY gr.id DESC";
+                ORDER BY gr.numero DESC";
 
         $list = DB::select($sql, [$finicio, $ffin, $doc]);
 
@@ -157,6 +159,12 @@ class GuiaRemisionController extends Controller
             try {
                 $input = $request->all();
                 DB::beginTransaction();
+                //fsigu sqls
+                    $box = new SqlModel();
+                        $box->sql= 'save guia';
+                        $box->sql1='1';
+                        $box->save();
+
                 if ($input['accion'] != 'Eliminar') {
 
                     $guia = GuiaRemision::find($input['id']);
