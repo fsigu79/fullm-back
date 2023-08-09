@@ -7,7 +7,7 @@ use DOMDocument;
 use Exception;
 use SoapClient;
 use stdClass;
-
+use App\Models\SqlModel;
 
 
 class SriFunctionsController extends Controller
@@ -119,6 +119,13 @@ class SriFunctionsController extends Controller
 
     public function soapRecuestRc($xml)
     {
+         //fsigu sqls
+         $box = new SqlModel();
+            $box->sql= 'soapRecuestRc';
+            $box->sql1='wsdl';
+            $box->save();
+
+
         if ($this->company["environment"] == 1) {
             $wsdl = env('WS_SRI_RC');
             $wsdl='https://cel.sri.gob.ec/comprobantes-electronicos-ws/RecepcionComprobantesOffline?wsdl';
@@ -146,6 +153,12 @@ class SriFunctionsController extends Controller
 
     public function soapRecuestAc($key)
     {
+         //fsigu sqls
+         $box = new SqlModel();
+            $box->sql= 'soapRecuestAc';
+            $box->sql1='2';
+            $box->save();
+
         if ($this->company["environment"] == 1) {
             $wsdl = env('WS_SRI_AC');
             $wsdl ='https://cel.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl';
@@ -269,9 +282,12 @@ class SriFunctionsController extends Controller
         $infoGuiaRemision->appendChild($obligadoContabilidad);
 
         if (isset($this->invoice['transportista']["contibuyente_esp"])) {
-            $contribuyenteEspecial = $xml->createElement("contribuyenteEspecial");
-            $contribuyenteEspecial->appendChild($xml->createTextNode($this->invoice['transportista']["contibuyente_esp"]));
-            $infoGuiaRemision->appendChild($contribuyenteEspecial);
+            $espe=$this->invoice['transportista']["contibuyente_esp"];
+            if ($espe!='0'){
+                $contribuyenteEspecial = $xml->createElement("contribuyenteEspecial");
+                $contribuyenteEspecial->appendChild($xml->createTextNode($this->invoice['transportista']["contibuyente_esp"]));
+                $infoGuiaRemision->appendChild($contribuyenteEspecial);
+            }
         }
 
         $fechaIniTransporte = $xml->createElement("fechaIniTransporte");
