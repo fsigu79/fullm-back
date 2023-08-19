@@ -208,7 +208,7 @@ private $sqlg="select g.numero_guia_remision AS numero,
                     inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
                     esactivo
 	        FROM guiaspac
-            WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=? and esentregado=0
+            WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=? and esfirmado=0
             ORDER BY fecha_emision asc";
 
         $list = DB::select($sql,[$inicio,$fin,$idtran]);
@@ -294,6 +294,40 @@ private $sqlg="select g.numero_guia_remision AS numero,
 
                 where numero_guia_remision=?";
             $order = DB::update($sql,[$guia]);
+
+
+            return $this->updateOk($input);
+
+            if ($movimiento) {
+                return $this->updateOk(null);
+            } else {
+                return $this->updateErr(null);
+            }
+        } else {
+            return $this->updateErrCustom($validation->messages(), 'Datos inválidos');
+        }
+    }
+
+    public function actualizaFirma(Request $request)
+    {
+        $validation = Validator::make(
+            $request->all(),
+            [
+                'guia_id' => 'required',
+            ],
+            [
+                'guia_id.required' => 'El codigo del guia_id es requerido.',
+            ]
+        );
+        if (!$validation->fails()) {
+
+            $input = $request->all();
+            $idguia=$input['guia_id'];
+            $foto_firma=$input['foto_firma'];
+
+            $sql="update guiaspac set foto_entrega1=?,esfirmado=1
+                    where id=?";
+            $order = DB::update($sql,[$foto_firma,$idguia]);
 
 
             return $this->updateOk($input);

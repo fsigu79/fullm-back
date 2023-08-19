@@ -32,6 +32,8 @@ use App\Http\Controllers\CuposUsosController;
 use App\Http\Controllers\PACReposicionController;
 use App\Http\Controllers\PacGuiasEntregaController;
 use App\Http\Controllers\RetencionController;
+use App\Http\Controllers\PresupuestoProductosController;
+
 use App\Http\Controllers\CredimportVentaMensualController;
 use App\Http\Controllers\CredimportSeguroConfianzasController;
 use App\Http\Controllers\CredimportCuposUsosController;
@@ -240,6 +242,8 @@ Route::group([
     Route::get('vtacompro', [PacVentasComparaController::class, 'ventamesproducto']);
     Route::get('vtacommar', [PacVentasComparaController::class, 'ventamesmarca']);
 
+    Route::get('vtacomcliyear', [PacVentasComparaController::class, 'ventamesclienteYear']);
+
     Route::get('searchproddupac', [ProductoPacController::class, 'searchProductsPac']);
     Route::get('prodbyidpac/{id}', [ProductoPacController::class, 'productIdPac']);
 
@@ -383,6 +387,7 @@ Route::group([
     Route::get('guiaslisttrans', [PacGuiasEntregaController::class, 'guiasListTransportista']);
     Route::get('guiaslisttranspen', [PacGuiasEntregaController::class, 'guiasListTransportistaPendientes']);
     Route::get('guiaslisttransfin', [PacGuiasEntregaController::class, 'guiasListTransportistaFinalizado']);
+    Route::put('firmaguia', [PacGuiasEntregaController::class, 'actualizaFirma']);
     Route::post('add-image', [PacGuiasEntregaController::class, 'addImage']);
     Route::post('send-mail', [PacGuiasEntregaController::class, 'email_send_guias']);
 });
@@ -399,6 +404,17 @@ Route::group([
     Route::get('catschasis', [ConsultaExtPacController::class, 'catalogoSeriesByChasis']);
     Route::get('protodomoto', [ConsultaExtPacController::class, 'productosTodomoto']);
     Route::get('prolist', [ConsultaExtPacController::class, 'productosJcevList']);
+    Route::get('facturapac', [ConsultaExtPacController::class, 'factuaPorNumero']);
 
 });
 
+
+
+Route::group([
+    'prefix' => 'prespac',
+], function () {
+
+    Route::get('getanio', [PresupuestoProductosController::class, 'getPresupuestoByAnio']);
+    Route::post('create', [PresupuestoProductosController::class, 'presupuestoCreate']);
+
+});
