@@ -5,9 +5,10 @@
     "keywords": ["framework", "laravel"],
     "license": "MIT",
     "require": {
-        "php": "^7.3|^8.0",
+        "php": "^8.0",
         "barryvdh/laravel-dompdf": "^0.9.0",
-        "fruitcake/laravel-cors": "^2.0",
+        "beyondcode/laravel-websockets": "^1.14",
+        "fruitcake/laravel-cors": "^3.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^8.54",
         "laravel/sanctum": "^2.11",
@@ -15,6 +16,8 @@
         "maatwebsite/excel": "^3.0.1",
         "milon/barcode": "^8.0",
         "nesbot/carbon": "^2.59",
+        "predis/predis": "^2.2",
+        "pusher/pusher-php-server": "^7.2",
         "tymon/jwt-auth": "^1.0"
     },
     "require-dev": {
