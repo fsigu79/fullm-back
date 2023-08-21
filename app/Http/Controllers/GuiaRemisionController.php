@@ -160,10 +160,10 @@ class GuiaRemisionController extends Controller
                 $input = $request->all();
                 DB::beginTransaction();
                 //fsigu sqls
-                    $box = new SqlModel();
+                    /*$box = new SqlModel();
                         $box->sql= 'save guia';
                         $box->sql1='1';
-                        $box->save();
+                        $box->save();*/
 
                 if ($input['accion'] != 'Eliminar') {
 
@@ -213,10 +213,14 @@ class GuiaRemisionController extends Controller
                     $key = $sri->getAccessKey();
 
                     $guia->xml = $xml;
+                    //$guia->status = 'PENDIENTE';
                     $guia->autorizacion = $key;
                     $guia->save();
 
                     DB::commit();
+                    $guianew=GuiaRemision::with(['detalle', 'transportista'])->find($guia->id);
+                    $this->requestToSri($guianew);
+
                     //return $this->insertOk($guia);
                 } else {
                     //Eliminar
@@ -226,6 +230,7 @@ class GuiaRemisionController extends Controller
                 return $this->insertErrCustom($input, $e->getMessage());
             }
 
+            /*
             try {
                 //$result = $this->requestToSri($sri, $guia);
                 $this->requestToSri($sri);
@@ -238,6 +243,7 @@ class GuiaRemisionController extends Controller
             } catch (\Throwable $th) {
                 return $this->insertErrCustom($input, $th->getMessage());
             }
+            */
         } else {
             return $this->insertErrCustom($validation->getMessageBag(), 'Datos inválidos');
         }
