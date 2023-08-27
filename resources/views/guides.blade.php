@@ -87,7 +87,9 @@
                     <tbody>
                         <tr>
                             <td>Fecha de Autorización:</td>
-                            <td>{{ \Carbon\Carbon::parse($invoice->fecha_autorizacion)->format('d/m/Y H:i:s') }}</td>
+                            @if (isset($invoice->fecha_autorizacion))
+                                <td>{{ \Carbon\Carbon::parse($invoice->fecha_autorizacion)->format('d/m/Y H:i:s') }}</td>
+                            @endif
                         </tr>
                         <tr>
                             <td>Ambiente:</td>
