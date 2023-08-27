@@ -160,10 +160,10 @@ class GuiaRemisionController extends Controller
                 $input = $request->all();
                 DB::beginTransaction();
                 //fsigu sqls
-                    $box = new SqlModel();
-                        $box->sql= 'save guia';
-                        $box->sql1='1';
-                        $box->save();
+                $box = new SqlModel();
+                $box->sql = 'save guia';
+                $box->sql1 = '1';
+                $box->save();
 
                 if ($input['accion'] != 'Eliminar') {
 
@@ -173,7 +173,6 @@ class GuiaRemisionController extends Controller
                         $numero = DB::select("SELECT numero + 1 AS numero FROM documentos WHERE codigo = ? AND modulo = 'Ventas'", [
                             $input['documento']
                         ]);
-
 
                         $guia = new GuiaRemision($input);
                         $guia->numero = $numero[0]->numero;

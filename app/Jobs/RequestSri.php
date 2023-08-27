@@ -62,16 +62,16 @@ class RequestSri implements ShouldQueue
             }
 
             // return $result;
-            if ($result->estado == "DEVUELTA") {
-                $this->invoice->status = "AUTORIZADO";
-                $this->invoice->status_code = "200";
-                $this->invoice->message_error = "";
-                $this->invoice->aditional_message_error = "";
-                $this->invoice->autorizado = 1;
-                $this->invoice->save();
-                $this->dispachEvent($this->invoice);
-                return;
-            }
+            // if ($result->estado == "DEVUELTA") {
+            //     $this->invoice->status = "AUTORIZADO";
+            //     $this->invoice->status_code = "200";
+            //     $this->invoice->message_error = "";
+            //     $this->invoice->aditional_message_error = "";
+            //     $this->invoice->autorizado = 1;
+            //     $this->invoice->save();
+            //     $this->dispachEvent($this->invoice);
+            //     return;
+            // }
 
             if ($result->estado == "DEVUELTA") {
                 if (
