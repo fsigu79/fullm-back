@@ -160,17 +160,10 @@ class GuiaRemisionController extends Controller
                 $input = $request->all();
                 DB::beginTransaction();
                 //fsigu sqls
-<<<<<<< HEAD
-                $box = new SqlModel();
-                $box->sql = 'save guia';
-                $box->sql1 = '1';
-                $box->save();
-=======
                     /*$box = new SqlModel();
                         $box->sql= 'save guia';
                         $box->sql1='1';
                         $box->save();*/
->>>>>>> bb88c4ea493bea895b151957a6aa3a736ec1e0b3
 
                 if ($input['accion'] != 'Eliminar') {
 
