@@ -142,6 +142,19 @@ class RequestSri implements ShouldQueue
                     return;
                 }
 
+                if ($resultAc->autorizaciones->autorizacion->estado == "RECHAZADA") {
+                    $this->invoice->status = $resultAc->autorizaciones->autorizacion->estado;
+                    $this->invoice->status_code =  $resultAc->autorizaciones->autorizacion->mensajes->mensaje->identificador;
+                    $this->invoice->message_error = $resultAc->autorizaciones->autorizacion->mensajes->mensaje->mensaje;
+                    if(isset($resultAc->autorizaciones->autorizacion->mensajes->mensaje->informacionAdicional)){
+                        $this->invoice->aditional_message_error = $resultAc->autorizaciones->autorizacion->mensajes->mensaje->informacionAdicional;
+                    }
+                    $this->invoice->save();
+                    //throw new RuntimeException($resultAc->autorizaciones->autorizacion->mensajes->mensaje->mensaje);
+                    $this->dispachEvent($this->invoice);
+                    return;
+                }
+
                 if ($resultAc->autorizaciones->autorizacion->estado == "NO AUTORIZADO") {
                     $this->invoice->status = $resultAc->autorizaciones->autorizacion->estado;
                     $this->invoice->status_code =  $resultAc->autorizaciones->autorizacion->mensajes->mensaje->identificador;
