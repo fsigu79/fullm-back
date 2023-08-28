@@ -217,7 +217,7 @@ class CatalogoController extends Controller
     public function listProductosCodigo()
     {
         //--productos menos los de categoria I=importaciones,G=gastos,9=servicios
-        $query=  "select codprod01 as codigo,concat(codprod01,'-',desprod01) as producto from jcev.maepro where tipprod01='S' AND statuspro01='S' and catprod01 not in('I','G','9') order by desprod01";
+        $query=  "select codprod01 as codigo,concat(codprod01,'-',desprod01) as producto,desprod01 from jcev.maepro where tipprod01='S' AND statuspro01='S' and catprod01 not in('I','G','9') order by desprod01";
         //$list = DB::select($sql,[$request['cliente_id']]);
         $list = DB::connection('mysqlpac')->select($query);
 
