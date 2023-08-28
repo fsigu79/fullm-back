@@ -243,6 +243,9 @@ Route::group([
     Route::get('vtacommar', [PacVentasComparaController::class, 'ventamesmarca']);
 
     Route::get('vtacomcliyear', [PacVentasComparaController::class, 'ventamesclienteYear']);
+    Route::get('vtacomvenyear', [PacVentasComparaController::class, 'ventamesvendedorYear']);
+    Route::get('vtacomproyear', [PacVentasComparaController::class, 'ventamesproductoYear']);
+    Route::get('vtacommaryear', [PacVentasComparaController::class, 'ventamesmarcaYear']);
 
     Route::get('searchproddupac', [ProductoPacController::class, 'searchProductsPac']);
     Route::get('prodbyidpac/{id}', [ProductoPacController::class, 'productIdPac']);

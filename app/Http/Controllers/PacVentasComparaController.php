@@ -281,27 +281,29 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
                 $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
                 $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
                 $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatriz('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatrizCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
 
         }
         else
         {
             // select de ventas
-            $sql=$this->generaQueryVentas($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+            $sql=$this->generaQueryVentasCom($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
             // select de notas de credito
-            $sqlnc=$this->generaQueryNC($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+            $sqlnc=$this->generaQueryNCCom($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
         }
 
         if ($unidades=="true")
         {
             //return $this->getOk('trueeeee');
-            $sql='SELECT codigoclientefs AS codigo,
+            $sql='SELECT codigocliente AS codigo,
 				                        cliente AS articulo,
 				                        cate AS categoria,ciudad,
                                         ROUND(SUM(IF(YEAR(fecha) = '.($anoanterior-1).', cantidad, 0)),2) AS anterior1,
 					                    ROUND(SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)),2) AS anterior,
 					                    ROUND(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)),2) AS actual,
-					                    ROUND(ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)),0)*100,2) as incremento
+					                    ROUND((ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)),0)-1)*100,2) as incremento,
+                                        ROUND((ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)) /SUM(IF(YEAR(fecha) = '.($anoanterior-1).', cantidad, 0)),0)-1)*100,2) as incrementoa,
+                                        ROUND((ifnull(SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)) /SUM(IF(YEAR(fecha) = '.($anoanterior-1).', cantidad, 0)),0)-1)*100,2) as incrementoa1
                                   FROM
                                  (  '.$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
 					            codigo, articulo,
@@ -479,6 +481,128 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
 
         return $this->getOk($list);
 
+    }
+
+    public function ventamesvendedorYear(Request $request)
+    {
+        $input = $request->all();
+        $bodega = $request['bodega_id'];
+        $bodega_filtro='';
+        $inicio=$request['finicio'].' 00:00:00';
+        $fin=$request['ffin'].' 23:59:00';
+        $fecha=Carbon::parse($inicio);
+        $anoactual=($fecha->year);
+        $anoanterior=($fecha->year)-1;
+        $fecha1=Carbon::parse($fin);
+        $inicioa=Carbon::create(($fecha->year)-1,$fecha->month, $fecha->day, 0, 0, 0);
+        $inicioa=$inicioa->format('Y-m-d').' 00:00:00';
+        $fina=Carbon::create(($fecha1->year)-1,$fecha1->month, $fecha1->day, 23,59, 0);
+        $fina=$fina->format('Y-m-d').' 23:59:00';
+
+        $inicioa1=Carbon::create(($fecha->year)-2,$fecha->month, $fecha->day, 0, 0, 0);
+        $inicioa1=$inicioa1->format('Y-m-d').' 00:00:00';
+        $fina1=Carbon::create(($fecha1->year)-2,$fecha1->month, $fecha1->day, 23,59, 0);
+        $fina1=$fina1->format('Y-m-d').' 23:59:00';
+
+        $marca=isset($request['marca_id']) ?$request['marca_id']:'0';
+        $producto=isset($request['producto_id']) ?$request['producto_id']:'0';
+        $vendedor=isset($request['vendedor_id']) ?$request['vendedor_id']:'0';
+        $cliente=isset($request['cliente_id']) ?$request['cliente_id']:'0';
+        $unidades=isset($request['unidades']) ?$request['unidades']:false;
+        $sql='';
+        $sqlnc='';
+
+
+
+        if ($bodega=='todas'){
+                // select de ventas
+                $sql=$this->generaQueryVentasCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                // select de notas de credito
+                $sqlnc=$this->generaQueryNCCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatrizCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+
+        }
+        else
+        {
+            // select de ventas
+            $sql=$this->generaQueryVentasCom($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+            // select de notas de credito
+            $sqlnc=$this->generaQueryNCCom($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+        }
+        if ($unidades=="true")
+        {
+            $sql='SELECT 	vendedor,
+                                        ROUND(SUM(IF(YEAR(fecha) = '.($anoanterior-1).', cantidad, 0)),2) AS anterior1,
+					                    ROUND(SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)),2) AS anterior,
+					                    ROUND(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)),2) AS actual,
+					                    ROUND((ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)),0)-1)*100,2) as incremento,
+                                        ROUND((ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)) /SUM(IF(YEAR(fecha) = '.($anoanterior-1).', cantidad, 0)),0)-1)*100,2) as incrementoa,
+                                        ROUND((ifnull(SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)) /SUM(IF(YEAR(fecha) = '.($anoanterior-1).', cantidad, 0)),0)-1)*100,2) as incrementoa1
+                            FROM
+                                 (  '.$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
+					            codigo, articulo,
+	                            tipodoc,documento,fecha,
+	                            cantidad,costotal,
+	                            vtatotal,desproducto,
+	                            descliente,
+	                            IF(codigo="-",net,vtaNeta) AS vtaNeta,
+	                            marcod,marca,
+					            vencod,vendedor,
+					            catcod,cate,ciudad
+                        FROM ( '.$sqlnc.') a'.') b
+                                      GROUP BY b.vendedor
+                                      ORDER BY SUM(b.cantidad) DESC';
+        }
+        else
+        {
+            $sql='SELECT 	vendedor,
+					                ROUND(SUM(IF(YEAR(fecha) = '.($anoanterior-1).', vtaneta, 0)),2) AS anterior1,
+					                ROUND(SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0)),2) AS anterior,
+					                ROUND(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)),2) AS actual,
+                                    ROUND((ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0)),0)-1)*100,2) as incremento,
+                                    ROUND((ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)) /SUM(IF(YEAR(fecha) = '.($anoanterior-1).', vtaneta, 0)),0)-1)*100,2) as incrementoa,
+                                    ROUND((ifnull(SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0)) /SUM(IF(YEAR(fecha) = '.($anoanterior-1).', vtaneta, 0)),0)-1)*100,2) as incrementoa1
+                            FROM
+                                 (  '.$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
+					            codigo, articulo,
+	                            tipodoc,documento,fecha,
+	                            cantidad,costotal,
+	                            vtatotal,desproducto,
+	                            descliente,
+	                            IF(codigo="-",net,vtaNeta) AS vtaNeta,
+	                            marcod,marca,
+					            vencod,vendedor,
+					            catcod,cate,ciudad
+                        FROM ( '.$sqlnc.') a'.') b
+                                      GROUP BY b.vendedor
+                                      ORDER BY SUM(b.vtaneta) DESC';
+        }
+
+
+
+        //return $this->getOk($sql);
+
+        //$list = DB::select($sql,[$request['cliente_id']]);
+        $list = DB::connection('mysqlpac')->select($sql);
+
+        return $this->getOk($list);
     }
 
 
@@ -711,6 +835,133 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
         return $this->getOk($list);
     }
 
+    public function ventamesproductoYear(Request $request)
+    {
+        $input = $request->all();
+        $bodega = $request['bodega_id'];
+        $bodega_filtro='';
+        $inicio=$request['finicio'].' 00:00:00';
+        $fin=$request['ffin'].' 23:59:00';
+        $fecha=Carbon::parse($inicio);
+        $anoactual=($fecha->year);
+        $anoanterior=($fecha->year)-1;
+        $fecha1=Carbon::parse($fin);
+        $inicioa=Carbon::create(($fecha->year)-1,$fecha->month, $fecha->day, 0, 0, 0);
+        $inicioa=$inicioa->format('Y-m-d').' 00:00:00';
+        $fina=Carbon::create(($fecha1->year)-1,$fecha1->month, $fecha1->day, 23,59, 0);
+        $fina=$fina->format('Y-m-d').' 23:59:00';
+        $inicioa1=Carbon::create(($fecha->year)-2,$fecha->month, $fecha->day, 0, 0, 0);
+        $inicioa1=$inicioa1->format('Y-m-d').' 00:00:00';
+        $fina1=Carbon::create(($fecha1->year)-2,$fecha1->month, $fecha1->day, 23,59, 0);
+        $fina1=$fina1->format('Y-m-d').' 23:59:00';
+
+        $marca=isset($request['marca_id']) ?$request['marca_id']:'0';
+        $producto=isset($request['producto_id']) ?$request['producto_id']:'0';
+        $vendedor=isset($request['vendedor_id']) ?$request['vendedor_id']:'0';
+        $cliente=isset($request['cliente_id']) ?$request['cliente_id']:'0';
+        $unidades=isset($request['unidades']) ?$request['unidades']:false;
+        $sql='';
+        $sqlnc='';
+
+
+
+        if ($bodega=='todas'){
+                // select de ventas
+                $sql=$this->generaQueryVentasCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                // select de notas de credito
+                $sqlnc=$this->generaQueryNCCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+
+        }
+        else
+        {
+            // select de ventas
+            $sql=$this->generaQueryVentasCom($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+            // select de notas de credito
+            $sqlnc=$this->generaQueryNCCom($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+        }
+
+        if ($unidades=="true")
+        {
+            $sql='SELECT 	codigo,
+                                articulo,
+                                marca,
+                                    ROUND(SUM(IF(YEAR(fecha) = '.($anoanterior-1).', cantidad, 0)),2) AS anterior1,
+					                ROUND(SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)),2) AS anterior,
+					                ROUND(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)),2) AS actual,
+					                ROUND((ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)),0)-1)*100,2) as incremento,
+                                    ROUND((ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)) /SUM(IF(YEAR(fecha) = '.($anoanterior-1).', cantidad, 0)),0)-1)*100,2) as incrementoa,
+                                    ROUND((ifnull(SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)) /SUM(IF(YEAR(fecha) = '.($anoanterior-1).', cantidad, 0)),0)-1)*100,2) as incrementoa1
+                            FROM
+                                 (  '.$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
+					            codigo, articulo,
+	                            tipodoc,documento,fecha,
+	                            cantidad,costotal,
+	                            vtatotal,desproducto,
+	                            descliente,
+	                            IF(codigo="-",net,vtaNeta) AS vtaNeta,
+	                            marcod,marca,
+					            vencod,vendedor,
+					            catcod,cate,ciudad
+                        FROM ( '.$sqlnc.') a'.') b
+                                      GROUP BY b.codigo,b.articulo,b.marca
+                                      ORDER BY SUM(b.cantidad) DESC';
+        }
+        else
+        {
+            $sql='SELECT 	codigo,
+                                articulo,
+                                marca,
+                                ROUND(SUM(IF(YEAR(fecha) = '.($anoanterior-1).', vtaneta, 0)),2) AS anterior1,
+					            ROUND(SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0)),2) AS anterior,
+					            ROUND(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)),2) AS actual,
+                                ROUND((ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0)),0)-1)*100,2) as incremento,
+                                ROUND((ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)) /SUM(IF(YEAR(fecha) = '.($anoanterior-1).', vtaneta, 0)),0)-1)*100,2) as incrementoa,
+                                ROUND((ifnull(SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0)) /SUM(IF(YEAR(fecha) = '.($anoanterior-1).', vtaneta, 0)),0)-1)*100,2) as incrementoa1
+                            FROM
+                                 (  '.$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
+					            codigo, articulo,
+	                            tipodoc,documento,fecha,
+	                            cantidad,costotal,
+	                            vtatotal,desproducto,
+	                            descliente,
+	                            IF(codigo="-",net,vtaNeta) AS vtaNeta,
+	                            marcod,marca,
+					            vencod,vendedor,
+					            catcod,cate,ciudad
+                        FROM ( '.$sqlnc.') a'.') b
+                                      GROUP BY b.codigo,b.articulo,b.marca
+                                      ORDER BY SUM(b.vtaneta) DESC';
+
+        }
+
+
+
+        //return $this->getOk($sql);
+
+        //$list = DB::select($sql,[$request['cliente_id']]);
+        $list = DB::connection('mysqlpac')->select($sql);
+
+        return $this->getOk($list);
+    }
+
 
     public function ventamesmarca(Request $request)
     {
@@ -825,6 +1076,124 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
     }
 
 
+     public function ventamesmarcaYear(Request $request)
+    {
+        $input = $request->all();
+        $bodega = isset($request['marca_id']) ?$request['bodega_id']:'todas';
+        $bodega_filtro='';
+        $inicio=$request['finicio'].' 00:00:00';
+        $fin=$request['ffin'].' 23:59:00';
+        $fecha=Carbon::parse($inicio);
+        $anoactual=($fecha->year);
+        $anoanterior=($fecha->year)-1;
+        $fecha1=Carbon::parse($fin);
+        $inicioa=Carbon::create(($fecha->year)-1,$fecha->month, $fecha->day, 0, 0, 0);
+        $inicioa=$inicioa->format('Y-m-d').' 00:00:00';
+        $fina=Carbon::create(($fecha1->year)-1,$fecha1->month, $fecha1->day, 23,59, 0);
+        $fina=$fina->format('Y-m-d').' 23:59:00';
+        $inicioa1=Carbon::create(($fecha->year)-2,$fecha->month, $fecha->day, 0, 0, 0);
+        $inicioa1=$inicioa1->format('Y-m-d').' 00:00:00';
+        $fina1=Carbon::create(($fecha1->year)-2,$fecha1->month, $fecha1->day, 23,59, 0);
+        $fina1=$fina1->format('Y-m-d').' 23:59:00';
+
+        $marca=isset($request['marca_id']) ?$request['marca_id']:'0';
+        $producto=isset($request['producto_id']) ?$request['producto_id']:'0';
+        $vendedor=isset($request['vendedor_id']) ?$request['vendedor_id']:'0';
+        $cliente=isset($request['cliente_id']) ?$request['cliente_id']:'0';
+        $unidades=isset($request['unidades']) ?$request['unidades']:false;
+        $sql='';
+        $sqlnc='';
+
+
+
+        if ($bodega=='todas'){
+                // select de ventas
+                $sql=$this->generaQueryVentasCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                // select de notas de credito
+                $sqlnc=$this->generaQueryNC('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNC('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatriz('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+
+        }
+        else
+        {
+            // select de ventas
+            $sql=$this->generaQueryVentasCom($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+            // select de notas de credito
+            $sqlnc=$this->generaQueryNCCom($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+        }
+
+        if ($unidades=="true")
+        {
+            $sql='SELECT 	marca,
+					            ROUND(SUM(IF(YEAR(fecha) = '.($anoanterior-1).', cantidad, 0)),2) AS anterior1,
+					                ROUND(SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)),2) AS anterior,
+					                ROUND(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)),2) AS actual,
+					                ROUND((ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)),0)-1)*100,2) as incremento,
+                                    ROUND((ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)) /SUM(IF(YEAR(fecha) = '.($anoanterior-1).', cantidad, 0)),0)-1)*100,2) as incrementoa,
+                                    ROUND((ifnull(SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)) /SUM(IF(YEAR(fecha) = '.($anoanterior-1).', cantidad, 0)),0)-1)*100,2) as incrementoa1
+                            FROM
+                                 (  '.$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
+					            codigo, articulo,
+	                            tipodoc,documento,fecha,
+	                            cantidad,costotal,
+	                            vtatotal,desproducto,
+	                            descliente,
+	                            IF(codigo="-",net,vtaNeta) AS vtaNeta,
+	                            marcod,marca,
+					            vencod,vendedor,
+					            catcod,cate,ciudad
+                        FROM ( '.$sqlnc.') a'.') b
+                                      GROUP BY b.marca
+                                      ORDER BY SUM(b.cantidad) DESC';
+        }
+        else
+        {
+            $sql='SELECT 	marca,
+					            ROUND(SUM(IF(YEAR(fecha) = '.($anoanterior-1).', vtaneta, 0)),2) AS anterior1,
+					            ROUND(SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0)),2) AS anterior,
+					            ROUND(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)),2) AS actual,
+                                ROUND((ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0)),0)-1)*100,2) as incremento,
+                                ROUND((ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)) /SUM(IF(YEAR(fecha) = '.($anoanterior-1).', vtaneta, 0)),0)-1)*100,2) as incrementoa,
+                                ROUND((ifnull(SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0)) /SUM(IF(YEAR(fecha) = '.($anoanterior-1).', vtaneta, 0)),0)-1)*100,2) as incrementoa1
+                            FROM
+                                 (  '.$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
+					            codigo, articulo,
+	                            tipodoc,documento,fecha,
+	                            cantidad,costotal,
+	                            vtatotal,desproducto,
+	                            descliente,
+	                            IF(codigo="-",net,vtaNeta) AS vtaNeta,
+	                            marcod,marca,
+					            vencod,vendedor,
+					            catcod,cate,ciudad
+                        FROM ( '.$sqlnc.') a'.') b
+                                      GROUP BY b.marca
+                                      ORDER BY SUM(b.vtaneta) DESC';
+        }
+
+
+        $list = DB::connection('mysqlpac')->select($sql);
+        return $this->getOk($list);
+
+    }
+
 
 
 
@@ -937,6 +1306,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
 
         $querync=  str_replace('yfinicioa',$inicioa,$querync);
         $querync=  str_replace('yffina',$fina,$querync);
+
         $querync=  str_replace('zfinicioa',$inicioa1,$querync);
         $querync=  str_replace('zffina',$fina1,$querync);
 
@@ -1030,6 +1400,88 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
 
         $queryncmatriz=  str_replace('yfinicioa',$inicioa,$queryncmatriz);
         $queryncmatriz=  str_replace('yffina',$fina,$queryncmatriz);
+
+        $query=$queryncmatriz;
+
+
+        return $query;
+    }
+
+
+     public function generaQueryNCMatrizCom($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1)
+    {
+        $queryncmatriz="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
+					             codcte43 AS codigocliente,
+						     nomcte01 AS cliente,
+						     0 AS desfac,
+						     '-' AS  codigo,
+						     '-' AS articulo,
+						     'NC' AS tipodoc,
+						     numdoc43 AS documento,
+                             fecdoc43 AS fecha,
+						     0 AS cantidad,
+						     0 AS costotal,
+						     0 AS vtatotal,
+						     0 AS desproducto,
+						     0 AS descliente,
+						     0 AS vtaNeta,
+						     (valorabono43/1.12)*-1 AS net,
+						      '0' AS marcod,
+						     '-' AS marca,
+						      vendcte01 AS vencod,
+						      (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
+						      catcte01 AS catcod,
+						      (SELECT b.desccate AS categoria FROM jcev.categorias a INNER JOIN  jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
+                              (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = jcev.maecte.canton) AS ciudad
+					    FROM xbase.movcte
+					    INNER JOIN xbase.maecte ON codcte43=codcte01
+					    WHERE tipodoc43 IN ('53')  AND ((fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin') or (fecdoc43 >= 'yfinicioa'  AND fecdoc43 <= 'yffina')
+                                or (fecdoc43 >= 'zfinicioa'  AND fecdoc43 <= 'zffina'))  AND cvanulado43<>'S' AND tipoNC43<>'P' and ocurren43 in ('00','0000')
+                            and case when '0'='xclie' then true else codcte43 in ('xclie') end
+                        UNION
+                        SELECT SUBSTRING(numdoc43,1,7) AS agencia,
+					             codcte43 AS codigocliente,
+						     nomcte01 AS cliente,
+						     0 AS desfac,
+						     '-' AS  codigo,
+						     '-' AS articulo,
+						     'NC' AS tipodoc,
+						     numdoc43 AS documento,
+                             fecdoc43 AS fecha,
+						     0 AS cantidad,
+						     0 AS costotal,
+						     0 AS vtatotal,
+						     0 AS desproducto,
+						     0 AS descliente,
+						     0 AS vtaNeta,
+						     (valorabono43/1.12)*-1 AS net,
+						      '0' AS marcod,
+						     '-' AS marca,
+						      vendcte01 AS vencod,
+						      (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
+						      catcte01 AS catcod,
+						      (SELECT b.desccate AS categoria FROM  jcev.categorias a INNER JOIN   jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
+                              (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = jcev.maecte.canton) AS ciudad
+					      FROM xbase.movcte2
+					      INNER JOIN xbase.maecte ON codcte43=codcte01
+					      WHERE tipodoc43 IN ('53')  AND ((fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin') or (fecdoc43 >= 'yfinicioa'  AND fecdoc43 <= 'yffina')
+                                or (fecdoc43 >= 'zfinicioa'  AND fecdoc43 <= 'zffina')) AND cvanulado43<>'S' AND tipoNC43<>'P' and ocurren43 in ('00','0000')
+                              and case when '0'='xclie' then true else codcte43 in ('xclie') end";
+
+        $queryncmatriz=  str_replace('xbase',$bodega,$queryncmatriz);
+        $queryncmatriz=  str_replace('xfinicio',$inicio,$queryncmatriz);
+        $queryncmatriz=  str_replace('xffin',$fin,$queryncmatriz);
+        $queryncmatriz=  str_replace('xmarc',$marca,$queryncmatriz);
+        $queryncmatriz=  str_replace('xprod',$producto,$queryncmatriz);
+        $queryncmatriz=  str_replace('xvend',$vendedor,$queryncmatriz);
+        $queryncmatriz=  str_replace('xclie',$cliente,$queryncmatriz);
+
+        $queryncmatriz=  str_replace('yfinicioa',$inicioa,$queryncmatriz);
+        $queryncmatriz=  str_replace('yffina',$fina,$queryncmatriz);
+
+        $queryncmatriz=  str_replace('zfinicioa',$inicioa1,$querync);
+        $queryncmatriz=  str_replace('zffina',$fina1,$querync);
+
 
         $query=$queryncmatriz;
 

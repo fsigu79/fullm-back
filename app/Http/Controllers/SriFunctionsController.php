@@ -271,24 +271,24 @@ class SriFunctionsController extends Controller
         $rucTransportista->appendChild($xml->createTextNode($this->invoice['transportista']["ruc"]));
         $infoGuiaRemision->appendChild($rucTransportista);
 
-        if ($this->invoice['transportista']["esrise"] == 1) {
+        /*if ($this->invoice['transportista']["esrise"] == 1) {
             $rise = $xml->createElement("rise");
             $rise->appendChild($xml->createTextNode("Contribuyente Regimen Simplificado RISE"));
             $infoGuiaRemision->appendChild($rise);
-        }
+        }*/
 
         $obligadoContabilidad = $xml->createElement("obligadoContabilidad");
         $obligadoContabilidad->appendChild($xml->createTextNode($this->invoice['transportista']["llevaconta"] == 1 ? "SI" : "NO"));
         $infoGuiaRemision->appendChild($obligadoContabilidad);
 
-        if (isset($this->invoice['transportista']["contibuyente_esp"])) {
+        /*if (isset($this->invoice['transportista']["contibuyente_esp"])) {
             $espe=$this->invoice['transportista']["contibuyente_esp"];
             if ($espe!='0'){
                 $contribuyenteEspecial = $xml->createElement("contribuyenteEspecial");
                 $contribuyenteEspecial->appendChild($xml->createTextNode($this->invoice['transportista']["contibuyente_esp"]));
                 $infoGuiaRemision->appendChild($contribuyenteEspecial);
             }
-        }
+        }*/
 
         $fechaIniTransporte = $xml->createElement("fechaIniTransporte");
         $fechaIniTransporte->appendChild($xml->createTextNode(date('d/m/Y', strtotime($this->invoice['fecha_inicio']))));
