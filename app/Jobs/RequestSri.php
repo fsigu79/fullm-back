@@ -62,16 +62,16 @@ class RequestSri implements ShouldQueue
             }
 
             // return $result;
-            if ($result->estado == "DEVUELTA") {
-                $this->invoice->status = "AUTORIZADO";
-                $this->invoice->status_code = "200";
-                $this->invoice->message_error = "";
-                $this->invoice->aditional_message_error = "";
-                $this->invoice->autorizado = 1;
-                $this->invoice->save();
-                $this->dispachEvent($this->invoice);
-                return;
-            }
+            // if ($result->estado == "DEVUELTA") {
+            //     $this->invoice->status = "AUTORIZADO";
+            //     $this->invoice->status_code = "200";
+            //     $this->invoice->message_error = "";
+            //     $this->invoice->aditional_message_error = "";
+            //     $this->invoice->autorizado = 1;
+            //     $this->invoice->save();
+            //     $this->dispachEvent($this->invoice);
+            //     return;
+            // }
 
             if ($result->estado == "DEVUELTA") {
                 if (
@@ -138,6 +138,19 @@ class RequestSri implements ShouldQueue
                     $this->invoice->aditional_message_error = "Reenviar mas tarde.";
                     $this->invoice->save();
                     //throw new RuntimeException("Factura en proceso.");
+                    $this->dispachEvent($this->invoice);
+                    return;
+                }
+
+                if ($resultAc->autorizaciones->autorizacion->estado == "RECHAZADA") {
+                    $this->invoice->status = $resultAc->autorizaciones->autorizacion->estado;
+                    $this->invoice->status_code =  $resultAc->autorizaciones->autorizacion->mensajes->mensaje->identificador;
+                    $this->invoice->message_error = $resultAc->autorizaciones->autorizacion->mensajes->mensaje->mensaje;
+                    if(isset($resultAc->autorizaciones->autorizacion->mensajes->mensaje->informacionAdicional)){
+                        $this->invoice->aditional_message_error = $resultAc->autorizaciones->autorizacion->mensajes->mensaje->informacionAdicional;
+                    }
+                    $this->invoice->save();
+                    //throw new RuntimeException($resultAc->autorizaciones->autorizacion->mensajes->mensaje->mensaje);
                     $this->dispachEvent($this->invoice);
                     return;
                 }

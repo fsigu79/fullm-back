@@ -10,6 +10,7 @@ use App\Http\Controllers\MovimientoInventarioController;
 use App\Http\Controllers\InventarioTransitoController;
 use App\Http\Controllers\PuertosEmbarqueController;
 use App\Http\Controllers\SiniestroController;
+use App\Http\Controllers\CatalogoSeriesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -157,3 +158,16 @@ Route::group([
     Route::put('facturado', [SiniestroController::class, 'updateFacturado']);
     Route::put('negar', [SiniestroController::class, 'updateNegado']);
 });
+
+
+
+Route::group([
+    'prefix' => 'catser',
+], function () {
+    Route::get('dispo', [CatalogoSeriesController::class, 'seriesDisponibles']);
+
+});
+
+
+
+
