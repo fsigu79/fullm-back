@@ -144,7 +144,8 @@ private $sqlg="select g.numero_guia_remision AS numero,
             g.esactivo,t.nombres as razon_social,t.chofer
             FROM guiaspac g
                 left join transportistas t on t.user_id=g.transportista_id
-            WHERE fecha_emision>=? and fecha_emision<=?";
+            WHERE fecha_emision>=? and fecha_emision<=?
+            order by numero_guia_remision";
              $list = DB::select($sql,[$inicio,$fin]);
 
         }else{
@@ -158,7 +159,8 @@ private $sqlg="select g.numero_guia_remision AS numero,
             g.esactivo,t.nombres as razon_social,t.chofer
             FROM guiaspac g
                 left join transportistas t on t.user_id=g.transportista_id
-            WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=?";
+            WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=?
+            order by numero_guia_remision";
              $list = DB::select($sql,[$inicio,$fin,$transportista_id]);
 
     }
@@ -208,7 +210,7 @@ private $sqlg="select g.numero_guia_remision AS numero,
                     inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
                     esactivo
 	        FROM guiaspac
-            WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=? and esfirmado=0
+            WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=? and esentregado=0
             ORDER BY fecha_emision asc";
 
         $list = DB::select($sql,[$inicio,$fin,$idtran]);
