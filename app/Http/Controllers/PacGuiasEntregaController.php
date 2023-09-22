@@ -7,10 +7,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Traits\FormatResponseTrait;
 use App\Models\SeriePac;
 use App\Models\SqlModel;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\EmailController;
 use Illuminate\Support\Facades\Mail;
+use Intervention\Image\Facades\Image;
 
 
 class PacGuiasEntregaController extends Controller
@@ -20,7 +22,7 @@ class PacGuiasEntregaController extends Controller
 
 
 
-private $sqlg="select g.numero_guia_remision AS numero,
+    private $sqlg = "select g.numero_guia_remision AS numero,
             g.fecha_emision AS fecha,
             g.nombre_transportista,
             g.ruc_transportista AS ruc_transportista,
@@ -59,21 +61,21 @@ private $sqlg="select g.numero_guia_remision AS numero,
     public function importarGuasPac(Request $request)
     {
         $input = $request->all();
-        $inicio=$request['finicio'].' 00:00:00';
-        $fin=$request['ffin'].' 23:59:00';
-        $sql='';
+        $inicio = $request['finicio'] . ' 00:00:00';
+        $fin = $request['ffin'] . ' 23:59:00';
+        $sql = '';
 
         // select de guias
-        $sql=$this->generaQueryGuias('jcev','jcev','jcev',$inicio,$fin);
-         $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevcuenca2','jcevcuenca2','jcevcuenca2',$inicio,$fin);
-         $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevcuenca1','jcevcuenca1','jcevcuenca1',$inicio,$fin);
-         $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevgye1','jcevgye1','jcevgye1',$inicio,$fin);
-         $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevgye10','jcevgye10','jcevgye10',$inicio,$fin);
-         $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevuio1','jcevuio1','jcevuio1',$inicio,$fin);
-         $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevconsigvirt','jcevuio1','jcevuio1',$inicio,$fin);
-         $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevgyeassem','jcevgyeassem','jcevgyeassem',$inicio,$fin);
-         $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevconsigvirt','jcevconsigvirt','jcevgyeassem',$inicio,$fin);
-         $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevstecvir','jcevstecvir','jcevstecvir',$inicio,$fin);
+        $sql = $this->generaQueryGuias('jcev', 'jcev', 'jcev', $inicio, $fin);
+        $sql = $sql . ' UNION ALL ' . $this->generaQueryGuias('jcevcuenca2', 'jcevcuenca2', 'jcevcuenca2', $inicio, $fin);
+        $sql = $sql . ' UNION ALL ' . $this->generaQueryGuias('jcevcuenca1', 'jcevcuenca1', 'jcevcuenca1', $inicio, $fin);
+        $sql = $sql . ' UNION ALL ' . $this->generaQueryGuias('jcevgye1', 'jcevgye1', 'jcevgye1', $inicio, $fin);
+        $sql = $sql . ' UNION ALL ' . $this->generaQueryGuias('jcevgye10', 'jcevgye10', 'jcevgye10', $inicio, $fin);
+        $sql = $sql . ' UNION ALL ' . $this->generaQueryGuias('jcevuio1', 'jcevuio1', 'jcevuio1', $inicio, $fin);
+        $sql = $sql . ' UNION ALL ' . $this->generaQueryGuias('jcevconsigvirt', 'jcevuio1', 'jcevuio1', $inicio, $fin);
+        $sql = $sql . ' UNION ALL ' . $this->generaQueryGuias('jcevgyeassem', 'jcevgyeassem', 'jcevgyeassem', $inicio, $fin);
+        $sql = $sql . ' UNION ALL ' . $this->generaQueryGuias('jcevconsigvirt', 'jcevconsigvirt', 'jcevgyeassem', $inicio, $fin);
+        $sql = $sql . ' UNION ALL ' . $this->generaQueryGuias('jcevstecvir', 'jcevstecvir', 'jcevstecvir', $inicio, $fin);
 
         $list = DB::connection('mysqlpac')->select($sql);
         //return $this->getOk($list);
@@ -84,43 +86,43 @@ private $sqlg="select g.numero_guia_remision AS numero,
             $box->save();*/
 
         foreach ($list as $detalle) {
-        $results=DB::select('SELECT guias_pac_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',[
-                            $detalle->numero,
-                            $detalle->fecha,
-                            $detalle->nombre_transportista,
-                            $detalle->ruc_transportista,
-                            $detalle->codigo_origen,
-                            $detalle->direccion_origen,
-                            $detalle->motivo_traslado,
-                            $detalle->codigo_destino,
-                            $detalle->direccion_destino,
-                            $detalle->direccion,
-                            $detalle->direccion_establecimiento,
-                            $detalle->fecha_inicio_transporte,
-                            $detalle->fecha_fin_transporte,
-                            $detalle->codigo_cliente,
-                            $detalle->ruc,
-                            $detalle->nombre_cliente,
-                            $detalle->telefono,
-                            $detalle->observacion,
-                            $detalle->numero_documento_origen,
-                            $detalle->fecha_factura,
-                            $detalle->numero_pedido,
-                            $detalle->fecha_pedido,
-                            $detalle->usuario
-                            ]);
+            $results = DB::select('SELECT guias_pac_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [
+                $detalle->numero,
+                $detalle->fecha,
+                $detalle->nombre_transportista,
+                $detalle->ruc_transportista,
+                $detalle->codigo_origen,
+                $detalle->direccion_origen,
+                $detalle->motivo_traslado,
+                $detalle->codigo_destino,
+                $detalle->direccion_destino,
+                $detalle->direccion,
+                $detalle->direccion_establecimiento,
+                $detalle->fecha_inicio_transporte,
+                $detalle->fecha_fin_transporte,
+                $detalle->codigo_cliente,
+                $detalle->ruc,
+                $detalle->nombre_cliente,
+                $detalle->telefono,
+                $detalle->observacion,
+                $detalle->numero_documento_origen,
+                $detalle->fecha_factura,
+                $detalle->numero_pedido,
+                $detalle->fecha_pedido,
+                $detalle->usuario
+            ]);
         };
-        $termino="IMPORTACION OK";
+        $termino = "IMPORTACION OK";
         return $this->getOk($termino);
     }
 
 
 
-    public function generaQueryGuias($bodega,$bodega1,$bodega2,$inicio,$fin)
+    public function generaQueryGuias($bodega, $bodega1, $bodega2, $inicio, $fin)
     {
-        $query=  str_replace('xbase',$bodega,$this->sqlg);
-        $query=  str_replace('xfinicio',$inicio,$query);
-        $query=  str_replace('xffin',$fin,$query);
+        $query =  str_replace('xbase', $bodega, $this->sqlg);
+        $query =  str_replace('xfinicio', $inicio, $query);
+        $query =  str_replace('xffin', $fin, $query);
         return $query;
     }
 
@@ -128,13 +130,13 @@ private $sqlg="select g.numero_guia_remision AS numero,
     public function guiasList(Request $request)
     {
         $input = $request->all();
-        $inicio=$request['finicio'].' 00:00:00';
-        $fin=$request['ffin'].' 23:59:00';
+        $inicio = $request['finicio'] . ' 00:00:00';
+        $fin = $request['ffin'] . ' 23:59:00';
         $transportista_id = $request['transportista_id'];
         $list = [];
 
-        if($transportista_id == 0){
-            $sql="SELECT g.id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
+        if ($transportista_id == 0) {
+            $sql = "SELECT g.id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
             codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
             direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
             codigo_cliente, g.ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
@@ -159,11 +161,9 @@ private $sqlg="select g.numero_guia_remision AS numero,
             g.esactivo,t.nombres as razon_social,t.chofer
             FROM guiaspac g
                 left join transportistas t on t.user_id=g.transportista_id
-            WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=?
-            order by numero_guia_remision";
-             $list = DB::select($sql,[$inicio,$fin,$transportista_id]);
-
-    }
+            WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=?";
+            $list = DB::select($sql, [$inicio, $fin, $transportista_id]);
+        }
 
 
 
@@ -173,11 +173,11 @@ private $sqlg="select g.numero_guia_remision AS numero,
     public function guiasListTransportista(Request $request)
     {
         $input = $request->all();
-        $inicio=$request['finicio'].' 00:00:00';
-        $fin=$request['ffin'].' 23:59:00';
-        $idtran=$request['transportista_id'];
+        $inicio = $request['finicio'] . ' 00:00:00';
+        $fin = $request['ffin'] . ' 23:59:00';
+        $idtran = $request['transportista_id'];
 
-        $sql="SELECT id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
+        $sql = "SELECT id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
                     codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
                     direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
                     codigo_cliente, ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
@@ -189,7 +189,7 @@ private $sqlg="select g.numero_guia_remision AS numero,
             WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=?
             ORDER BY fecha_emision desc";
 
-        $list = DB::select($sql,[$inicio,$fin,$idtran]);
+        $list = DB::select($sql, [$inicio, $fin, $idtran]);
 
         return $this->getOk($list);
     }
@@ -197,11 +197,11 @@ private $sqlg="select g.numero_guia_remision AS numero,
     public function guiasListTransportistaPendientes(Request $request)
     {
         $input = $request->all();
-        $inicio=$request['finicio'].' 00:00:00';
-        $fin=$request['ffin'].' 23:59:00';
-        $idtran=$request['transportista_id'];
+        $inicio = $request['finicio'] . ' 00:00:00';
+        $fin = $request['ffin'] . ' 23:59:00';
+        $idtran = $request['transportista_id'];
 
-        $sql="SELECT id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
+        $sql = "SELECT id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
                     codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
                     direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
                     codigo_cliente, ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
@@ -213,7 +213,7 @@ private $sqlg="select g.numero_guia_remision AS numero,
             WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=? and esentregado=0
             ORDER BY fecha_emision asc";
 
-        $list = DB::select($sql,[$inicio,$fin,$idtran]);
+        $list = DB::select($sql, [$inicio, $fin, $idtran]);
 
         return $this->getOk($list);
     }
@@ -221,11 +221,11 @@ private $sqlg="select g.numero_guia_remision AS numero,
     public function guiasListTransportistaFinalizado(Request $request)
     {
         $input = $request->all();
-        $inicio=$request['finicio'].' 00:00:00';
-        $fin=$request['ffin'].' 23:59:00';
-        $idtran=$request['transportista_id'];
+        $inicio = $request['finicio'] . ' 00:00:00';
+        $fin = $request['ffin'] . ' 23:59:00';
+        $idtran = $request['transportista_id'];
 
-        $sql="SELECT id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
+        $sql = "SELECT id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
                     codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
                     direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
                     codigo_cliente, ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
@@ -237,7 +237,7 @@ private $sqlg="select g.numero_guia_remision AS numero,
             WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=? and esentregado=1
             ORDER BY fecha_emision asc";
 
-        $list = DB::select($sql,[$inicio,$fin,$idtran]);
+        $list = DB::select($sql, [$inicio, $fin, $idtran]);
 
         return $this->getOk($list);
     }
@@ -256,12 +256,12 @@ private $sqlg="select g.numero_guia_remision AS numero,
         if (!$validation->fails()) {
 
             $input = $request->all();
-            $guia=$input['num_guia'];
-            $idtransportista=$input['transportista_id'];
+            $guia = $input['num_guia'];
+            $idtransportista = $input['transportista_id'];
 
-            $sql="update guiaspac set transportista_id=?,fecha_asignacion=current_timestamp,esasignado=1
+            $sql = "update guiaspac set transportista_id=?,fecha_asignacion=current_timestamp,esasignado=1
                 where numero_guia_remision=?";
-            $order = DB::update($sql,[$idtransportista,$guia]);
+            $order = DB::update($sql, [$idtransportista, $guia]);
 
             return $this->updateOk($input);
 
@@ -289,13 +289,13 @@ private $sqlg="select g.numero_guia_remision AS numero,
         if (!$validation->fails()) {
 
             $input = $request->all();
-            $guia=$input['num_guia'];
-            $idtransportista=$input['transportista_id'];
+            $guia = $input['num_guia'];
+            $idtransportista = $input['transportista_id'];
 
-            $sql="update guiaspac set fecha_inicio_traslado_transportista=current_timestamp,inicio_transporte=1
+            $sql = "update guiaspac set fecha_inicio_traslado_transportista=current_timestamp,inicio_transporte=1
 
                 where numero_guia_remision=?";
-            $order = DB::update($sql,[$guia]);
+            $order = DB::update($sql, [$guia]);
 
 
             return $this->updateOk($input);
@@ -324,12 +324,12 @@ private $sqlg="select g.numero_guia_remision AS numero,
         if (!$validation->fails()) {
 
             $input = $request->all();
-            $idguia=$input['guia_id'];
-            $foto_firma=$input['foto_firma'];
+            $idguia = $input['guia_id'];
+            $foto_firma = $input['foto_firma'];
 
-            $sql="update guiaspac set foto_entrega1=?,esfirmado=1
+            $sql = "update guiaspac set foto_entrega1=?,esfirmado=1
                     where id=?";
-            $order = DB::update($sql,[$foto_firma,$idguia]);
+            $order = DB::update($sql, [$foto_firma, $idguia]);
 
 
             return $this->updateOk($input);
@@ -358,17 +358,17 @@ private $sqlg="select g.numero_guia_remision AS numero,
         if (!$validation->fails()) {
 
             $input = $request->all();
-            $guia=$input['num_guia'];
-            $idtransportista=$input['transportista_id'];
-            $longitud=$input['longitud'];
-            $latitud=$input['latitud'];
-            $image=$input['image'];
+            $guia = $input['num_guia'];
+            $idtransportista = $input['transportista_id'];
+            $longitud = $input['longitud'];
+            $latitud = $input['latitud'];
+            $image = $input['image'];
 
 
-            $sql="update guiaspac set fecha_entrega_transportista=current_timestamp,esentregado=1,
+            $sql = "update guiaspac set fecha_entrega_transportista=current_timestamp,esentregado=1,
                         longitud=?,latitud=?,foto_entrega=?
                 where numero_guia_remision=?";
-            $order = DB::update($sql,[$longitud,$latitud,$image,$guia]);
+            $order = DB::update($sql, [$longitud, $latitud, $image, $guia]);
 
 
             return $this->updateOk($input);
@@ -383,7 +383,8 @@ private $sqlg="select g.numero_guia_remision AS numero,
         }
     }
 
-    public function getImage($filename){
+    public function getImage($filename)
+    {
         $isset = \Storage::disk('images')->exists($filename);
         //echo($filename);
         //echo($isset);
@@ -400,24 +401,67 @@ private $sqlg="select g.numero_guia_remision AS numero,
         }
     }
 
-    public function addImage(Request $request){
-        $image=$request->file('image');
+    public function addImage(Request $request)
+    {
+        try {
+            //     $image=$request->file('image');
 
-        if($image){
-            $image_path=$image->getClientOriginalName();
-           \Storage::disk('images')->put($image_path, \File::get($image));
+            //     if($image){
+            //         $image_path=$image->getClientOriginalName();
+            //        \Storage::disk('images')->put($image_path, \File::get($image));
+            //     }
+            //     $data=array(
+
+            //        'image'=>$image,
+            //        'status'=>'success'
+            //    );
+            //    return response()->json($data,200);
+
+            $image = $request->file('image');
+
+            if ($image) {
+                // Obtén el nombre original del archivo
+                $imageFileName = $image->getClientOriginalName();
+
+                // Comprimir la imagen antes de guardarla
+                $compressedImage = Image::make($image);
+                $compressedImage->resize(800, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                })->encode('jpg', 80); // 80 es la calidad de compresión, puedes ajustarlo según tus necesidades
+
+                // Guardar la imagen comprimida como JPG
+                Storage::disk('images')->put($imageFileName . '.jpg', $compressedImage->stream());
+
+                // Puedes obtener la URL de la imagen guardada
+                //$imageUrl = Storage::disk('images')->url($imageFileName);
+
+                $data = [
+                    //'image_url' => $imageUrl,
+                    'status' => 'success'
+                ];
+
+                return response()->json($data, 200);
+            }
+
+            $data = [
+                'status' => 'error',
+                'message' => 'No se proporcionó ninguna imagen.'
+            ];
+
+            return response()->json($data, 400);
+
+        } catch (\Throwable $th) {
+            $data = [
+                'status' => 'error',
+                'message' => $th->getMessage()
+            ];
+            return response()->json($data, 400);
         }
-        $data=array(
-
-           'image'=>$image,
-           'status'=>'success'
-       );
-       return response()->json($data,200);
-
     }
 
 
-    public function email_send_guias(Request $request){
+    public function email_send_guias(Request $request)
+    {
         $validation = Validator::make(
             $request->all(),
             [
@@ -431,10 +475,10 @@ private $sqlg="select g.numero_guia_remision AS numero,
         if (!$validation->fails()) {
             $input = $request->all();
             //send email verification
-  try {
-    //variable que contiene la plantilla en HTML
+            try {
+                //variable que contiene la plantilla en HTML
 
-    $emailTemplate = "<!DOCTYPE html>
+                $emailTemplate = "<!DOCTYPE html>
     <html lang='en'>
     <head>
         <meta charset='UTF-8'>
@@ -480,48 +524,42 @@ private $sqlg="select g.numero_guia_remision AS numero,
     </body>
     </html>";
 
-    $sql ='SELECT * from guiaspac where numero_guia_remision =?';
-    $request_db = DB::select($sql,[$input['numero_guia']]);
+                $sql = 'SELECT * from guiaspac where numero_guia_remision =?';
+                $request_db = DB::select($sql, [$input['numero_guia']]);
 
-    $html = str_replace("{Numguia}", $input['numero_guia'], $emailTemplate);
-    $html = str_replace("{fecha_fin}", $input['fecha'], $html);
-    $html = str_replace("{imagen_url}", $input['image'], $html);
+                $html = str_replace("{Numguia}", $input['numero_guia'], $emailTemplate);
+                $html = str_replace("{fecha_fin}", $input['fecha'], $html);
+                $html = str_replace("{imagen_url}", $input['image'], $html);
 
-    $html = str_replace("{fecha_emision}", $request_db[0]->fecha_emision, $html);
-    $html = str_replace("{fecha_asignacion}", $request_db[0]->fecha_asignacion, $html);
-    $html = str_replace("{fecha_inicio}", $request_db[0]->fecha_inicio_transporte, $html);
-    $html = str_replace("{transportista}", $request_db[0]->nombre_transportista, $html);
-    $html = str_replace("{codigo_cliente}", $request_db[0]->codigo_cliente, $html);
-    $html = str_replace("{ruc}", $request_db[0]->ruc, $html);
+                $html = str_replace("{fecha_emision}", $request_db[0]->fecha_emision, $html);
+                $html = str_replace("{fecha_asignacion}", $request_db[0]->fecha_asignacion, $html);
+                $html = str_replace("{fecha_inicio}", $request_db[0]->fecha_inicio_transporte, $html);
+                $html = str_replace("{transportista}", $request_db[0]->nombre_transportista, $html);
+                $html = str_replace("{codigo_cliente}", $request_db[0]->codigo_cliente, $html);
+                $html = str_replace("{ruc}", $request_db[0]->ruc, $html);
 
-    $email = new EmailController();
-    $email->sendEmail($html, $input['email'], "Guia Finalizada");
-    //confirma en mensaje
-    $data = array(
-        'status' => 'success',
-        'code' => 200,
-        'message' => 'Correo enviado exitosamente',
-        'error'=> false
-    );
+                $email = new EmailController();
+                $email->sendEmail($html, $input['email'], "Guia Finalizada");
+                //confirma en mensaje
+                $data = array(
+                    'status' => 'success',
+                    'code' => 200,
+                    'message' => 'Correo enviado exitosamente',
+                    'error' => false
+                );
 
-    return $data;
-
-}catch(\Throwable $th) {
-  $data = array(
-                'code' => 404,
-                'status' => 'error',
-                'message' => 'La error al enviar el correo',
-                'error message' => $th->getMessage()
-            );
-            return response()->json($data, $data['code']);
-}
-
+                return $data;
+            } catch (\Throwable $th) {
+                $data = array(
+                    'code' => 404,
+                    'status' => 'error',
+                    'message' => 'La error al enviar el correo',
+                    'error message' => $th->getMessage()
+                );
+                return response()->json($data, $data['code']);
+            }
         } else {
             return $this->updateErrCustom($validation->messages(), 'Datos inválidos');
         }
-
     }
-
-
-
 }
