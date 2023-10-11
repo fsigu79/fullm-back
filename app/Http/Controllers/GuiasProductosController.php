@@ -38,9 +38,10 @@ class GuiasProductosController extends Controller
                     from jcevgyeassem.maeser
                     inner join jcevgyeassem.maepro on codprod04=codprod01
                     left join jcevgyeassem.maefac on jcevgyeassem.maefac.nofact31=jcevgyeassem.maeser.nofact04
-                    where  fecmov04>=? and fecmov04<=? and (cvanulada04 in ('F','T'))
+                    where  fecfact31>=? and fecfact31<=? and (cvanulada04 in ('F','T'))
                     order by documento ASC";
 
+            //fecfact31 antes fecha fecmov04
     public function __construct()
     {
         $this->middleware('auth:admin');

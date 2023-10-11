@@ -30,6 +30,7 @@ class PresupuestoProductosController extends Controller
 
             $anio=$input['anio'];
             $marca=$input['marca_id'];
+            $vendedor=$input['vendedor_id'];
 
            //--productos menos los de categoria I=importaciones,G=gastos,9=servicios
             $query=  "select codprod01 as codigo,desprod01 as producto,marca01 as marca_id,
@@ -80,20 +81,19 @@ class PresupuestoProductosController extends Controller
                     select pres.id, anio,pres.codigo,precio,enero, febrero, marzo, abril, mayo, junio, julio,
                                     agosto, septiembre, octubre, noviembre, diciembre,
                                     total, total_usd
-                    from presupuesto_productos pres WHERE anio=?
+                    from presupuesto_productos pres WHERE anio=? and vendedor_id=?
                 ) as  b on pro.codigo=b.codigo
 
                 where case when '0'=? then true else pro.marca_id=? end
                 ORDER BY pro.marca_id,pro.descripcion";
 
-            $list = DB::select($sql,[$anio,$marca,$marca]);
+            $list = DB::select($sql,[$anio,$vendedor,$marca,$marca]);
 
             return $this->getOk($list);
         } catch (\Exception $e) {
                 DB::rollBack();
                 return $this->insertErrCustom('Error', $e->getMessage());
         }
-
     }
 
 
@@ -103,7 +103,8 @@ class PresupuestoProductosController extends Controller
             $detalle = $request->all();
             DB::beginTransaction();
             $anio=$detalle[0]['anio'];
-            DB::delete('DELETE from presupuesto_productos where anio=?',[$anio]);
+            $vendedor=$detalle[0]['vendedor_id'];
+            DB::delete('DELETE from presupuesto_productos where anio=? and vendedor_id=?',[$anio,$vendedor]);
 
             $chunks=array_chunk($detalle,75);
             foreach($chunks as $record){
