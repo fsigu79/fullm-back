@@ -146,10 +146,12 @@ class PacGuiasEntregaController extends Controller
             g.esactivo,t.nombres as razon_social,t.chofer
             FROM guiaspac g
                 left join transportistas t on t.user_id=g.transportista_id
-            WHERE fecha_emision>=? and fecha_emision<=?";
-            $list = DB::select($sql, [$inicio, $fin]);
-        } else {
-            $sql = "SELECT g.id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
+            WHERE fecha_emision>=? and fecha_emision<=?
+            order by numero_guia_remision";
+             $list = DB::select($sql,[$inicio,$fin]);
+
+        }else{
+            $sql="SELECT g.id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
             codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
             direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
             codigo_cliente, g.ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
@@ -208,7 +210,7 @@ class PacGuiasEntregaController extends Controller
                     inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
                     esactivo
 	        FROM guiaspac
-            WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=? and esfirmado=0
+            WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=? and esentregado=0
             ORDER BY fecha_emision asc";
 
         $list = DB::select($sql, [$inicio, $fin, $idtran]);

@@ -16,12 +16,9 @@ class CatalogoSeriesController extends Controller
 {
      use FormatResponseTrait;
 
-     public function __construct()
+    public function __construct()
     {
-        $this->middleware('auth:admin',['except' =>
-              [
-                  'seriesDisponibles',
-                  ]]);
+
     }
 
     public function seriesDisponibles(Request $request)
@@ -79,18 +76,12 @@ class CatalogoSeriesController extends Controller
                             anio04 as anio,
                             color04 as color,
                             cpn04 as cpn,
-                            cvanulada04,
                             if (cvanulada04='A','ANULADA', 'FAC.'+nofact04) as estado,
                             cvanulada04 as estado1,
-                            nopedido04 as pedido,
-                            nocte31 as codigo_cliente,
-                            nomcte31 as cliente,
-                            fecfact31 as fecha_factura
-
+                            nopedido04 as pedido
                         from xbase1.maeser
                         inner join xbase1.maepro on codprod04=codprod01
-                        left join xbase1.maefac on nofact31=nofact04
-                        where fecmov04>=? and fecmov04<=? and cvanulada04 in ('D','T')
+                        where fecmov04>=? and fecmov04<=? and cvanulada04 in ('D')
                                 and if(?='0',true,codprod04=?)
                                 and if(?='0',true,serie04=?)
                                 and if(?='0',true,chasis04=?)
