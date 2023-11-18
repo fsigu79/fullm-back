@@ -430,7 +430,8 @@ class PacGuiasEntregaController extends Controller
                 })->encode('jpg', 80); // 80 es la calidad de compresión, puedes ajustarlo según tus necesidades
 
                 // Guardar la imagen comprimida como JPG
-                Storage::disk('images')->put($imageFileName . '.jpg', $compressedImage->stream());
+                // eliminar la concatenacion con .jpg
+                Storage::disk('images')->put($imageFileName, $compressedImage->stream());
 
                 // Puedes obtener la URL de la imagen guardada
                 //$imageUrl = Storage::disk('images')->url($imageFileName);
