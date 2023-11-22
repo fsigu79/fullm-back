@@ -468,7 +468,8 @@ class ConsultaExtPacController extends Controller
                             IFNULL((SELECT cantact01 FROM jcevstecvir.maepro WHERE jcev.maepro.codprod01=jcevstecvir.maepro.codprod01),0) +
                             IFNULL((SELECT cantact01 FROM jcevgyeassem.maepro WHERE jcev.maepro.codprod01=jcevgyeassem.maepro.codprod01),0) +
                             IFNULL((SELECT cantact01 FROM jcevcuenca1.maepro WHERE jcev.maepro.codprod01=jcevcuenca1.maepro.codprod01),0)  +
-                            IFNULL((SELECT cantact01 FROM jcevgye10.maepro WHERE jcev.maepro.codprod01=jcevgye10.maepro.codprod01),0)
+                            IFNULL((SELECT cantact01 FROM jcevgye10.maepro WHERE jcev.maepro.codprod01=jcevgye10.maepro.codprod01),0)+
+                            IFNULL((SELECT cantact01 FROM jcevgye3.maepro WHERE jcev.maepro.codprod01=jcevgye3.maepro.codprod01),0)
                         ) as stock_total,
                         cantact01 AS smatriz,
                         IFNULL((SELECT cantact01 FROM jcevcuenca2.maepro WHERE jcev.maepro.codprod01=jcevcuenca2.maepro.codprod01),0) AS scuenca2,
@@ -478,7 +479,8 @@ class ConsultaExtPacController extends Controller
                             IFNULL((SELECT cantact01 FROM jcevstecvir.maepro WHERE jcev.maepro.codprod01=jcevstecvir.maepro.codprod01),0) AS sservtecn,
                             IFNULL((SELECT cantact01 FROM jcevgyeassem.maepro WHERE jcev.maepro.codprod01=jcevgyeassem.maepro.codprod01),0) AS sgyeasse,
                             IFNULL((SELECT cantact01 FROM jcevcuenca1.maepro WHERE jcev.maepro.codprod01=jcevcuenca1.maepro.codprod01),0) AS sunicomer,
-                            IFNULL((SELECT cantact01 FROM jcevgye10.maepro WHERE jcev.maepro.codprod01=jcevgye10.maepro.codprod01),0) AS sguay2
+                            IFNULL((SELECT cantact01 FROM jcevgye10.maepro WHERE jcev.maepro.codprod01=jcevgye10.maepro.codprod01),0) AS sguay2,
+                            IFNULL((SELECT cantact01 FROM jcevgye3.maepro WHERE jcev.maepro.codprod01=jcevgye3.maepro.codprod01),0) AS sguy3
                     from jcev.maepro
                     order by desprod01";
                 $list = DB::connection('mysqlpac')->select($sql,[]);
@@ -488,7 +490,7 @@ class ConsultaExtPacController extends Controller
             }
     }
 
-    public function factuaPorNumero(Request $request)
+    public function facturaPorNumero(Request $request)
     {
         $input = $request->all();
         $serie = $input['serie'];
@@ -510,15 +512,26 @@ class ConsultaExtPacController extends Controller
                     $base='jcevcuenca2';
                 } else if ($serie=='001-106') {
                     $base='jcevcuenca1';
+                } else if ($serie=='001-114') {
+                    $base='jcevgye3';
                 } else if ($serie=='001-107') {
                     $base='jcevgye10';
                 } else if ($serie=='001-108') {
+                    $base='jcevstecvir';
+                 } else if ($serie=='001-109') {
+                    $base='jcevstecguay';
+                 } else if ($serie=='001-111') {
+                    $base='jcevpromo';
+                 } else if ($serie=='001-108') {
+                    $base='jcevstecvir';
+                 } else if ($serie=='001-108') {
                     $base='jcevstecvir';
                 } else {
                     $base='jcev';
                 }
                 //consulta catalog de series
                 $sql="select tipodocto31,nofact31,nocte31,nomcte31,vtabta31 as subcab,if (cvanulado31=9,'ANULADO','FACTURADO') as estadofac,
+                        descto31,
                         (select sum(round(precvta03-descvta03,2)) from xbase.movpro where tipotra03='80' and nofact31=nocomp03) as subtotal,
                         (select round(sum( (iva03/100)*(precvta03 - descvta03-desctotvta03)),2) from xbase.movpro where tipotra03='80' and nofact31=nocomp03) as iva
                         from xbase.maefac where tipodocto31=02 and nofact31=?";
@@ -535,6 +548,7 @@ class ConsultaExtPacController extends Controller
                     $factura->nofact31=$fact[0]->nofact31;
                     $factura->nocte31=$fact[0]->nocte31;
                     $factura->nomcte31=$fact[0]->nomcte31;
+                    $factura->descto31=$fact[0]->descto31;
                     $factura->subcab=$fact[0]->subcab;
                     $factura->estadofac=$fact[0]->estadofac;
                     $factura->subtotal=$fact[0]->subtotal;
@@ -575,6 +589,434 @@ class ConsultaExtPacController extends Controller
             }
     }
 
+
+    public function facturaPorNumeroCredimport(Request $request)
+    {
+        $input = $request->all();
+        $serie = $input['serie'];
+        $numero = $input['numero'];
+        $comprobante=$serie.'-'.$numero;
+        $base='vintipart';
+
+            try{
+
+                if ($serie=='001-101'){
+                    $base='vintipart';
+                } else if ($serie=='001-102') {
+                    $base='vintipartcuen1';
+                } else if ($serie=='001-104') {
+                    $base='vintipartgyeass';
+                } else if ($serie=='001-100') {
+                    $base='vintipartuio';
+                } else if ($serie=='001-001') {
+                    $base='vintipartcvirt';
+                } else if ($serie=='001-103') {
+                    $base='vintipartgye3';
+                } else {
+                    $base='vintipart';
+                }
+                //consulta catalog de series
+                $sql="select tipodocto31,nofact31,nocte31,nomcte31,vtabta31 as subcab,if (cvanulado31=9,'ANULADO','FACTURADO') as estadofac,
+                        descto31,
+                        (select sum(round(precvta03-descvta03,2)) from xbase.movpro where tipotra03='80' and nofact31=nocomp03) as subtotal,
+                        (select round(sum( (iva03/100)*(precvta03 - descvta03-desctotvta03)),2) from xbase.movpro where tipotra03='80' and nofact31=nocomp03) as iva
+                        from xbase.maefac where tipodocto31=02 and nofact31=?";
+
+                $query=  str_replace('xbase',$base,$sql);
+
+
+                $fact = DB::connection('mysqlpac')->select($query,[$comprobante]);
+
+
+                $factura= new FacturaRpa();
+                if (!empty($fact)) {
+                    $factura->tipodocto31=$fact[0]->tipodocto31;
+                    $factura->nofact31=$fact[0]->nofact31;
+                    $factura->nocte31=$fact[0]->nocte31;
+                    $factura->nomcte31=$fact[0]->nomcte31;
+                    $factura->descto31=$fact[0]->descto31;
+                    $factura->subcab=$fact[0]->subcab;
+                    $factura->estadofac=$fact[0]->estadofac;
+                    $factura->subtotal=$fact[0]->subtotal;
+                    $factura->iva=$fact[0]->iva;
+
+                    $sql="select cte.codcte01,cte.agente_retencion,ar.descripcion,bienes_iva,servicios_iva,bienes_renta,servicios_renta
+                        from vintipart.maecte cte
+                        inner join vintipart.agentes_retencion ar on cte.agente_retencion =ar.id
+                        inner join vintipart.configuracion_agentes_retencion car on ar.id=car.id_agente_retencion
+                        where codcte01=?";
+
+                    $reten = DB::connection('mysqlpac')->select($sql,[$factura->nocte31]);
+                    if (!empty($reten)){
+                        $factura->agente_retencion=$reten[0]->agente_retencion;
+                        $factura->descripcion=$reten[0]->descripcion;
+                        $factura->bienes_iva=$reten[0]->bienes_iva;
+                        $factura->servicios_iva=$reten[0]->servicios_iva;
+                        $factura->bienes_renta=$reten[0]->bienes_renta;
+                        $factura->servicios_renta=$reten[0]->servicios_renta;
+                    }
+                    else{
+                         $factura->agente_retencion='';
+                        $factura->descripcion='';
+                        $factura->bienes_iva='';
+                        $factura->servicios_iva='';
+                        $factura->bienes_renta='';
+                        $factura->servicios_renta='';
+                    }
+                    return $this->getOk($factura);
+                }else{
+                    return $this->getOk($fact);
+                }
+
+
+
+            } catch (\Exception $e) {
+                return $this->insertErrCustom($input, $e->getMessage());
+            }
+    }
+
+
+    public function facturaPorNumeroEvisu(Request $request)
+    {
+        $input = $request->all();
+        $serie = $input['serie'];
+        $numero = $input['numero'];
+        $comprobante=$serie.'-'.$numero;
+        $base='distevisu';
+
+            try{
+
+                if ($serie=='001-501'){
+                    $base='distevisu';
+                } else if ($serie=='001-105') {
+                    $base='distevisucuenca2';
+                } else if ($serie=='001-102') {
+                    $base='distevisugy1';
+                } else if ($serie=='001-104') {
+                    $base='distevisuuio1';
+                } else if ($serie=='999-004') {
+                    $base='distevisuconsigvirt';
+                } else if ($serie=='001-108') {
+                    $base='distevisustecvir';
+                } else if ($serie=='001-103') {
+                    $base='distevisugyeassem';
+                } else if ($serie=='001-106') {
+                    $base='distevisucuenca1';
+                } else if ($serie=='001-107') {
+                    $base='distevisugye10';
+                } else {
+                    $base='distevisu';
+                }
+                //consulta catalog de series
+                $sql="select tipodocto31,nofact31,nocte31,nomcte31,vtabta31 as subcab,if (cvanulado31=9,'ANULADO','FACTURADO') as estadofac,
+                        descto31,
+                        (select sum(round(precvta03-descvta03,2)) from xbase.movpro where tipotra03='80' and nofact31=nocomp03) as subtotal,
+                        (select round(sum( (iva03/100)*(precvta03 - descvta03-desctotvta03)),2) from xbase.movpro where tipotra03='80' and nofact31=nocomp03) as iva
+                        from xbase.maefac where tipodocto31=02 and nofact31=?";
+
+                $query=  str_replace('xbase',$base,$sql);
+
+
+                $fact = DB::connection('mysqlpac')->select($query,[$comprobante]);
+
+
+                $factura= new FacturaRpa();
+                if (!empty($fact)) {
+                    $factura->tipodocto31=$fact[0]->tipodocto31;
+                    $factura->nofact31=$fact[0]->nofact31;
+                    $factura->nocte31=$fact[0]->nocte31;
+                    $factura->nomcte31=$fact[0]->nomcte31;
+                    $factura->descto31=$fact[0]->descto31;
+                    $factura->subcab=$fact[0]->subcab;
+                    $factura->estadofac=$fact[0]->estadofac;
+                    $factura->subtotal=$fact[0]->subtotal;
+                    $factura->iva=$fact[0]->iva;
+
+                    $sql="select cte.codcte01,cte.agente_retencion,ar.descripcion,bienes_iva,servicios_iva,bienes_renta,servicios_renta
+                        from distevisu.maecte cte
+                        inner join distevisu.agentes_retencion ar on cte.agente_retencion =ar.id
+                        inner join distevisu.configuracion_agentes_retencion car on ar.id=car.id_agente_retencion
+                        where codcte01=?";
+
+                    $reten = DB::connection('mysqlpac')->select($sql,[$factura->nocte31]);
+                    if (!empty($reten)){
+                        $factura->agente_retencion=$reten[0]->agente_retencion;
+                        $factura->descripcion=$reten[0]->descripcion;
+                        $factura->bienes_iva=$reten[0]->bienes_iva;
+                        $factura->servicios_iva=$reten[0]->servicios_iva;
+                        $factura->bienes_renta=$reten[0]->bienes_renta;
+                        $factura->servicios_renta=$reten[0]->servicios_renta;
+                    }
+                    else{
+                         $factura->agente_retencion='';
+                        $factura->descripcion='';
+                        $factura->bienes_iva='';
+                        $factura->servicios_iva='';
+                        $factura->bienes_renta='';
+                        $factura->servicios_renta='';
+                    }
+                    return $this->getOk($factura);
+                }else{
+                    return $this->getOk($fact);
+                }
+
+
+
+            } catch (\Exception $e) {
+                return $this->insertErrCustom($input, $e->getMessage());
+            }
+    }
+
+    public function facturaPorNumeroElectrotienda(Request $request)
+    {
+        $input = $request->all();
+        $serie = $input['serie'];
+        $numero = $input['numero'];
+        $comprobante=$serie.'-'.$numero;
+        $base='electrot';
+
+            try{
+
+                if ($serie=='001-003'){
+                    $base='electrot';
+                } else if ($serie=='999-001') {
+                    $base='electrotgyeass';
+                } else if ($serie=='999-002') {
+                    $base='electrotcvirt';
+                } else if ($serie=='999-003') {
+                    $base='electrotstvirt';
+                } else {
+                    $base='electrot';
+                }
+                //consulta catalog de series
+                $sql="select tipodocto31,nofact31,nocte31,nomcte31,vtabta31 as subcab,if (cvanulado31=9,'ANULADO','FACTURADO') as estadofac,
+                        descto31,
+                        (select sum(round(precvta03-descvta03,2)) from xbase.movpro where tipotra03='80' and nofact31=nocomp03) as subtotal,
+                        (select round(sum( (iva03/100)*(precvta03 - descvta03-desctotvta03)),2) from xbase.movpro where tipotra03='80' and nofact31=nocomp03) as iva
+                        from xbase.maefac where tipodocto31=02 and nofact31=?";
+
+                $query=  str_replace('xbase',$base,$sql);
+
+
+                $fact = DB::connection('mysqlpac')->select($query,[$comprobante]);
+
+
+                $factura= new FacturaRpa();
+                if (!empty($fact)) {
+                    $factura->tipodocto31=$fact[0]->tipodocto31;
+                    $factura->nofact31=$fact[0]->nofact31;
+                    $factura->nocte31=$fact[0]->nocte31;
+                    $factura->nomcte31=$fact[0]->nomcte31;
+                    $factura->descto31=$fact[0]->descto31;
+                    $factura->subcab=$fact[0]->subcab;
+                    $factura->estadofac=$fact[0]->estadofac;
+                    $factura->subtotal=$fact[0]->subtotal;
+                    $factura->iva=$fact[0]->iva;
+
+                    $sql="select cte.codcte01,cte.agente_retencion,ar.descripcion,bienes_iva,servicios_iva,bienes_renta,servicios_renta
+                        from electrot.maecte cte
+                        inner join electrot.agentes_retencion ar on cte.agente_retencion =ar.id
+                        inner join electrot.configuracion_agentes_retencion car on ar.id=car.id_agente_retencion
+                        where codcte01=?";
+
+                    $reten = DB::connection('mysqlpac')->select($sql,[$factura->nocte31]);
+                    if (!empty($reten)){
+                        $factura->agente_retencion=$reten[0]->agente_retencion;
+                        $factura->descripcion=$reten[0]->descripcion;
+                        $factura->bienes_iva=$reten[0]->bienes_iva;
+                        $factura->servicios_iva=$reten[0]->servicios_iva;
+                        $factura->bienes_renta=$reten[0]->bienes_renta;
+                        $factura->servicios_renta=$reten[0]->servicios_renta;
+                    }
+                    else{
+                         $factura->agente_retencion='';
+                        $factura->descripcion='';
+                        $factura->bienes_iva='';
+                        $factura->servicios_iva='';
+                        $factura->bienes_renta='';
+                        $factura->servicios_renta='';
+                    }
+                    return $this->getOk($factura);
+                }else{
+                    return $this->getOk($fact);
+                }
+
+
+
+            } catch (\Exception $e) {
+                return $this->insertErrCustom($input, $e->getMessage());
+            }
+    }
+
+    public function facturaPorNumeroTodoMoto(Request $request)
+    {
+        $input = $request->all();
+        $serie = $input['serie'];
+        $numero = $input['numero'];
+        $comprobante=$serie.'-'.$numero;
+        $base='todomoto';
+
+            try{
+
+                if ($serie=='001-501'){
+                    $base='todomoto';
+                } else if ($serie=='001-103') {
+                    $base='todomotogye1';
+                } else if ($serie=='001-104') {
+                    $base='todomotouio1';
+                } else {
+                    $base='todomoto';
+                }
+                //consulta catalog de series
+                $sql="select tipodocto31,nofact31,nocte31,nomcte31,vtabta31 as subcab,if (cvanulado31=9,'ANULADO','FACTURADO') as estadofac,
+                        descto31,
+                        ((select sum(round(precvta03-descvta03,2)) from xbase.movpro where tipotra03='80' and nofact31=nocomp03)-xbase.maefac.descto31-xbase.maefac.desctofp31) as subtotal,
+                        (select round(sum( (iva03/100)*(precvta03 - descvta03-desctotvta03)),2) from xbase.movpro where tipotra03='80' and nofact31=nocomp03) as iva
+                        from xbase.maefac where tipodocto31=02 and nofact31=?";
+
+                $query=  str_replace('xbase',$base,$sql);
+
+
+                $fact = DB::connection('mysqlpac')->select($query,[$comprobante]);
+
+
+                $factura= new FacturaRpa();
+                if (!empty($fact)) {
+                    $factura->tipodocto31=$fact[0]->tipodocto31;
+                    $factura->nofact31=$fact[0]->nofact31;
+                    $factura->nocte31=$fact[0]->nocte31;
+                    $factura->nomcte31=$fact[0]->nomcte31;
+                    $factura->descto31=$fact[0]->descto31;
+                    $factura->subcab=$fact[0]->subcab;
+                    $factura->estadofac=$fact[0]->estadofac;
+                    $factura->subtotal=$fact[0]->subtotal;
+                    $factura->iva=$fact[0]->iva;
+
+                    $sql="select cte.codcte01,cte.agente_retencion,ar.descripcion,bienes_iva,servicios_iva,bienes_renta,servicios_renta
+                        from todomoto.maecte cte
+                        inner join todomoto.agentes_retencion ar on cte.agente_retencion =ar.id
+                        inner join todomoto.configuracion_agentes_retencion car on ar.id=car.id_agente_retencion
+                        where codcte01=?";
+
+                    $reten = DB::connection('mysqlpac')->select($sql,[$factura->nocte31]);
+                    if (!empty($reten)){
+                        $factura->agente_retencion=$reten[0]->agente_retencion;
+                        $factura->descripcion=$reten[0]->descripcion;
+                        $factura->bienes_iva=$reten[0]->bienes_iva;
+                        $factura->servicios_iva=$reten[0]->servicios_iva;
+                        $factura->bienes_renta=$reten[0]->bienes_renta;
+                        $factura->servicios_renta=$reten[0]->servicios_renta;
+                    }
+                    else{
+                         $factura->agente_retencion='';
+                        $factura->descripcion='';
+                        $factura->bienes_iva='';
+                        $factura->servicios_iva='';
+                        $factura->bienes_renta='';
+                        $factura->servicios_renta='';
+                    }
+                    return $this->getOk($factura);
+                }else{
+                    return $this->getOk($fact);
+                }
+
+
+
+            } catch (\Exception $e) {
+                return $this->insertErrCustom($input, $e->getMessage());
+            }
+    }
+
+    public function facturaPorNumeroUltracem(Request $request)
+    {
+        $input = $request->all();
+        $serie = $input['serie'];
+        $numero = $input['numero'];
+        $comprobante=$serie.'-'.$numero;
+        $base='ultcem';
+
+            try{
+
+                if ($serie=='001-100'){
+                    $base='ultcem';
+                } else if ($serie=='001-105') {
+                    $base='ultcemcuenca2';
+                } else if ($serie=='001-102') {
+                    $base='ultcemgye1';
+                } else if ($serie=='001-104') {
+                    $base='ultcemuio1';
+                } else if ($serie=='001-108') {
+                    $base='ultcemstecvirt';
+                } else if ($serie=='001-103') {
+                    $base='ultcemgyeassem';
+                } else if ($serie=='001-106') {
+                    $base='ultcemcuenca1';
+                } else if ($serie=='001-107') {
+                    $base='ultcemgye10';
+                } else if ($serie=='999-004') {
+                    $base='ultcemconsigvirt';
+                } else {
+                    $base='ultcem';
+                }
+                //consulta catalog de series
+                $sql="select tipodocto31,nofact31,nocte31,nomcte31,vtabta31 as subcab,if (cvanulado31=9,'ANULADO','FACTURADO') as estadofac,
+                        descto31,
+                        (select sum(round(precvta03-descvta03,2)) from xbase.movpro where tipotra03='80' and nofact31=nocomp03) as subtotal,
+                        (select round(sum( (iva03/100)*(precvta03 - descvta03-desctotvta03)),2) from xbase.movpro where tipotra03='80' and nofact31=nocomp03) as iva
+                        from xbase.maefac where tipodocto31=02 and nofact31=?";
+
+                $query=  str_replace('xbase',$base,$sql);
+
+
+                $fact = DB::connection('mysqlpac')->select($query,[$comprobante]);
+
+
+                $factura= new FacturaRpa();
+                if (!empty($fact)) {
+                    $factura->tipodocto31=$fact[0]->tipodocto31;
+                    $factura->nofact31=$fact[0]->nofact31;
+                    $factura->nocte31=$fact[0]->nocte31;
+                    $factura->nomcte31=$fact[0]->nomcte31;
+                    $factura->descto31=$fact[0]->descto31;
+                    $factura->subcab=$fact[0]->subcab;
+                    $factura->estadofac=$fact[0]->estadofac;
+                    $factura->subtotal=$fact[0]->subtotal;
+                    $factura->iva=$fact[0]->iva;
+
+                    $sql="select cte.codcte01,cte.agente_retencion,ar.descripcion,bienes_iva,servicios_iva,bienes_renta,servicios_renta
+                        from ultcem.maecte cte
+                        inner join ultcem.agentes_retencion ar on cte.agente_retencion =ar.id
+                        inner join ultcem.configuracion_agentes_retencion car on ar.id=car.id_agente_retencion
+                        where codcte01=?";
+
+                    $reten = DB::connection('mysqlpac')->select($sql,[$factura->nocte31]);
+                    if (!empty($reten)){
+                        $factura->agente_retencion=$reten[0]->agente_retencion;
+                        $factura->descripcion=$reten[0]->descripcion;
+                        $factura->bienes_iva=$reten[0]->bienes_iva;
+                        $factura->servicios_iva=$reten[0]->servicios_iva;
+                        $factura->bienes_renta=$reten[0]->bienes_renta;
+                        $factura->servicios_renta=$reten[0]->servicios_renta;
+                    }
+                    else{
+                         $factura->agente_retencion='';
+                        $factura->descripcion='';
+                        $factura->bienes_iva='';
+                        $factura->servicios_iva='';
+                        $factura->bienes_renta='';
+                        $factura->servicios_renta='';
+                    }
+                    return $this->getOk($factura);
+                }else{
+                    return $this->getOk($fact);
+                }
+
+
+
+            } catch (\Exception $e) {
+                return $this->insertErrCustom($input, $e->getMessage());
+            }
+    }
 
 
 

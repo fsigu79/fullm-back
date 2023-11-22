@@ -20,7 +20,10 @@ class PacGuiasEntregaController extends Controller
     use FormatResponseTrait;
 
 
+    //(SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
+    //(SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab=(select novend31 from xbase.maefac where nofact31=g.numero_documento_origen)) as vendedor,
 
+    //
 
     private $sqlg = "select g.numero_guia_remision AS numero,
             g.fecha_emision AS fecha,
@@ -39,7 +42,41 @@ class PacGuiasEntregaController extends Controller
             g.codigo_cliente AS codigo_cliente,
             g.codigo_cliente AS ruc,
             g.nombre_cliente AS nombre_cliente,
+            (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab=(select novend31 from xbase.maefac where nofact31=g.numero_documento_origen)) as vendedor,
             g.telefono AS telefono,
+            '' as vendedor,
+            g.observacion AS observacion,
+            g.numero_documento_origen AS numero_documento_origen,
+            f.fecfact31  as fecha_factura,
+            f.nopedido31 as numero_pedido,
+            g.usuario AS usuario
+        from (xbase.guia_remision_electronica g join xbase.series_electronicas e on(((convert(substr(g.numero_guia_remision,1,7) using binary) = convert(e.serie using binary))
+            and (e.tipodoc = '99'))))
+        inner join xbase.maefac f on  f.nofact31=g.numero_documento_origen
+        where g.fecha_emision>='xfinicio'  and g.fecha_emision<='xffin' and (g.estado_electronico = 2)";
+
+
+
+
+        private $sqlgori = "select g.numero_guia_remision AS numero,
+            g.fecha_emision AS fecha,
+            g.nombre_transportista,
+            g.ruc_transportista AS ruc_transportista,
+            g.bodega_origen AS codigo_origen,
+            g.direccion_origen AS direccion_origen,
+            g.motivo_traslado AS motivo_traslado,
+            g.bodega_destino AS codigo_destino,
+            g.direccion_destino AS direccion_destino,
+            g.direccion_destino AS direccion,
+            (select group_concat(jcev.maetab.nomtab separator ' ') from jcev.maetab where ((jcev.maetab.numtab = '01')
+                    and (jcev.maetab.codtab in ('10','11'))) group by jcev.maetab.numtab) AS direccion_establecimiento,
+            g.fecha_inicio_transporte AS fecha_inicio_transporte,
+            g.fecha_fin_transporte AS fecha_fin_transporte,
+            g.codigo_cliente AS codigo_cliente,
+            g.codigo_cliente AS ruc,
+            g.nombre_cliente AS nombre_cliente,
+            g.telefono AS telefono,
+            '' as vendedor,
             g.observacion AS observacion,
             g.numero_documento_origen AS numero_documento_origen,
             (select fecfact31 from xbase.maefac where nofact31=g.numero_documento_origen) as fecha_factura,
@@ -77,16 +114,24 @@ class PacGuiasEntregaController extends Controller
         $sql = $sql . ' UNION ALL ' . $this->generaQueryGuias('jcevconsigvirt', 'jcevconsigvirt', 'jcevgyeassem', $inicio, $fin);
         $sql = $sql . ' UNION ALL ' . $this->generaQueryGuias('jcevstecvir', 'jcevstecvir', 'jcevstecvir', $inicio, $fin);
 
-        $list = DB::connection('mysqlpac')->select($sql);
-        //return $this->getOk($list);
-        //fsigu sqls
+
         /*$box = new SqlModel();
             $box->sql= $sql;
             $box->sql1=$sql;
             $box->save();*/
 
+
+        $list = DB::connection('mysqlpac')->select($sql);
+        //return $this->getOk($list);
+        //fsigu sqls
+            /*$box = new SqlModel();
+            $box->sql= 'inserto';
+            $box->sql1='inserto';
+            $box->save();*/
+
+
         foreach ($list as $detalle) {
-            $results = DB::select('SELECT guias_pac_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [
+            $results = DB::select('SELECT guias_pac_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [
                 $detalle->numero,
                 $detalle->fecha,
                 $detalle->nombre_transportista,
@@ -98,17 +143,20 @@ class PacGuiasEntregaController extends Controller
                 $detalle->direccion_destino,
                 $detalle->direccion,
                 $detalle->direccion_establecimiento,
-                $detalle->fecha_inicio_transporte,
-                $detalle->fecha_fin_transporte,
+                //$detalle->fecha_inicio_transporte,
+                null,
+                //$detalle->fecha_fin_transporte,
+                null,
                 $detalle->codigo_cliente,
                 $detalle->ruc,
                 $detalle->nombre_cliente,
+                $detalle->vendedor,
                 $detalle->telefono,
                 $detalle->observacion,
                 $detalle->numero_documento_origen,
                 $detalle->fecha_factura,
-                $detalle->numero_pedido,
-                $detalle->fecha_pedido,
+                '',
+                null,
                 $detalle->usuario
             ]);
         };
@@ -139,7 +187,7 @@ class PacGuiasEntregaController extends Controller
             $sql = "SELECT g.id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
             codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
             direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
-            codigo_cliente, g.ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
+            codigo_cliente, g.ruc, nombre_cliente,vendedor, telefono, observacion, numero_documento_origen,
             fecha_factura,numero_pedido,fecha_pedido,
             usuario, transportista_id, fecha_asignacion, esasignado, fecha_inicio_traslado_transportista,
             inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
@@ -154,7 +202,7 @@ class PacGuiasEntregaController extends Controller
             $sql="SELECT g.id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
             codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
             direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
-            codigo_cliente, g.ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
+            codigo_cliente, g.ruc, nombre_cliente,vendedor, telefono, observacion, numero_documento_origen,
             fecha_factura,numero_pedido,fecha_pedido,
             usuario, transportista_id, fecha_asignacion, esasignado, fecha_inicio_traslado_transportista,
             inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
@@ -180,7 +228,7 @@ class PacGuiasEntregaController extends Controller
         $sql = "SELECT id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
                     codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
                     direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
-                    codigo_cliente, ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
+                    codigo_cliente, ruc, nombre_cliente,vendedor, telefono, observacion, numero_documento_origen,
                     fecha_factura,numero_pedido,fecha_pedido,
                     usuario, transportista_id, fecha_asignacion, esasignado, fecha_inicio_traslado_transportista,
                     inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
@@ -204,7 +252,7 @@ class PacGuiasEntregaController extends Controller
         $sql = "SELECT id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
                     codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
                     direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
-                    codigo_cliente, ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
+                    codigo_cliente, ruc, nombre_cliente,vendedor, telefono, observacion, numero_documento_origen,
                     fecha_factura,numero_pedido,fecha_pedido,
                     usuario, transportista_id, fecha_asignacion, esasignado, fecha_inicio_traslado_transportista,
                     inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
@@ -228,7 +276,7 @@ class PacGuiasEntregaController extends Controller
         $sql = "SELECT id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
                     codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
                     direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
-                    codigo_cliente, ruc, nombre_cliente, telefono, observacion, numero_documento_origen,
+                    codigo_cliente, ruc, nombre_cliente,vendedor, telefono, observacion, numero_documento_origen,
                     fecha_factura,numero_pedido,fecha_pedido,
                     usuario, transportista_id, fecha_asignacion, esasignado, fecha_inicio_traslado_transportista,
                     inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
@@ -430,7 +478,9 @@ class PacGuiasEntregaController extends Controller
                 })->encode('jpg', 80); // 80 es la calidad de compresión, puedes ajustarlo según tus necesidades
 
                 // Guardar la imagen comprimida como JPG
+
                 // eliminar la concatenacion con .jpg
+
                 Storage::disk('images')->put($imageFileName, $compressedImage->stream());
 
                 // Puedes obtener la URL de la imagen guardada

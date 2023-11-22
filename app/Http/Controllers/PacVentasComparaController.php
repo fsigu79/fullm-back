@@ -271,6 +271,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina,$inicioa1,$fina1);
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
                 // select de notas de credito
                 $sqlnc=$this->generaQueryNCCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
@@ -280,6 +281,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
                 //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatrizCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
 
         }
@@ -399,6 +401,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina);
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
                 // select de notas de credito
                 $sqlnc=$this->generaQueryNC('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
@@ -409,6 +412,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCMatriz('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
 
         }
@@ -428,7 +432,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
 				                        cate AS categoria,ciudad,
 					                    ROUND(SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)),2) AS anterior,
 					                    ROUND(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)),2) AS actual,
-					                    ROUND(ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)),0)*100,2) as incremento
+					                    ROUND(ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0))-1,0)*100,2) as incremento
                                   FROM
                                  (  '.$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
 					            codigo, articulo,
@@ -454,7 +458,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
 				                        cate AS categoria,ciudad,
 					                    ROUND(SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0)),2) AS anterior,
 					                    ROUND(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)),2) AS actual,
-                                        ROUND(ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0)),0)*100,2) as incremento
+                                        ROUND(ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0))-1,0)*100,2) as incremento
                                   FROM
                                  (  '.$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
 					            codigo, articulo,
@@ -525,6 +529,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina,$inicioa1,$fina1);
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
                 // select de notas de credito
                 $sqlnc=$this->generaQueryNCCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
@@ -535,6 +540,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
                 //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatrizCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
 
         }
@@ -644,6 +650,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina);
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
                 // select de notas de credito
                 $sqlnc=$this->generaQueryNC('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
@@ -654,6 +661,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCMatriz('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
 
         }
@@ -669,7 +677,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
             $sql='SELECT 	vendedor,
 					            ROUND(SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)),2) AS anterior,
 					            ROUND(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)),2) AS actual,
-					            ROUND(ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)),0)*100,2) as incremento
+					            ROUND(ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0))-1,0)*100,2) as incremento
                             FROM
                                  (  '.$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
 					            codigo, articulo,
@@ -690,7 +698,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
             $sql='SELECT 	vendedor,
 					            ROUND(SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0)),2) AS anterior,
 					            ROUND(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)),2) AS actual,
-					            ROUND(ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0)),0)*100,2) as incremento
+					            ROUND(ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0))-1,0)*100,2) as incremento
                             FROM
                                  (  '.$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
 					            codigo, articulo,
@@ -755,6 +763,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina);
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
                 // select de notas de credito
                 $sqlnc=$this->generaQueryNC('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
@@ -765,6 +774,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
                 //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatriz('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
 
         }
@@ -783,7 +793,8 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
                                 marca,
                                 ROUND(SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)),2) AS anterior,
 					            ROUND(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)),2) AS actual,
-					            ROUND(ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)),0)*100,2) as incremento
+					            ROUND(
+                                    ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0))-1,0)*100,2) as incremento
                             FROM
                                  (  '.$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
 					            codigo, articulo,
@@ -806,7 +817,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
                                 marca,
                                 ROUND(SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0)),2) AS anterior,
 					            ROUND(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)),2) AS actual,
-								ROUND(ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0)),0)*100,2) as incremento
+								ROUND(ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0))-1,0)*100,2) as incremento
                             FROM
                                  (  '.$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
 					            codigo, articulo,
@@ -876,6 +887,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina,$inicioa1,$fina1);
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
                 // select de notas de credito
                 $sqlnc=$this->generaQueryNCCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
@@ -886,6 +898,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
                 //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
 
         }
@@ -999,6 +1012,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina);
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
                 // select de notas de credito
                 $sqlnc=$this->generaQueryNC('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
@@ -1009,6 +1023,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
                 //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatriz('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
 
         }
@@ -1025,7 +1040,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
             $sql='SELECT 	marca,
 					            ROUND(SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)),2) AS anterior,
 					            ROUND(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)),2) AS actual,
-								ROUND(ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0)),0)*100,2) as incremento
+								ROUND(ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', cantidad, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', cantidad, 0))-1,0)*100,2) as incremento
                             FROM
                                  (  '.$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
 					            codigo, articulo,
@@ -1046,7 +1061,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
             $sql='SELECT 	marca,
 					            ROUND(SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0)),2) AS anterior,
 					            ROUND(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)),2) AS actual,
-								ROUND(ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0)),0)*100,2) as incremento
+								ROUND(ifnull(SUM(IF(YEAR(fecha) = '.$anoactual.', vtaneta, 0)) /SUM(IF(YEAR(fecha) = '.$anoanterior.', vtaneta, 0))-1,0)*100,2) as incremento
                             FROM
                                  (  '.$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
 					            codigo, articulo,
@@ -1117,6 +1132,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina,$inicioa1,$fina1);
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
                 // select de notas de credito
                 $sqlnc=$this->generaQueryNC('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
@@ -1127,6 +1143,7 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
                 //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatriz('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
 
         }

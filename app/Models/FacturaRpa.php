@@ -16,6 +16,7 @@ class FacturaRpa extends Model
         'nomcte31',
         'subcab',
         'estadofac',
+        'descto31',
         'subtotal',
         'iva',
         'agente_retencion',

@@ -14,6 +14,8 @@ use App\Http\Controllers\AbonoController;
 use App\Http\Controllers\GuiaRemisionController;
 use App\Http\Controllers\GuiasProductosController;
 use App\Http\Controllers\DireccionController;
+use App\Http\Controllers\TipoVisitaController;
+use App\Http\Controllers\VisitaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -142,6 +144,10 @@ Route::group([
     Route::get('resend_email/{id}', [GuiaRemisionController::class, 'resendEmail']);
     Route::get('resend_sri/{id}', [GuiaRemisionController::class, 'resendToSri']);
 
+    Route::get('getdespachos', [GuiasProductosController::class, 'importaDespachos']);
+    Route::get('getdesdetalle', [GuiasProductosController::class, 'importaDespachosDetalle']);
+    Route::put('updest', [GuiasProductosController::class, 'actualizaEstadoFacturas']);
+
  });
 
 
@@ -155,3 +161,27 @@ Route::group([
    Route::put('edit', [DireccionController::class, 'update']);
    Route::delete('delete/{id}', [DireccionController::class, 'delete']);
 });
+
+
+
+Route::group([
+   'prefix' => 'tipov',
+], function () {
+   Route::get('list', [TipoVisitaController::class, 'list']);
+   Route::get('list/{id}', [TipoVisitaController::class, 'getById']);
+   Route::post('create', [TipoVisitaController::class, 'create']);
+   Route::put('edit', [TipoVisitaController::class, 'edit']);
+   Route::delete('delete/{id}', [TipoVisitaController::class, 'delete']);
+});
+
+
+
+Route::group([
+    'prefix' => 'vis',
+ ], function () {
+
+    Route::get('list', [VisitaController::class, 'list']);
+    Route::post('create', [VisitaController::class, 'save']);
+    Route::get('list/{id}', [VisitaController::class, 'findById']);
+
+ });

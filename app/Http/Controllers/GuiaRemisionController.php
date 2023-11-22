@@ -142,6 +142,7 @@ class GuiaRemisionController extends Controller
 
     public function save(Request $request)
     {
+        $input='';
         $validation = Validator::make(
             $request->all(),
             [
@@ -158,20 +159,23 @@ class GuiaRemisionController extends Controller
         if (!$validation->fails()) {
             try {
                 $input = $request->all();
-                DB::beginTransaction();
-                //fsigu sqls
-                    /*$box = new SqlModel();
-                        $box->sql= 'save guia';
+                /*$box = new SqlModel();
+                        $box->sql=$input['serie'];
                         $box->sql1='1';
                         $box->save();*/
+
+                DB::beginTransaction();
+                //fsigu sqls
+
 
                 if ($input['accion'] != 'Eliminar') {
 
                     $guia = GuiaRemision::find($input['id']);
 
                     if (!$guia) {
-                        $numero = DB::select("SELECT numero + 1 AS numero FROM documentos WHERE codigo = ? AND modulo = 'Ventas'", [
-                            $input['documento']
+                        $serie=$input['serie'];
+                        $numero = DB::select("SELECT numero + 1 AS numero FROM documentos WHERE codigo = ? and serie=? AND modulo = 'Ventas'", [
+                            $input['documento'],$serie,
                         ]);
 
                         $guia = new GuiaRemision($input);
