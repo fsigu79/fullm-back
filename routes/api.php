@@ -220,7 +220,7 @@ Route::group([
 
 
 
-
+//api/pac/getclipac se envia como parametro el codigo del cliente
 Route::group([
     'prefix' => 'pac',
 ], function () {
@@ -251,6 +251,7 @@ Route::group([
     Route::get('prodbyidpac/{id}', [ProductoPacController::class, 'productIdPac']);
 
     Route::get('searchclipac', [ClientesPacController::class, 'searchClientesPac']);
+    Route::get('getclipac', [ClientesPacController::class, 'getClientesPacByCode']);
     Route::get('searchprovepac', [ClientesPacController::class, 'searchProveedorPac']);
 
     Route::get('reposicion', [PACReposicionController::class, 'reposicionProducto']);
@@ -407,8 +408,12 @@ Route::group([
     Route::get('catschasis', [ConsultaExtPacController::class, 'catalogoSeriesByChasis']);
     Route::get('protodomoto', [ConsultaExtPacController::class, 'productosTodomoto']);
     Route::get('prolist', [ConsultaExtPacController::class, 'productosJcevList']);
-    Route::get('facturapac', [ConsultaExtPacController::class, 'factuaPorNumero']);
-
+    Route::get('facturapac', [ConsultaExtPacController::class, 'facturaPorNumero']);
+    Route::get('faccdredimport', [ConsultaExtPacController::class, 'facturaPorNumeroCredimport']);
+    Route::get('facevisu', [ConsultaExtPacController::class, 'facturaPorNumeroEvisu']);
+    Route::get('facelectro', [ConsultaExtPacController::class, 'facturaPorNumeroElectrotienda']);
+    Route::get('factodomoto', [ConsultaExtPacController::class, 'facturaPorNumeroTodoMoto']);
+    Route::get('factultra', [ConsultaExtPacController::class, 'facturaPorNumeroUltracem']);
 });
 
 

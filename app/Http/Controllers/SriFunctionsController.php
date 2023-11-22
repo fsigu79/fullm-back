@@ -87,6 +87,7 @@ class SriFunctionsController extends Controller
         }
     }
 
+
     private function signXml($xml): string
     {
         try {
@@ -94,7 +95,32 @@ class SriFunctionsController extends Controller
             $p12 = storage_path("app/public/" . $this->company["signature_file"]);
             $password = $this->company->decriptPassword($this->company["signature_password"]);
             $escapedXml = base64_encode($xml);
-            $command = env('PYTHON')." $basePath --xml=$escapedXml --p12=$p12 --password=$password";
+            $command = 'python3 '." $basePath --xml=$escapedXml --p12=$p12 --password=$password";
+            $output = shell_exec($command);
+            $parts = explode("\n", $output);
+            $firstWord = $parts[0];
+            if ($firstWord == "None") {
+                throw new Exception("Error executing Python file: " . $parts[1]);
+            }
+            if ($output === null) {
+                throw new Exception("Error executing Python file " . $command);
+            }
+            return trim($output);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
+
+
+    private function signXmlOri($xml): string
+    {
+        try {
+            $basePath = base_path() . DIRECTORY_SEPARATOR . "signxml.py";
+            $p12 = storage_path("app/public/" . $this->company["signature_file"]);
+            $password = $this->company->decriptPassword($this->company["signature_password"]);
+            $escapedXml = base64_encode($xml);
+            $command = env('PYTHON3')." $basePath --xml=$escapedXml --p12=$p12 --password=$password";
             //return $command;
             $output = shell_exec($command);
 
@@ -102,14 +128,14 @@ class SriFunctionsController extends Controller
             $firstWord = $parts[0];
             //return $firstWord;
             if ($firstWord == "None") {
-                throw new Exception("Error executing Python file: " . $parts[1]);
+                throw new Exception("Error executing Python file 1: " . $parts[1]);
             }
             /*if ($output === null) {
-                throw new Exception("Error executing Python file ".$output);
+                throw new Exception("Error executing Python file 2".$output);
 
             }*/
             if ($output === null) {
-                throw new Exception("Error executing Python file ".$command);
+                throw new Exception("Error executing Python file 3".$command);
             }
             return trim($output); // Devuelve la salida sin espacios en blanco adicionales
         } catch (\Throwable $th) {
