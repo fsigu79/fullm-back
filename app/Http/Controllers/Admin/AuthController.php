@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Traits\FormatResponseTrait;
+use App\Models\Menu;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +22,7 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-           $validation = Validator::make(
+        $validation = Validator::make(
             $request->all(),
             [
                 'login' => 'required',
@@ -49,11 +50,48 @@ class AuthController extends Controller
                 return $this->getOk($data, 'Cuenta desactivada');
             }
 
+            $profile_id = $user->profile_id;
+
+            // if($user->role == 2){
+            //     $menu = Menu::where("parent_id", 10)
+            //     ->where("isactive", 1)
+            //     ->with([
+            //         "items.permission" => function ($query) use ($profile_id) {
+            //             $query->where("profile_id", $profile_id)
+            //                 ->where("view", 1);
+            //         }
+            //     ])
+            //     ->get();
+            // }else{
+            //     $menu = Menu::where("parent_id", null)
+            //     ->where("isactive", 1)
+            //     ->with([
+            //         "items.permission" => function ($query) use ($profile_id) {
+            //             $query->where("profile_id", $profile_id)
+            //                 ->where("view", 1);
+            //         }
+            //     ])
+            //     ->get();
+            // }
+
+            $menu = Menu::where("parent_id", null)
+                ->where("isactive", 1)
+                ->with([
+                    "items.permission" => function ($query) use ($profile_id) {
+                        $query->where("profile_id", $profile_id)
+                            ->where("view", 1);
+                    }
+                ])
+                ->get();
+
+
+
             $data = [
-                'token' =>$token,
+                'token' => $token,
                 'token_type' => 'bearer',
                 'expires_in' => auth()->factory()->getTTL() * 320,
                 'user' => $user,
+                'menu' => $menu,
             ];
 
 
