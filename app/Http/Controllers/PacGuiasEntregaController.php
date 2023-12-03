@@ -25,6 +25,35 @@ class PacGuiasEntregaController extends Controller
 
     //
 
+    private $sqloptimus="select g.serie||lpad(trim(g.numero),9,'0') AS numero,
+            g.fecha_inicio AS fecha,
+            t.nombres as nombre_transportista,
+            t.ruc AS ruc_transportista,
+            g.serie AS codigo_origen,
+            g.partida AS direccion_origen,
+            g.motivo AS motivo_traslado,
+            '' AS codigo_destino,
+            d.direccion AS direccion_destino,
+            d.direccion AS direccion,
+            g.partida AS direccion_establecimiento,
+            g.fecha_inicio AS fecha_inicio_transporte,
+            g.fecha_fin AS fecha_fin_transporte,
+            g.ruc AS codigo_cliente,
+            g.ruc AS ruc,
+            g.cliente AS nombre_cliente,
+            '' as vendedor,
+            d	.telefono AS telefono,
+            '' as vendedor,
+            '' AS observacion,
+            '' AS numero_documento_origen,
+            current_timestamp as fecha_factura,
+            '' as numero_pedido,
+            '' AS usuario
+        from guias_remision g
+		inner join transportistas t on g.transportista_id=t.id
+        inner join direcciones d on g.direccion_id=d.id
+        where g.fecha_inicio>='xfinicio'  and g.fecha_inicio<='xffin'";
+
     private $sqlg = "select g.numero_guia_remision AS numero,
             g.fecha_emision AS fecha,
             g.nombre_transportista,
@@ -95,7 +124,138 @@ class PacGuiasEntregaController extends Controller
     }
 
 
+    public function importarGuasOptimus(Request $request)
+    {
+        $input = $request->all();
+        $inicio = $request['finicio'] . ' 00:00:00';
+        $fin = $request['ffin'] . ' 23:59:00';
+        $sql = '';
+
+        // select de guias
+        $sql = $this->sqloptimus;
+
+
+        /*$box = new SqlModel();
+            $box->sql= $sql;
+            $box->sql1=$sql;
+            $box->save();*/
+
+
+        $list = DB::connection('mysqlpac')->select($sql);
+        //return $this->getOk($list);
+        //fsigu sqls
+            /*$box = new SqlModel();
+            $box->sql= 'inserto';
+            $box->sql1='inserto';
+            $box->save();*/
+
+
+        foreach ($list as $detalle) {
+            $results = DB::select('SELECT guias_pac_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [
+                $detalle->numero,
+                $detalle->fecha,
+                $detalle->nombre_transportista,
+                $detalle->ruc_transportista,
+                $detalle->codigo_origen,
+                $detalle->direccion_origen,
+                $detalle->motivo_traslado,
+                $detalle->codigo_destino,
+                $detalle->direccion_destino,
+                $detalle->direccion,
+                $detalle->direccion_establecimiento,
+                //$detalle->fecha_inicio_transporte,
+                null,
+                //$detalle->fecha_fin_transporte,
+                null,
+                $detalle->codigo_cliente,
+                $detalle->ruc,
+                $detalle->nombre_cliente,
+                $detalle->vendedor,
+                $detalle->telefono,
+                $detalle->observacion,
+                $detalle->numero_documento_origen,
+                $detalle->fecha_factura,
+                '',
+                null,
+                $detalle->usuario
+            ]);
+        };
+        $termino = "IMPORTACION OK";
+        return $this->getOk($termino);
+    }
+
+
     public function importarGuasPac(Request $request)
+    {
+        $input = $request->all();
+        $inicio = $request['finicio'] . ' 00:00:00';
+        $fin = $request['ffin'] . ' 23:59:00';
+        $sql = '';
+
+        // select de guias
+        $sql = $this->generaQueryGuias('jcev', 'jcev', 'jcev', $inicio, $fin);
+        $sql = $sql . ' UNION ALL ' . $this->generaQueryGuias('jcevcuenca2', 'jcevcuenca2', 'jcevcuenca2', $inicio, $fin);
+        $sql = $sql . ' UNION ALL ' . $this->generaQueryGuias('jcevcuenca1', 'jcevcuenca1', 'jcevcuenca1', $inicio, $fin);
+        $sql = $sql . ' UNION ALL ' . $this->generaQueryGuias('jcevgye1', 'jcevgye1', 'jcevgye1', $inicio, $fin);
+        $sql = $sql . ' UNION ALL ' . $this->generaQueryGuias('jcevgye10', 'jcevgye10', 'jcevgye10', $inicio, $fin);
+        $sql = $sql . ' UNION ALL ' . $this->generaQueryGuias('jcevuio1', 'jcevuio1', 'jcevuio1', $inicio, $fin);
+        $sql = $sql . ' UNION ALL ' . $this->generaQueryGuias('jcevconsigvirt', 'jcevuio1', 'jcevuio1', $inicio, $fin);
+        $sql = $sql . ' UNION ALL ' . $this->generaQueryGuias('jcevgyeassem', 'jcevgyeassem', 'jcevgyeassem', $inicio, $fin);
+        $sql = $sql . ' UNION ALL ' . $this->generaQueryGuias('jcevconsigvirt', 'jcevconsigvirt', 'jcevgyeassem', $inicio, $fin);
+        $sql = $sql . ' UNION ALL ' . $this->generaQueryGuias('jcevstecvir', 'jcevstecvir', 'jcevstecvir', $inicio, $fin);
+
+
+        /*$box = new SqlModel();
+            $box->sql= $sql;
+            $box->sql1=$sql;
+            $box->save();*/
+
+
+        $list = DB::connection('mysqlpac')->select($sql);
+        //return $this->getOk($list);
+        //fsigu sqls
+            /*$box = new SqlModel();
+            $box->sql= 'inserto';
+            $box->sql1='inserto';
+            $box->save();*/
+
+
+        foreach ($list as $detalle) {
+            $results = DB::select('SELECT guias_pac_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [
+                $detalle->numero,
+                $detalle->fecha,
+                $detalle->nombre_transportista,
+                $detalle->ruc_transportista,
+                $detalle->codigo_origen,
+                $detalle->direccion_origen,
+                $detalle->motivo_traslado,
+                $detalle->codigo_destino,
+                $detalle->direccion_destino,
+                $detalle->direccion,
+                $detalle->direccion_establecimiento,
+                //$detalle->fecha_inicio_transporte,
+                null,
+                //$detalle->fecha_fin_transporte,
+                null,
+                $detalle->codigo_cliente,
+                $detalle->ruc,
+                $detalle->nombre_cliente,
+                $detalle->vendedor,
+                $detalle->telefono,
+                $detalle->observacion,
+                $detalle->numero_documento_origen,
+                $detalle->fecha_factura,
+                '',
+                null,
+                $detalle->usuario
+            ]);
+        };
+        $termino = "IMPORTACION OK";
+        return $this->getOk($termino);
+    }
+
+
+     public function importarGuasOptimus1(Request $request)
     {
         $input = $request->all();
         $inicio = $request['finicio'] . ' 00:00:00';
