@@ -90,6 +90,40 @@ class GuiasPacController extends Controller
         return $this->getOk($list);
     }
 
+
+    public function ventaGuiasOptimus(Request $request)
+    {
+        $input = $request->all();
+        $inicio=$request['finicio'].' 00:00:00';
+        $fin=$request['ffin'].' 23:59:00';
+        $sql='';
+
+        // select de guias
+        $sql=$this->generaQueryGuias('jcev','jcev','jcev',$inicio,$fin);
+        $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevcuenca2','jcevcuenca2','jcevcuenca2',$inicio,$fin);
+        $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevcuenca1','jcevcuenca1','jcevcuenca1',$inicio,$fin);
+        $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevgye1','jcevgye1','jcevgye1',$inicio,$fin);
+        $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevgye10','jcevgye10','jcevgye10',$inicio,$fin);
+        $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevuio1','jcevuio1','jcevuio1',$inicio,$fin);
+        $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevconsigvirt','jcevuio1','jcevuio1',$inicio,$fin);
+        $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevgyeassem','jcevgyeassem','jcevgyeassem',$inicio,$fin);
+        $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevconsigvirt','jcevconsigvirt','jcevgyeassem',$inicio,$fin);
+        $sql=$sql.' UNION ALL '.$this->generaQueryGuias('jcevstecvir','jcevstecvir','jcevstecvir',$inicio,$fin);
+
+        $sql='select codigocliente,
+                    cliente,
+                    documento,
+                    fecha,
+                    vendedor,
+                    numero_guia_remision,
+                    sum(cantidad) as cantidad
+              from ('.$sql.' ) a group by codigocliente,cliente,documento,fecha,vendedor,numero_guia_remision';
+
+        $list = DB::connection('mysqlpac')->select($sql);
+
+        return $this->getOk($list);
+    }
+
     public function generaQueryGuias($bodega,$bodega1,$bodega2,$inicio,$fin)
     {
         $query=  str_replace('xbase',$bodega,$this->sqlgen);
