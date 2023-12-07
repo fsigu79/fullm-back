@@ -236,6 +236,7 @@ Route::group([
     Route::get('cuposusos', [CuposUsosController::class, 'cuposUsos']);
     Route::get('vensem', [PacVentasController::class, 'ventasSemana']);
     Route::get('gerdia', [PacGerencialDiarioController::class, 'ventasmarca']);
+    Route::get('propacprecio', [ProductoPacController::class, 'listPrecios']);
 
     Route::get('vtacomcli', [PacVentasComparaController::class, 'ventamescliente']);
     Route::get('vtacomven', [PacVentasComparaController::class, 'ventamesvendedor']);
