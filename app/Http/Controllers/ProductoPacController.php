@@ -150,6 +150,67 @@ class ProductoPacController extends Controller
         }
     }
 
+    public function listPrecios(Request $request)
+    {
+        $input = $request->all();
+        $marca=$request['marca_id'];
+
+        if ($request['producto_id']=='null' || $request['producto_id']==''){
+            $producto='0';
+        }else{
+            $producto=$request['producto_id'];
+        }
+
+        if ($request['producto_nombre']=='null' || $request['producto_nombre']==''){
+            $descripcion='0';
+        }else{
+            $descripcion=$request['producto_nombre'].'%';
+        }
+
+        if ($request['producto_marca']=='null' || $request['producto_marca']==''){
+            $marca='0';
+        }else{
+            $marca=$request['producto_marca'];
+        }
+
+        //$producto=isset($request['producto_id']) ?$request['producto_id']:'0';
+        //$vendedor=isset($request['vendedor_id']) ?$request['vendedor_id']:'0';
+
+
+        //$descripcion=$request['producto_nombre'];
+        $tipo=$request['tipo_id'];
+        $categoria=$request['categoria_id'];
+
+
+
+        $sql="select codprod01 as codigo,
+                desprod01 as descripcion,
+                cantact01  as saldo,
+                orden01 as tipoc,
+                (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab='46' AND codtab!='' AND codtab=maepro.orden01) AS tipo_producto,
+                marca01 as marcac,
+                (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab='4530' AND codtab!='' AND codtab=maepro.marca01) AS marca,
+                catprod01 as categoriac,
+                (SELECT desccate FROM jcev.categorias cc WHERE tipocate='02' AND codcate=catprod01) as categoria,
+                descto101 as descuento,
+                precvta01 as precio,
+                '' as proveedor,
+                fotoprod01 as imagen1
+            from jcev.maepro
+            where  codprod01!=''
+                and case when '0'='xprod' then true else codprod01='xprod' end
+                and case when '0'='xdes' then true else desprod01 like 'xdes' end
+                and case when '0'='xmar' then true else marca01 = 'xmar' end";
+
+        //$list = DB::select($sql,[$producto,$producto,$descripcion,$descripcion]);
+        $sql=  str_replace('xprod',$producto,$sql);
+        $sql=  str_replace('xdes',$descripcion,$sql);
+        $sql=  str_replace('xmar',$marca,$sql);
+        $list = DB::connection('mysqlpac')->select($sql);
+
+        return $this->getOk($list);
+    }
+
 
 
 

@@ -44,7 +44,7 @@ class GuiaRemisionController extends Controller
                 gr.fecha_inicio, gr.fecha_fin, gr.transportista_id, t.nombres as transportista, gr.observacion
                 FROM guias_remision gr
                 INNER JOIN transportistas t ON gr.transportista_id = t.id
-                WHERE gr.fecha_inicio >= ? AND gr.fecha_fin <= ? AND gr.documento = ?
+                WHERE gr.fecha_inicio >= ? AND gr.fecha_inicio <= ? AND gr.documento = ?
                 ORDER BY gr.numero DESC";
 
         $list = DB::select($sql, [$finicio, $ffin, $doc]);

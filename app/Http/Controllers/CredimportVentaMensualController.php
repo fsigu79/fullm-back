@@ -143,11 +143,13 @@ class CredimportVentaMensualController extends Controller
                 $sql=$this->generaQueryVentas('vintipart',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentas('vintipartcuen1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentas('vintipartuio',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('vintipartgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
 
                 // select de notas de credito
                 $sqlnc=$this->generaQueryNC('vintipart',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('vintipartcuen1',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('vintipartuio',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('vintipartgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
 
         }
         else
@@ -263,11 +265,13 @@ class CredimportVentaMensualController extends Controller
                 $sql=$this->generaQueryVentas('vintipart',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentas('vintipartcuen1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentas('vintipartuio',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('vintipartgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
 
                 // select de notas de credito
                 $sqlnc=$this->generaQueryNC('vintipart',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('vintipartcuen1',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('vintipartuio',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('vintipartgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
 
         }
         else
@@ -378,11 +382,13 @@ class CredimportVentaMensualController extends Controller
                 $sql=$this->generaQueryVentas('vintipart',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentas('vintipartcuen1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentas('vintipartuio',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('vintipartgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
 
                 // select de notas de credito
                 $sqlnc=$this->generaQueryNC('vintipart',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('vintipartcuen1',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('vintipartuio',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('vintipartgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
 
         }
         else
@@ -508,11 +514,13 @@ class CredimportVentaMensualController extends Controller
                 $sql=$this->generaQueryVentas('vintipart',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentas('vintipartcuen1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
                 $sql=$sql.' UNION ALL '.$this->generaQueryVentas('vintipartuio',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('vintipartgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO');
 
                 // select de notas de credito
                 $sqlnc=$this->generaQueryNC('vintipart',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('vintipartcuen1',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
                 $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('vintipartuio',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('vintipartgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
 
         }
         else
