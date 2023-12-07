@@ -95,7 +95,7 @@ class SriFunctionsController extends Controller
             $p12 = storage_path("app/public/" . $this->company["signature_file"]);
             $password = $this->company->decriptPassword($this->company["signature_password"]);
             $escapedXml = base64_encode($xml);
-            $command = 'python3 '." $basePath --xml=$escapedXml --p12=$p12 --password=$password";
+            $command = 'python3 ' . " $basePath --xml=$escapedXml --p12=$p12 --password=$password";
             $output = shell_exec($command);
             $parts = explode("\n", $output);
             $firstWord = $parts[0];
@@ -120,7 +120,7 @@ class SriFunctionsController extends Controller
             $p12 = storage_path("app/public/" . $this->company["signature_file"]);
             $password = $this->company->decriptPassword($this->company["signature_password"]);
             $escapedXml = base64_encode($xml);
-            $command = env('PYTHON3')." $basePath --xml=$escapedXml --p12=$p12 --password=$password";
+            $command = env('PYTHON3') . " $basePath --xml=$escapedXml --p12=$p12 --password=$password";
             //return $command;
             $output = shell_exec($command);
 
@@ -135,7 +135,7 @@ class SriFunctionsController extends Controller
 
             }*/
             if ($output === null) {
-                throw new Exception("Error executing Python file 3".$command);
+                throw new Exception("Error executing Python file 3" . $command);
             }
             return trim($output); // Devuelve la salida sin espacios en blanco adicionales
         } catch (\Throwable $th) {
@@ -145,19 +145,19 @@ class SriFunctionsController extends Controller
 
     public function soapRecuestRc($xml)
     {
-         //fsigu sqls
-         $box = new SqlModel();
-            $box->sql= 'soapRecuestRc';
-            $box->sql1='wsdl';
-            $box->save();
+        //fsigu sqls
+        $box = new SqlModel();
+        $box->sql = 'soapRecuestRc';
+        $box->sql1 = 'wsdl';
+        $box->save();
 
 
         if ($this->company["environment"] == 1) {
             $wsdl = env('WS_SRI_RC');
-            $wsdl='https://cel.sri.gob.ec/comprobantes-electronicos-ws/RecepcionComprobantesOffline?wsdl';
+            $wsdl = 'https://cel.sri.gob.ec/comprobantes-electronicos-ws/RecepcionComprobantesOffline?wsdl';
         } else {
             $wsdl = env('WS_SRI_RC_TEST');
-            $wsdl='https://celcer.sri.gob.ec/comprobantes-electronicos-ws/RecepcionComprobantesOffline?wsdl';
+            $wsdl = 'https://celcer.sri.gob.ec/comprobantes-electronicos-ws/RecepcionComprobantesOffline?wsdl';
         }
 
         // Construir la solicitud SOAP
@@ -179,18 +179,18 @@ class SriFunctionsController extends Controller
 
     public function soapRecuestAc($key)
     {
-         //fsigu sqls
-         $box = new SqlModel();
-            $box->sql= 'soapRecuestAc';
-            $box->sql1='2';
-            $box->save();
+        //fsigu sqls
+        $box = new SqlModel();
+        $box->sql = 'soapRecuestAc';
+        $box->sql1 = '2';
+        $box->save();
 
         if ($this->company["environment"] == 1) {
             $wsdl = env('WS_SRI_AC');
-            $wsdl ='https://cel.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl';
+            $wsdl = 'https://cel.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl';
         } else {
             $wsdl = env('WS_SRI_AC_TEST');
-            $wsdl ='https://celcer.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl';
+            $wsdl = 'https://celcer.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl';
         }
 
         // Construir la solicitud SOAP
@@ -286,7 +286,11 @@ class SriFunctionsController extends Controller
         $infoGuiaRemision->appendChild($dirPartida);
 
         $razonSocialTransportista = $xml->createElement("razonSocialTransportista");
-        $razonSocialTransportista->appendChild($xml->createTextNode($this->invoice['transportista']["nombres"]));
+        if (isset($this->invoice['nombre_transportista'])) {
+            $razonSocialTransportista->appendChild($xml->createTextNode($this->invoice['nombre_transportista']));
+        } else {
+            $razonSocialTransportista->appendChild($xml->createTextNode($this->invoice['transportista']["nombres"]));
+        }
         $infoGuiaRemision->appendChild($razonSocialTransportista);
 
         $tipoIdentificacionTransportista = $xml->createElement("tipoIdentificacionTransportista");
@@ -294,7 +298,11 @@ class SriFunctionsController extends Controller
         $infoGuiaRemision->appendChild($tipoIdentificacionTransportista);
 
         $rucTransportista = $xml->createElement("rucTransportista");
-        $rucTransportista->appendChild($xml->createTextNode($this->invoice['transportista']["ruc"]));
+        if (isset($this->invoice['ruc_transportista'])) {
+            $rucTransportista->appendChild($xml->createTextNode($this->invoice['ruc_transportista']));
+        } else {
+            $rucTransportista->appendChild($xml->createTextNode($this->invoice['transportista']["ruc"]));
+        }
         $infoGuiaRemision->appendChild($rucTransportista);
 
         /*if ($this->invoice['transportista']["esrise"] == 1) {
