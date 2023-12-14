@@ -73,35 +73,42 @@ class AuthController extends Controller
             //     ])
             //     ->get();
             // }
-
-            if($request['app']='jcev'){
-                $menu = Menu::where("parent_id", null)
-                ->where("isactive", 1)
-                ->where("app", 0)
-                ->with([
-                    "items.permission" => function ($query) use ($profile_id) {
-                        $query->where("profile_id", $profile_id)
-                            ->where("view", 1);
+            $mostrarMenu='jcev';
+            if (isset($request['app'])){
+                if($request['app']='jcev'){
+                        $mostrarMenu='jcev';
+                    }else{
+                       $mostrarMenu='movil';
                     }
-                ])
-                ->get();
-
             }else{
-                $menu = Menu::where("parent_id", null)
-                ->where("isactive", 1)
-                ->where("app", 1)
-                ->with([
-                    "items.permission" => function ($query) use ($profile_id) {
-                        $query->where("profile_id", $profile_id)
-                            ->where("view", 1);
-                    }
-                ])
-                ->get();
+                $mostrarMenu='movil';
             }
 
+            if ($mostrarMenu='jcev'){
+                $menu = Menu::where("parent_id", null)
+                        ->where("isactive", 1)
+                        ->where("app", 0)
+                        ->with([
+                            "items.permission" => function ($query) use ($profile_id) {
+                                $query->where("profile_id", $profile_id)
+                                    ->where("view", 1);
+                            }
+                        ])
+                        ->get();
 
+            }else{
+                     $menu = Menu::where("parent_id", null)
+                        ->where("isactive", 1)
+                        ->where("app", 1)
+                        ->with([
+                            "items.permission" => function ($query) use ($profile_id) {
+                                $query->where("profile_id", $profile_id)
+                                    ->where("view", 1);
+                            }
+                        ])
+                        ->get();
 
-
+            }
 
 
             $data = [
