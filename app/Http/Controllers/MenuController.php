@@ -29,6 +29,17 @@ class MenuController extends Controller
         ]);
     }
 
+    public function listApp()
+    {
+        $data = Menu::where('app','=', '1')->get();
+
+        return response() ->json([
+            'code' => 200,
+            'status'=> 'success',
+            'data' => $data
+        ]);
+    }
+
     public function findById($id){
         $entity = Menu::find($id);
         if (is_object($entity)) {

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
+
 use PDF;
 
 class CredimportVentaMensualController extends Controller
@@ -594,7 +595,11 @@ class CredimportVentaMensualController extends Controller
                                       ORDER BY SUM(b.vtaneta) DESC';
         }
 
-
+            //fsigu sqls
+         $box = new SqlModel();
+            $box->sql= $sql;
+            $box->sql1=$sql;
+            $box->save();
 
         //return $this->getOk($sql);
 

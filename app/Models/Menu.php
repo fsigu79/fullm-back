@@ -20,6 +20,7 @@ class Menu extends Model
         'updated_att',
         'parent_id',
         'isactive',
+        'app'
     ];
 
     protected $hidden = [

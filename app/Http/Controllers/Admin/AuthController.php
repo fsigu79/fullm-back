@@ -74,8 +74,10 @@ class AuthController extends Controller
             //     ->get();
             // }
 
-            $menu = Menu::where("parent_id", null)
+            if($request['app']='jcev'){
+                $menu = Menu::where("parent_id", null)
                 ->where("isactive", 1)
+                ->where("app", 0)
                 ->with([
                     "items.permission" => function ($query) use ($profile_id) {
                         $query->where("profile_id", $profile_id)
@@ -83,6 +85,22 @@ class AuthController extends Controller
                     }
                 ])
                 ->get();
+
+            }else{
+                $menu = Menu::where("parent_id", null)
+                ->where("isactive", 1)
+                ->where("app", 1)
+                ->with([
+                    "items.permission" => function ($query) use ($profile_id) {
+                        $query->where("profile_id", $profile_id)
+                            ->where("view", 1);
+                    }
+                ])
+                ->get();
+            }
+
+
+
 
 
 
