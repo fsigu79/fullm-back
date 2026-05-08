@@ -243,7 +243,7 @@ class GuiaRemisionController extends Controller
                         $numeroFormateado = $guianew->serie . '-' . str_pad($guianew->numero, 9, '0', STR_PAD_LEFT);
 
                         // INSERT PAC vía Store Procedure
-                        DB::connection('pgsqloptimus')->select(
+                        DB::connection('pgsql_optimus')->select(
                             'SELECT guias_pac_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                             [
                                 'Fullmotos',
