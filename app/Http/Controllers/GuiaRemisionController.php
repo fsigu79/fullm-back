@@ -142,7 +142,7 @@ class GuiaRemisionController extends Controller
 
     public function save(Request $request)
     {
-        $input='';
+        $input = '';
         $validation = Validator::make(
             $request->all(),
             [
@@ -156,97 +156,167 @@ class GuiaRemisionController extends Controller
                 'fecha_fin.required' => 'Fecha fin es requerido.',
             ]
         );
+
         if (!$validation->fails()) {
             try {
                 $input = $request->all();
-                /*$box = new SqlModel();
-                        $box->sql=$input['serie'];
-                        $box->sql1='1';
-                        $box->save();*/
-
                 DB::beginTransaction();
-                //fsigu sqls
-
 
                 if ($input['accion'] != 'Eliminar') {
 
                     $guia = GuiaRemision::find($input['id']);
 
+                    // =========================
+                    // CREATE / UPDATE
+                    // =========================
                     if (!$guia) {
-                        $serie=$input['serie'];
-                        $numero = DB::select("SELECT numero + 1 AS numero FROM documentos WHERE codigo = ? and serie=? AND modulo = 'Ventas'", [
-                            $input['documento'],$serie,
-                        ]);
+                        $serie = $input['serie'];
+                        $numero = DB::select(
+                            "SELECT numero + 1 AS numero FROM documentos WHERE codigo = ? and serie=? AND modulo = 'Ventas'",
+                            [$input['documento'], $serie]
+                        );
 
                         $guia = new GuiaRemision($input);
                         $guia->numero = $numero[0]->numero;
                         $input['numero'] = $numero[0]->numero;
                         $guia->save();
 
-                        DB::update("update documentos set numero = numero + 1 where codigo = ? and modulo = 'Ventas'", [
-                            $input['documento']
-                        ]);
+                        DB::update(
+                            "update documentos set numero = numero + 1 where codigo = ? and modulo = 'Ventas'",
+                            [$input['documento']]
+                        );
                     } else {
                         $guia->update($input);
                     }
 
+                    // =========================
+                    // DETALLE
+                    // =========================
                     $guia->detalle()->delete();
+
                     foreach ($input['detalle'] as $detalle) {
-                        $detalleObj =  new GuiaRemisionDetalle($detalle);
+                        $detalleObj = new GuiaRemisionDetalle($detalle);
                         $detalleObj->guiar_id = $guia->id;
                         $detalleObj->documento = $guia->documento;
                         $detalleObj->numero = $guia->numero;
                         $detalleObj->save();
 
+                        // Validación de origen para actualizar catálogo
+                        if ($input['origen'] != 'MANUAL') {
+                            $guia_numero = $guia->serie . Str::padLeft($guia->numero, 9, '0');
 
-                        if ($input['origen'] == 'PAC') {
-                            $guia_numero = $guia->serie . Str::padLeft($guia->numero, 9, '0');;
-                            $result = DB::update('update catalogo_series set guia_remision_id=?, guia_remision_numero=? where chasis=? and serie=?', [
-                                $guia->id,
-                                $guia_numero,
-                                $detalleObj->chasis,
-                                $detalleObj->serie,
-                            ]);
+                            DB::update(
+                                'update catalogo_series set guia_remision_id=?, guia_remision_numero=? where chasis=? and serie=? and documento=?',
+                                [
+                                    $guia->id,
+                                    $guia_numero,
+                                    $detalleObj->chasis,
+                                    $detalleObj->serie,
+                                    $guia->documento,
+                                ]
+                            );
                         }
-                    };
+                    }
 
-
+                    // =========================
+                    // SRI LOGIC
+                    // =========================
                     $sri = new SriFunctionsController("06", $input);
                     $xml = $sri->getXml();
                     $key = $sri->getAccessKey();
 
                     $guia->xml = $xml;
-                    //$guia->status = 'PENDIENTE';
+                    $guia->status = 'PENDIENTE';
                     $guia->autorizacion = $key;
                     $guia->save();
 
                     DB::commit();
-                    $guianew=GuiaRemision::with(['detalle', 'transportista'])->find($guia->id);
+
+                    // Notificar al SRI
+                    $guianew = GuiaRemision::with(['detalle', 'transportista'])->find($guia->id);
                     $this->requestToSri($guianew);
 
-                    //return $this->insertOk($guia);
+                    // =========================
+                    // PAC + ASIGNACIÓN
+                    // =========================
+                    try {
+                        $numeroFormateado = $guianew->serie . '-' . str_pad($guianew->numero, 9, '0', STR_PAD_LEFT);
+
+                        // INSERT PAC vía Store Procedure
+                        DB::connection('pgsqloptimus')->select(
+                            'SELECT guias_pac_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                            [
+                                'Fullmotos',
+                                $numeroFormateado,
+                                $guianew->fecha_inicio,
+                                $guianew->transportista->nombres ?? '',
+                                $guianew->transportista->ruc ?? '',
+                                null,
+                                $guianew->partida,
+                                $guianew->motivo,
+                                null,
+                                $guianew->direccion,
+                                $guianew->direccion,
+                                $guianew->direccion,
+                                $guianew->fecha_inicio,
+                                $guianew->fecha_fin,
+                                null,
+                                $guianew->ruc,
+                                $guianew->cliente,
+                                null,
+                                $guianew->telefono,
+                                $guianew->observacion,
+                                $guianew->documentos,
+                                null,
+                                '',
+                                null,
+                                auth()->user()->name ?? 'system',
+                                $guianew->transportista_id
+                            ]
+                        );
+
+                        \Log::info('INSERT PAC OK: ' . $numeroFormateado);
+
+                        // ASIGNACIÓN DEL TRANSPORTISTA EN GUIASPAC
+                        if ($guianew->transportista_id) {
+                            $transportista = DB::table('transportistas')
+                                ->where('id', $guianew->transportista_id)
+                                ->first();
+
+                            $userId = $transportista->user_id ?? null;
+
+                            $actualizado = DB::update(
+                                "update guiaspac 
+                             set transportista_id = ?, 
+                                 transportista_id_guia = ?, 
+                                 fecha_asignacion = current_timestamp, 
+                                 esasignado = 1
+                             where numero_guia_remision = ?",
+                                [
+                                    $userId,
+                                    $guianew->transportista_id,
+                                    $numeroFormateado
+                                ]
+                            );
+
+                            \Log::info('UPDATE GUIASPAC filas: ' . $actualizado);
+                        }
+
+                    } catch (\Exception $e) {
+                        \Log::error('ERROR PAC: ' . $e->getMessage());
+                    }
+
+                    return $this->insertOk($guia);
+
                 } else {
-                    //Eliminar
+                    // Lógica para eliminar (si se requiere)
                 }
+
             } catch (\Exception $e) {
                 DB::rollBack();
                 return $this->insertErrCustom($input, $e->getMessage());
             }
 
-            /*
-            try {
-                //$result = $this->requestToSri($sri, $guia);
-                $this->requestToSri($sri);
-                //$result='nose';
-                return response([
-                    'err' => false,
-                    'data' => $guia,
-                    //'result' => $result,
-                ], 200);
-            } catch (\Throwable $th) {
-                return $this->insertErrCustom($input, $th->getMessage());
-            }
-            */
         } else {
             return $this->insertErrCustom($validation->getMessageBag(), 'Datos inválidos');
         }
