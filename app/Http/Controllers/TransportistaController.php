@@ -22,28 +22,45 @@ class TransportistaController extends Controller
 
     public function list()
     {
-        $list = Transportista::orderBy('id')->get();
+        $list = Transportista::on('pgsql_optimus')->orderBy('id')->get();
+
         return $this->getOk($list);
     }
 
     public function list_active()
     {
-        $list = Transportista::where('esactivo',1)->get();
+        // Aplicamos lo mismo para el filtro de activos
+        $list = Transportista::on('pgsql_optimus')
+            ->where('esactivo', 1)
+            ->get();
+
         return $this->getOk($list);
     }
 
     public function getById($id)
     {
-      //  $entidad = Transportista::find($id);
-      $entidad = Transportista::find($id);
-      return $this->getOk($entidad);
+        // Buscamos el registro específicamente en la conexión pgsql_optimus
+        $entidad = Transportista::on('pgsql_optimus')->find($id);
+
+        if ($entidad) {
+            return $this->getOk($entidad);
+        } else {
+            // Opcional: manejar el error si no existe el transportista
+            return $this->getOk(null);
+        }
     }
 
     public function delete($id)
     {
-        $entidad = Transportista::find($id);
-        $entidad->delete();
-        return $this->getOk($entidad);
+        // Buscamos el registro en la conexión pgsql_optimus
+        $entidad = Transportista::on('pgsql_optimus')->find($id);
+
+        if ($entidad) {
+            $entidad->delete(); // Al haber sido cargado con on(), el delete() se ejecuta en esa misma conexión
+            return $this->getOk($entidad);
+        } else {
+            return $this->updateErrCustom(null, 'El transportista no existe.');
+        }
     }
 
     public function create(Request $request)
@@ -52,25 +69,27 @@ class TransportistaController extends Controller
             $request->all(),
             [
                 'nombres' => 'required',
-                'ruc' => 'required|unique:transportistas,ruc',
+                // Indicamos a la validación que busque el unique en la conexión pgsql_optimus
+                'ruc' => 'required|unique:pgsql_optimus.transportistas,ruc',
                 'placa' => 'required',
             ],
             [
                 'nombres.required' => 'La razon social es requerido.',
                 'ruc.required' => 'El ruc es requerido.',
-                'placa.required' => 'La laca es requerida.',
+                'placa.required' => 'La placa es requerida.',
             ]
         );
-        if (!$validation->fails()) {
 
+        if (!$validation->fails()) {
             $input = $request->all();
-            $entidad = new Transportista($input);
+
+            // Instanciamos el modelo y definimos la conexión antes de guardar
+            $entidad = new Transportista();
+            $entidad->setConnection('pgsql_optimus');
+            $entidad->fill($input);
             $entidad->save();
-            if ($entidad) {
-                return $this->insertOk($entidad);
-            } else {
-                return $this->insertErr(null);
-            }
+
+            return $entidad ? $this->insertOk($entidad) : $this->insertErr(null);
         } else {
             return $this->insertErrCustom($validation->messages(), 'Datos inválidos');
         }
@@ -81,7 +100,7 @@ class TransportistaController extends Controller
         $validation = Validator::make(
             $request->all(),
             [
-               'nombres' => 'required',
+                'nombres' => 'required',
                 'ruc' => 'required',
                 'placa' => 'required',
             ],
@@ -91,12 +110,13 @@ class TransportistaController extends Controller
                 'placa.required' => 'La placa es requerida.',
             ]
         );
-        if (!$validation->fails()) {
 
-            $entidad = Transportista::find($request->all()['id']);
-            $entidad->update($request->all());
+        if (!$validation->fails()) {
+            // Usamos on() para buscar el registro en la conexión correcta
+            $entidad = Transportista::on('pgsql_optimus')->find($request->id);
 
             if ($entidad) {
+                $entidad->update($request->all());
                 return $this->updateOk($entidad);
             } else {
                 return $this->updateErr(null);
@@ -105,7 +125,6 @@ class TransportistaController extends Controller
             return $this->updateErrCustom($validation->messages(), 'Datos inválidos');
         }
     }
-
 
 
 }
