@@ -18,7 +18,7 @@ class Transportista extends Model
         'llevaconta',
         'contibuyente_esp',
         'esactivo',
-        //'user_id'
+        'user_id'
     ];
 
     protected $hidden = [
@@ -33,6 +33,11 @@ class Transportista extends Model
         'contibuyente_esp' => 'integer',
         'esactivo' => 'integer',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', "id");
+    }
 
 
 
