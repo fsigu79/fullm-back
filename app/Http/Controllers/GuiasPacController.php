@@ -31,6 +31,7 @@ class GuiasPacController extends Controller
                     LEFT JOIN xbase.guia_remision_electronica on numero_documento_origen=NOCOMP03
                     WHERE tipotra03 IN ('80') AND cvanulado03 <>'S' AND fecmov03 >= 'xfinicio'  AND fecmov03 <= 'xffin' AND  tipprod01='S' AND statuspro01='S'";
 
+
     private $sqlguias="SELECT ALL SUBSTRING(NOCOMP03,1,7) AS agencia,
                             nocte31 AS codigocliente,
                             nomcte31 AS cliente,
@@ -135,7 +136,7 @@ class GuiasPacController extends Controller
     }
 
 
-    public function guiasDetalle(Request $request)
+    public function guiasDetallePac(Request $request)
     {
         $input = $request->all();
         $inicio=$request['finicio'].' 00:00:00';
@@ -167,6 +168,84 @@ class GuiasPacController extends Controller
 
         return $this->getOk($list);
     }
+
+    public function guiasResumen(Request $request)
+    {
+        $input = $request->all();
+        $inicio=$request['finicio'].' 00:00:00';
+        $fin=$request['ffin'].' 23:59:00';
+        $serie=isset($input['serie_id']) ?$input['serie_id']:'0';
+        $sql='';
+
+        //return $this->getOk($input);
+
+        // select de guias detalle
+        $sql="select doc.nombre as bodega,
+                                    c.serie||'-'||lpad(c.numero,9,'0') as numero_guia_remision,
+                                    c.fecha_inicio as fecha,
+                                    c.ruc as codigocliente,
+                                    c.cliente,
+									dir.ciudad,
+                                    dir.nombre as tienda,
+                                    t.nombres as nombre_transportista,
+                                    sum(d.cantidad) as items
+                            from guias_remision c
+                            inner join guias_remisiond d on c.id=d.guiar_id
+                            inner join transportistas t on c.transportista_id=t.id
+                            left join direcciones dir on c.direccion_id=dir.id
+                            left join documentos doc on c.serie=doc.serie and doc.codigo='GR'
+                            where fecha_inicio>=? and fecha_inicio<=?
+                                and case when '0'=? then true else c.serie=? end
+							group by 1,2,3,4,5,6,7,8
+							order by 1,3,2,5";
+        $list = DB::select($sql,[$inicio,$fin,$serie,$serie]);
+        return $this->getOk($list);
+    }
+
+
+    public function guiasDetalle(Request $request)
+    {
+        $input = $request->all();
+        $inicio=$request['finicio'].' 00:00:00';
+        $fin=$request['ffin'].' 23:59:00';
+        $serie=isset($input['serie_id']) ?$input['serie_id']:'0';
+        $sql='';
+
+        //return $this->getOk($input);
+
+        // select de guias detalle
+        $sql="select doc.nombre as bodega,
+                                    c.serie||'-'||lpad(c.numero,9,'0') as numero_guia_remision,
+                                    c.fecha_inicio as fecha,
+                                    c.observacion,
+                                    c.ruc as codigocliente,
+                                    c.cliente,
+                                    c.transportista_id,
+                                    c.placa,
+                                    c.ruta,
+									dir.ciudad,
+                                    dir.nombre as tienda,
+                                    t.ruc as ruc_transportista,
+                                    t.nombres as nombre_transportista,
+                                    '' as vendedor,
+                                    '' as marca,
+                                    d.codigo,
+                                    d.descripcion as articulo,
+                                    d.serie,
+                                    d.cantidad
+                            from guias_remision c
+                            inner join guias_remisiond d on c.id=d.guiar_id
+                            inner join transportistas t on c.transportista_id=t.id
+                            left join direcciones dir on c.direccion_id=dir.id
+                            left join documentos doc on c.serie=doc.serie and doc.codigo='GR'
+                            where fecha_inicio>=? and fecha_inicio<=?
+                                and case when '0'=? then true else c.serie=? end";
+
+        $list = DB::select($sql,[$inicio,$fin,$serie,$serie]);
+
+        return $this->getOk($list);
+    }
+
 
     public function generaQueryGuiasDetalle($bodega,$bodega1,$bodega2,$inicio,$fin)
     {

@@ -25,14 +25,14 @@ class PacGuiasEntregaController extends Controller
 
     //
 
-    private $sqloptimus="select g.serie||lpad(trim(g.numero),9,'0') AS numero,
+    private $sqloptimus="select g.serie||'-'||lpad(trim(g.numero),9,'0') AS numero,
             g.fecha_inicio AS fecha,
             t.nombres as nombre_transportista,
             t.ruc AS ruc_transportista,
             g.serie AS codigo_origen,
             g.partida AS direccion_origen,
             g.motivo AS motivo_traslado,
-            '' AS codigo_destino,
+            d.id AS codigo_destino,
             d.direccion AS direccion_destino,
             d.direccion AS direccion,
             g.partida AS direccion_establecimiento,
@@ -51,7 +51,7 @@ class PacGuiasEntregaController extends Controller
             '' AS usuario
         from guias_remision g
 		inner join transportistas t on g.transportista_id=t.id
-        inner join direcciones d on g.direccion_id=d.id
+        left join direcciones d on g.direccion_id=d.id
         where g.fecha_inicio>='xfinicio'  and g.fecha_inicio<='xffin'";
 
     private $sqlg = "select g.numero_guia_remision AS numero,
@@ -132,7 +132,10 @@ class PacGuiasEntregaController extends Controller
         $sql = '';
 
         // select de guias
-        $sql = $this->sqloptimus;
+        //$sql = $this->sqloptimus;
+
+        $sql =  str_replace('xfinicio', $inicio, $this->sqloptimus);
+        $sql =  str_replace('xffin', $fin, $sql);
 
 
         /*$box = new SqlModel();
@@ -141,7 +144,8 @@ class PacGuiasEntregaController extends Controller
             $box->save();*/
 
 
-        $list = DB::connection('mysqlpac')->select($sql);
+        //$list = DB::connection('mysqlpac')->select($sql);
+        $list = DB::select($sql);
         //return $this->getOk($list);
         //fsigu sqls
             /*$box = new SqlModel();
@@ -163,10 +167,10 @@ class PacGuiasEntregaController extends Controller
                 $detalle->direccion_destino,
                 $detalle->direccion,
                 $detalle->direccion_establecimiento,
-                //$detalle->fecha_inicio_transporte,
-                null,
-                //$detalle->fecha_fin_transporte,
-                null,
+                $detalle->fecha_inicio_transporte,
+                //null,
+                $detalle->fecha_fin_transporte,
+                //null,
                 $detalle->codigo_cliente,
                 $detalle->ruc,
                 $detalle->nombre_cliente,
@@ -385,7 +389,24 @@ class PacGuiasEntregaController extends Controller
         $fin = $request['ffin'] . ' 23:59:00';
         $idtran = $request['transportista_id'];
 
-        $sql = "SELECT id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
+        if ($idtran == 0) {
+             $sql = "SELECT id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
+                    codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
+                    direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
+                    codigo_cliente, ruc, nombre_cliente,vendedor, telefono, observacion, numero_documento_origen,
+                    fecha_factura,numero_pedido,fecha_pedido,
+                    usuario, transportista_id, fecha_asignacion, esasignado, fecha_inicio_traslado_transportista,
+                    inicio_transporte, fecha_entrega_transportista, foto_entrega, foto_entrega1, esentregado,
+                    esactivo, longitud, latitud
+	        FROM guiaspac
+            WHERE fecha_emision>=? and fecha_emision<=?
+
+            ORDER BY fecha_emision desc";
+
+            //WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=(select id from transportistas where user_id=?)
+            $list = DB::select($sql, [$inicio, $fin]);
+        }else{
+            $sql = "SELECT id, numero_guia_remision, fecha_emision, nombre_transportista, ruc_transportista,
                     codigo_origen, direccion_origen, motivo_traslado, codigo_destino, direccion_destino,
                     direccion, direccion_establecimiento, fecha_inicio_transporte, fecha_fin_transporte,
                     codigo_cliente, ruc, nombre_cliente,vendedor, telefono, observacion, numero_documento_origen,
@@ -395,9 +416,14 @@ class PacGuiasEntregaController extends Controller
                     esactivo, longitud, latitud
 	        FROM guiaspac
             WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=?
+
             ORDER BY fecha_emision desc";
 
-        $list = DB::select($sql, [$inicio, $fin, $idtran]);
+            //WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=(select id from transportistas where user_id=?)
+            $list = DB::select($sql, [$inicio, $fin, $idtran]);
+        }
+
+
 
         return $this->getOk($list);
     }
@@ -420,6 +446,8 @@ class PacGuiasEntregaController extends Controller
 	        FROM guiaspac
             WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=? and esentregado=0
             ORDER BY fecha_emision asc";
+
+            //WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=(select id from transportistas where user_id=?) and esentregado=0
 
         $list = DB::select($sql, [$inicio, $fin, $idtran]);
 
@@ -445,6 +473,7 @@ class PacGuiasEntregaController extends Controller
             WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=? and esentregado=1
             ORDER BY fecha_emision asc";
 
+            //WHERE fecha_emision>=? and fecha_emision<=? and transportista_id=(select id from transportistas where user_id=?) and esentregado=1
         $list = DB::select($sql, [$inicio, $fin, $idtran]);
 
         return $this->getOk($list);

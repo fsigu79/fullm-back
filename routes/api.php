@@ -33,7 +33,7 @@ use App\Http\Controllers\PACReposicionController;
 use App\Http\Controllers\PacGuiasEntregaController;
 use App\Http\Controllers\RetencionController;
 use App\Http\Controllers\PresupuestoProductosController;
-
+use App\Http\Controllers\BufferController;
 use App\Http\Controllers\CredimportVentaMensualController;
 use App\Http\Controllers\CredimportSeguroConfianzasController;
 use App\Http\Controllers\CredimportCuposUsosController;
@@ -45,6 +45,9 @@ use App\Http\Controllers\TransportistaController;
 use App\Http\Controllers\BalancesController;
 use App\Http\Controllers\TodoMotoPyGController;
 use App\Http\Controllers\GastoJcevController;
+use App\Http\Controllers\FacturaPrepagoController;
+use App\Http\Controllers\CredimportVentaComparaController;
+use App\Http\Controllers\PacReporteComprasController;
 
 
 
@@ -79,6 +82,7 @@ Route::group([
    'prefix' => 'menu',
 ], function () {
 
+   Route::get('list', [MenuController::class, 'list']);
    Route::get('list', [MenuController::class, 'list']);
    Route::get('list/{id}', [MenuController::class, 'findById']);
 });
@@ -252,6 +256,7 @@ Route::group([
     Route::get('prodbyidpac/{id}', [ProductoPacController::class, 'productIdPac']);
 
     Route::get('searchclipac', [ClientesPacController::class, 'searchClientesPac']);
+    Route::get('filterclipac', [ClientesPacController::class, 'filterClientesPac']);
     Route::get('getclipac', [ClientesPacController::class, 'getClientesPacByCode']);
     Route::get('searchprovepac', [ClientesPacController::class, 'searchProveedorPac']);
 
@@ -260,6 +265,9 @@ Route::group([
     Route::get('reposicioncate', [PACReposicionController::class, 'categoriaProducto']);
 
     Route::get('retclientes', [RetencionController::class, 'retencionesClientes']);
+    Route::get('facpre', [FacturaPrepagoController::class, 'facturasPrepago']);
+
+    Route::get('compraspac', [PacReporteComprasController::class, 'comprasTotales']);
 
 });
 
@@ -284,33 +292,6 @@ Route::group([
     Route::get('list/{id}', [GastoJcevController::class, 'findById']);
     Route::delete('delete/{id}', [GastoJcevController::class, 'delete']);
 });
-
-
-Route::group([
-    'prefix' => 'credi',
-], function () {
-    Route::get('vtames', [CredimportVentaMensualController::class, 'ventamescliente']);
-    Route::get('vtamesven', [CredimportVentaMensualController::class, 'ventamesvendedor']);
-    Route::get('vtamespro', [CredimportVentaMensualController::class, 'ventamesproducto']);
-    Route::get('vtamesmar', [CredimportVentaMensualController::class, 'ventamesmarca']);
-    Route::get('segucon', [CredimportSeguroConfianzasController::class, 'seguroConfianza']);
-    Route::get('cuposusos', [CredimportCuposUsosController::class, 'cuposUsos']);
-
-});
-
-Route::group([
-    'prefix' => 'master',
-], function () {
-    Route::get('vtames', [TodoMotoVentaMensualController::class, 'ventamescliente']);
-    Route::get('vtamesven', [TodoMotoVentaMensualController::class, 'ventamesvendedor']);
-    Route::get('vtamespro', [TodoMotoVentaMensualController::class, 'ventamesproducto']);
-    Route::get('vtamesmar', [TodoMotoVentaMensualController::class, 'ventamesmarca']);
-    Route::get('segucon', [TodoMotoSeguroConfianzasController::class, 'seguroConfianza']);
-    Route::get('cuposusos', [TodoMotoCuposUsosController::class, 'cuposUsos']);
-
-});
-
-
 
 Route::group([
     'prefix' => 'marca',
@@ -382,7 +363,7 @@ Route::group([
 Route::group([
     'prefix' => 'pacg',
 ], function () {
-    Route::get('guiasvta', [GuiasPacController::class, 'ventaGuias']);
+    Route::get('guiasvta', [GuiasPacController::class, 'guiasResumen']);
     Route::get('guias/det', [GuiasPacController::class, 'guiasDetalle']);
     Route::get('guiasimporta', [PacGuiasEntregaController::class, 'importarGuasOptimus']);
     Route::put('repoasitra', [PacGuiasEntregaController::class, 'asignaTransportistas']);
@@ -402,6 +383,7 @@ Route::group([
     'prefix' => 'pacext',
 ], function () {
     Route::get('chasis', [ConsultaExtPacController::class, 'datosPorChasis']);
+    Route::get('chasisfullm', [ConsultaExtPacController::class, 'datosPorChasisFullm']);
     Route::get('catseries', [ConsultaExtPacController::class, 'catalogoSeries']);
     Route::get('catscodigo', [ConsultaExtPacController::class, 'catalogoSeriesByCodCliente']);
     Route::get('catscliente', [ConsultaExtPacController::class, 'catalogoSeriesByCliente']);
@@ -414,10 +396,9 @@ Route::group([
     Route::get('facevisu', [ConsultaExtPacController::class, 'facturaPorNumeroEvisu']);
     Route::get('facelectro', [ConsultaExtPacController::class, 'facturaPorNumeroElectrotienda']);
     Route::get('factodomoto', [ConsultaExtPacController::class, 'facturaPorNumeroTodoMoto']);
+    Route::get('facfullmot', [ConsultaExtPacController::class, 'facturaPorNumeroFullmot']);
     Route::get('factultra', [ConsultaExtPacController::class, 'facturaPorNumeroUltracem']);
 });
-
-
 
 Route::group([
     'prefix' => 'prespac',
@@ -425,5 +406,17 @@ Route::group([
 
     Route::get('getanio', [PresupuestoProductosController::class, 'getPresupuestoByAnio']);
     Route::post('create', [PresupuestoProductosController::class, 'presupuestoCreate']);
+    Route::get('prescomjcp', [PresupuestoProductosController::class, 'getPessupuestoComparaProducto']);
+    Route::get('prescomjcc', [PresupuestoProductosController::class, 'getPessupuestoComparaCliente']);
+    Route::get('prescomjcm', [PresupuestoProductosController::class, 'getPessupuestoComparaMarca']);
+    Route::get('prescomjcv', [PresupuestoProductosController::class, 'getPessupuestoComparaVendedor']);
+});
+
+Route::group([
+    'prefix' => 'buffer',
+], function () {
+
+    Route::get('getprod', [BufferController::class, 'getProductosBufferYear']);
+    Route::post('create', [BufferController::class, 'bufferCreate']);
 
 });

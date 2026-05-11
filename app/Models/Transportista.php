@@ -11,6 +11,7 @@ class Transportista extends Model
 
     protected $fillable = [
         'nombres',
+        'chofer',
         'placa',
         'ruc',
         'tiporuc',

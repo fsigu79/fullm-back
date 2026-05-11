@@ -31,18 +31,58 @@ class PresupuestoProductosController extends Controller
             $anio=$input['anio'];
             $marca=$input['marca_id'];
             $vendedor=$input['vendedor_id'];
+            $cliente=$input['cliente_id'];
 
            //--productos menos los de categoria I=importaciones,G=gastos,9=servicios
             $query=  "select codprod01 as codigo,desprod01 as producto,marca01 as marca_id,
                         (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab='4530' AND codtab<>'' AND codtab=jcev.maepro.marca01) AS marca
-                    from jcev.maepro where tipprod01='S' AND statuspro01='S' and catprod01 not in('I','G','9') order by desprod01";
+                    from jcev.maepro where tipprod01='S' AND statuspro01='S' and catprod01 not in('I','G','9')
+                    order by desprod01";
             $list = DB::connection('mysqlpac')->select($query);
 
             //DB::beginTransaction();
-            DB::delete('DELETE from productos_pac');
+            //DB::delete('DELETE from productos_pac');
+
+            /*foreach($list as $produ){
+                $presprod=new PresupuestProducto();
+                $presprod->anio=$produ->anio;
+                $presprod->marca_id=$produ->anio;
+                $presprod->marca=$produ->anio;
+                $presprod->cod_cliente=$produ->anio;
+                $presprod->cliente=$produ->anio;
+                $presprod->vendedor_id=$produ->anio;
+                $presprod->codigo=$produ->anio;
+                $presprod->descripcion=$produ->anio;
+                $presprod->precio=$produ->anio;
+                $presprod->enero=$produ->anio;
+                $presprod->febrero=$produ->anio;
+                $presprod->marzo=$produ->anio;
+                $presprod->abril=$produ->anio;
+                $presprod->mayo=$produ->anio;
+                $presprod->junio=$produ->anio;
+                $presprod->julio=$produ->anio;
+                $presprod->agosto=$produ->anio;
+                $presprod->septiembre=$produ->anio;
+                $presprod->octubre=$produ->anio;
+                $presprod->noviembre=$produ->anio;
+                $presprod->diciembrediciembrediciembre=$produ->anio;
+                $presprod->total=$produ->anio;
+                $presprod->total_usd=$produ->anio;
+
+                  DB::table('presupuesto_productos')->updateOrInsert(
+                    ['anio' => $produ->anio, 'codigo' => $produ->codigo],
+                    $produ);
+            }*/
+
+
 
             foreach($list as $produ){
-                DB::insert('insert into productos_pac (codigo,barcode,descripcion,marca_id,marca) values (?,?,?,?,?)',[
+                DB::insert('insert into productos_pac (codigo,barcode,descripcion,marca_id,marca) values (?,?,?,?,?)
+                            ON CONFLICT(codigo)
+                            DO UPDATE SET
+                            descripcion = EXCLUDED.descripcion,
+                            marca_id = EXCLUDED.marca_id,
+                            marca = EXCLUDED.marca;',[
                             $produ->codigo,
                             $produ->codigo,
                             $produ->producto,
@@ -58,8 +98,15 @@ class PresupuestoProductosController extends Controller
             }
             */
 
-            $sql="SELECT coalesce(b.id,0) as id, coalesce(anio,0) as anio,
-					pro.codigo,pro.descripcion, pro.marca_id, pro.marca,
+            $sql="SELECT coalesce(b.id,0) as id,
+                    coalesce(anio,0) as anio,
+					pro.codigo,
+                    pro.descripcion,
+                    pro.marca_id,
+                    pro.marca,
+                    coalesce(cod_cliente,'0') as cod_cliente,
+                    coalesce(cliente,'0') as cliente,
+
 					coalesce(precio,0) as precio,
                     coalesce(enero,0) as enero,
 					coalesce(febrero,0) as febrero,
@@ -78,16 +125,17 @@ class PresupuestoProductosController extends Controller
                 FROM productos_pac pro
                 left join
                 (
-                    select pres.id, anio,pres.codigo,precio,enero, febrero, marzo, abril, mayo, junio, julio,
+                    select pres.id, anio,cod_cliente,cliente,pres.codigo,precio,enero, febrero, marzo, abril, mayo, junio, julio,
                                     agosto, septiembre, octubre, noviembre, diciembre,
-                                    total, total_usd
-                    from presupuesto_productos pres WHERE anio=? and vendedor_id=?
+                                    total, total_usd,vendedor_id
+                    from presupuesto_productos pres WHERE anio=?
+                        and case when '0'=? then true else pres.vendedor_id=? end
+                        and case when '0'=? then true else pres.marca_id=? end
+                        and case when '0'=? then true else pres.cod_cliente=? end
                 ) as  b on pro.codigo=b.codigo
+                ORDER BY b.vendedor_id,b.cliente,pro.marca_id,pro.descripcion";
 
-                where case when '0'=? then true else pro.marca_id=? end
-                ORDER BY pro.marca_id,pro.descripcion";
-
-            $list = DB::select($sql,[$anio,$vendedor,$marca,$marca]);
+            $list = DB::select($sql,[$anio,$vendedor,$vendedor,$marca,$marca,$cliente,$cliente]);
 
             return $this->getOk($list);
         } catch (\Exception $e) {
@@ -98,6 +146,35 @@ class PresupuestoProductosController extends Controller
 
 
     public function presupuestoCreate(Request $request)
+    {
+        try {
+            $detalle = $request->all();
+            DB::beginTransaction();
+            $anio=$detalle[0]['anio'];
+            foreach($detalle as $produ){
+               DB::table('presupuesto_productos')->updateOrInsert(
+                    ['anio' => $produ['anio'],
+                    'codigo' => $produ['codigo'],
+                    'marca_id' => $produ['marca_id'],
+                    'vendedor_id' => $produ['vendedor_id'],
+                    'cod_cliente' => $produ['cod_cliente'],
+                ],
+                    $produ);
+            }
+
+            $sql="";
+
+            DB::commit();
+            return $this->insertOk('Guardado correctamente');
+
+        } catch (\Exception $e) {
+                DB::rollBack();
+                return $this->insertErrCustom('Error', $e->getMessage());
+        }
+
+    }
+
+    public function presupuestoCreateAnte(Request $request)
     {
         try {
             $detalle = $request->all();
@@ -118,6 +195,191 @@ class PresupuestoProductosController extends Controller
                 return $this->insertErrCustom('Error', $e->getMessage());
         }
 
+    }
+
+
+public function getPessupuestoComparaProducto(Request $request)
+    {
+        try {
+            $input = $request->all();
+
+            $anio=$input['anio'];
+            $marca=$input['marca_id'];
+            $vendedor=$input['vendedor_id'];
+            $cliente=$input['cliente_id'];
+
+
+            $sql="select pres.codigo,
+                        pres.descripcion,
+                        round(avg(precio),2) as precio,
+                        sum(enero) as enero,
+                        sum(febrero) as febrero,
+                        sum(marzo) as marzo,
+                        sum(abril) as abril,
+                        sum(mayo) as mayo,
+                        sum(junio) as junio,
+                        sum(julio) as julio,
+                        sum(agosto) as agosto,
+                        sum(septiembre) as septiembre,
+                        sum(octubre) as octubre,
+                        sum(noviembre) as noviembre,
+                        sum(diciembre) as diciembre,
+                        sum(total) as total,
+                        round((avg(precio) *sum(total)),2) as total_usd
+
+                from presupuesto_productos pres
+                WHERE anio=?
+                        and case when '0'=? then true else pres.vendedor_id=? end
+                        and case when '0'=? then true else pres.marca_id=? end
+                        and case when '0'=? then true else pres.cod_cliente=? end
+                    group by codigo,descripcion
+                    order by codigo";
+
+            $list = DB::select($sql,[$anio,$vendedor,$vendedor,$marca,$marca,$cliente,$cliente]);
+
+            return $this->getOk($list);
+        } catch (\Exception $e) {
+                DB::rollBack();
+                return $this->insertErrCustom('Error', $e->getMessage());
+        }
+    }
+
+    public function getPessupuestoComparaCliente(Request $request)
+    {
+        try {
+            $input = $request->all();
+
+            $anio=$input['anio'];
+            $marca=$input['marca_id'];
+            $vendedor=$input['vendedor_id'];
+            $cliente=$input['cliente_id'];
+
+
+            $sql="select pres.cod_cliente as codigo,
+                        pres.cliente as descripcion,
+                        round(avg(precio),2) as precio,
+                        sum(enero) as enero,
+                        sum(febrero) as febrero,
+                        sum(marzo) as marzo,
+                        sum(abril) as abril,
+                        sum(mayo) as mayo,
+                        sum(junio) as junio,
+                        sum(julio) as julio,
+                        sum(agosto) as agosto,
+                        sum(septiembre) as septiembre,
+                        sum(octubre) as octubre,
+                        sum(noviembre) as noviembre,
+                        sum(diciembre) as diciembre,
+                        sum(total) as total,
+                        round((avg(precio) *sum(total)),2) as total_usd
+
+                from presupuesto_productos pres
+                WHERE anio=?
+                        and case when '0'=? then true else pres.vendedor_id=? end
+                        and case when '0'=? then true else pres.marca_id=? end
+                        and case when '0'=? then true else pres.cod_cliente=? end
+                    group by cod_cliente,cliente
+                    order by cliente";
+
+            $list = DB::select($sql,[$anio,$vendedor,$vendedor,$marca,$marca,$cliente,$cliente]);
+
+            return $this->getOk($list);
+        } catch (\Exception $e) {
+                DB::rollBack();
+                return $this->insertErrCustom('Error', $e->getMessage());
+        }
+    }
+
+
+    public function getPessupuestoComparaMarca(Request $request)
+    {
+        try {
+            $input = $request->all();
+
+            $anio=$input['anio'];
+            $marca=$input['marca_id'];
+            $vendedor=$input['vendedor_id'];
+            $cliente=$input['cliente_id'];
+
+
+            $sql="select pres.marca_id as codigo,
+                        pres.marca as descripcion,
+                        round(avg(precio),2) as precio,
+                        sum(enero) as enero,
+                        sum(febrero) as febrero,
+                        sum(marzo) as marzo,
+                        sum(abril) as abril,
+                        sum(mayo) as mayo,
+                        sum(junio) as junio,
+                        sum(julio) as julio,
+                        sum(agosto) as agosto,
+                        sum(septiembre) as septiembre,
+                        sum(octubre) as octubre,
+                        sum(noviembre) as noviembre,
+                        sum(diciembre) as diciembre,
+                        sum(total) as total,
+                        round((avg(precio) *sum(total)),2) as total_usd
+
+                from presupuesto_productos pres
+                WHERE anio=?
+                        and case when '0'=? then true else pres.vendedor_id=? end
+                        and case when '0'=? then true else pres.marca_id=? end
+                        and case when '0'=? then true else pres.cod_cliente=? end
+                    group by marca_id,marca
+                    order by marca";
+
+            $list = DB::select($sql,[$anio,$vendedor,$vendedor,$marca,$marca,$cliente,$cliente]);
+
+            return $this->getOk($list);
+        } catch (\Exception $e) {
+                DB::rollBack();
+                return $this->insertErrCustom('Error', $e->getMessage());
+        }
+    }
+
+    public function getPessupuestoComparaVendedor(Request $request)
+    {
+        try {
+            $input = $request->all();
+
+            $anio=$input['anio'];
+            $marca=$input['marca_id'];
+            $vendedor=$input['vendedor_id'];
+            $cliente=$input['cliente_id'];
+
+
+            $sql="select pres.vendedor_id codigo,
+                        round(avg(precio),2) as precio,
+                        sum(enero) as enero,
+                        sum(febrero) as febrero,
+                        sum(marzo) as marzo,
+                        sum(abril) as abril,
+                        sum(mayo) as mayo,
+                        sum(junio) as junio,
+                        sum(julio) as julio,
+                        sum(agosto) as agosto,
+                        sum(septiembre) as septiembre,
+                        sum(octubre) as octubre,
+                        sum(noviembre) as noviembre,
+                        sum(diciembre) as diciembre,
+                        sum(total) as total,
+                        round((avg(precio) *sum(total)),2) as total_usd
+
+                from presupuesto_productos pres
+                WHERE anio=?
+                        and case when '0'=? then true else pres.vendedor_id=? end
+                        and case when '0'=? then true else pres.marca_id=? end
+                        and case when '0'=? then true else pres.cod_cliente=? end
+                    group by vendedor_id
+                    order by vendedor_id";
+
+            $list = DB::select($sql,[$anio,$vendedor,$vendedor,$marca,$marca,$cliente,$cliente]);
+
+            return $this->getOk($list);
+        } catch (\Exception $e) {
+                DB::rollBack();
+                return $this->insertErrCustom('Error', $e->getMessage());
+        }
     }
 
 

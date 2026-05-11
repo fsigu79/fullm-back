@@ -17,7 +17,7 @@ class CuposUsosController extends Controller
                             nomcte01 as cliente,
                             cascte01  as ruc,
                             vendcte01 AS vencod,
-  					        (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab =vendcte01) AS vendedor,
+  					        (SELECT nomtab FROM fullm.maetab WHERE numtab='73' AND codtab =vendcte01) AS vendedor,
                             sdoact01 as saldo_actual,
                             totexceso01 as exceso,
                             (sdoact01+totexceso01) as saldo_neto,
@@ -50,7 +50,7 @@ class CuposUsosController extends Controller
 
 
         try{
-            $sql=$this->generaQuery('jcev',$inicio,$fin,$vendedor);
+            $sql=$this->generaQuery('fullm',$inicio,$fin,$vendedor);
            /* $sql=$sql.' UNION ALL '.$this->generaQuery('jcevcuenca2',$inicio,$fin);
             $sql=$sql.' UNION ALL '.$this->generaQuery('jcevcuenca1',$inicio,$fin);
             $sql=$sql.' UNION ALL '.$this->generaQuery('jcevgye1',$inicio,$fin);

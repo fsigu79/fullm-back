@@ -12,7 +12,7 @@ class TipoVisita extends Model
     protected $fillable = [
         'nombre',
         'esactivo',
-
+        'modulo',
     ];
 
     protected $hidden = [

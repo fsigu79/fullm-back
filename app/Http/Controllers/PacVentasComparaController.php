@@ -32,16 +32,16 @@ class PacVentasComparaController extends Controller
 	                        desctotvta03 AS descliente,
 	                        (precvta03 - descvta03-desctotvta03) AS vtaNeta,
 	                        marca01 AS marcod,
-  					        (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '4530' AND codtab <> '' AND codtab = marca01) AS marca,
+  					        (SELECT DISTINCT nomtab FROM fullm.maetab WHERE numtab = '4530' AND codtab <> '' AND codtab = marca01) AS marca,
 	 				        vendcte01 AS vencod,
-  					        (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab =novend31) AS vendedor,
+  					        (SELECT nomtab FROM fullm.maetab WHERE numtab='73' AND codtab =novend31) AS vendedor,
 					        catcte01 AS catcod,
-  					        (SELECT b.desccate AS categoria FROM jcev.categorias a INNER JOIN  jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
-                            (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = jcev.maecte.canton) AS ciudad
+  					        (SELECT a.desccate AS categoria FROM fullm.categorias a INNER JOIN  fullm.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
+                            (SELECT DISTINCT nomtab FROM fullm.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = fullm.maecte.canton) AS ciudad
                FROM xbase.movpro
                INNER JOIN ybase1.maepro ON codprod03 = codprod01
                INNER JOIN zbase1.maefac ON NOCOMP03=nofact31 AND cvanulado31!=9
-               INNER JOIN jcev.maecte ON nocte31=codcte01
+               INNER JOIN fullm.maecte ON nocte31=codcte01
                WHERE tipotra03 IN ('80') AND cvanulado03 <>'S' AND ((fecmov03 >= 'xfinicio'  AND fecmov03 <= 'xffin') or (fecmov03 >= 'yfinicioa'  AND fecmov03 <= 'yffina')) AND  tipprod01='S'
                     and case when '0'='xmarc' then true else marca01 in ('xmarc') end
                     and case when '0'='xprod' then true else codprod01 in ('xprod') end
@@ -65,16 +65,16 @@ private $sqlgencom="SELECT ALL SUBSTRING(NOCOMP03,1,7) AS agencia,
 	                        desctotvta03 AS descliente,
 	                        (precvta03 - descvta03-desctotvta03) AS vtaNeta,
 	                        marca01 AS marcod,
-  					        (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '4530' AND codtab <> '' AND codtab = marca01) AS marca,
+  					        (SELECT DISTINCT nomtab FROM fullm.maetab WHERE numtab = '4530' AND codtab <> '' AND codtab = marca01) AS marca,
 	 				        vendcte01 AS vencod,
-  					        (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab =novend31) AS vendedor,
+  					        (SELECT nomtab FROM fullm.maetab WHERE numtab='73' AND codtab =novend31) AS vendedor,
 					        catcte01 AS catcod,
-  					        (SELECT b.desccate AS categoria FROM jcev.categorias a INNER JOIN  jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
-                            (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = jcev.maecte.canton) AS ciudad
+  					        (SELECT a.desccate AS categoria FROM fullm.categorias a INNER JOIN  fullm.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
+                            (SELECT DISTINCT nomtab FROM fullm.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = fullm.maecte.canton) AS ciudad
                FROM xbase.movpro
                INNER JOIN ybase1.maepro ON codprod03 = codprod01
                INNER JOIN zbase1.maefac ON NOCOMP03=nofact31 AND cvanulado31!=9
-               INNER JOIN jcev.maecte ON nocte31=codcte01
+               INNER JOIN fullm.maecte ON nocte31=codcte01
                WHERE tipotra03 IN ('80') AND cvanulado03 <>'S' AND ((fecmov03 >= 'xfinicio'  AND fecmov03 <= 'xffin') or (fecmov03 >= 'yfinicioa'  AND fecmov03 <= 'yffina')
                     or (fecmov03 >= 'zfinicioa'  AND fecmov03 <= 'zffina')) AND  tipprod01='S'
                     and case when '0'='xmarc' then true else marca01 in ('xmarc') end
@@ -100,14 +100,14 @@ private $sqlgencom="SELECT ALL SUBSTRING(NOCOMP03,1,7) AS agencia,
 						     IFNULL((precvta03 - descvta03-desctotvta03)*-1,0) AS vtaNeta,
 						     (valorabono43/1.12)*-1 AS net,
 						      marca01 AS marcod,
-						     (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '4530' AND codtab <> '' AND codtab = marca01) AS marca,
+						     (SELECT DISTINCT nomtab FROM fullm.maetab WHERE numtab = '4530' AND codtab <> '' AND codtab = marca01) AS marca,
 						      vendcte01 AS vencod,
-						      (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
+						      (SELECT nomtab FROM fullm.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM jcev.categorias a INNER JOIN  jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
-                              (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = jcev.maecte.canton) AS ciudad
-					      FROM jcev.movcte
-					      INNER JOIN jcev.maecte ON codcte43=codcte01
+						      (SELECT a.desccate AS categoria FROM fullm.categorias a INNER JOIN  fullm.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
+                              (SELECT DISTINCT nomtab FROM fullm.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = fullm.maecte.canton) AS ciudad
+					      FROM fullm.movcte
+					      INNER JOIN fullm.maecte ON codcte43=codcte01
 					      INNER JOIN xbase.movpro  ON NOCOMP03=numdoc43 AND tipotra03 IN ('22') AND cvanulado03 <>'S'
 					      INNER JOIN xbase.maepro ON codprod03 = codprod01 AND  tipprod01='S'  AND statuspro01='S'
 					      WHERE tipodoc43 IN ('53')  AND ((fecdoc43 >= 'xfinicio'  AND fecdoc43<= 'xffin') or (fecdoc43 >= 'yfinicioa'  AND fecdoc43 <= 'yffina'))  AND cvanulado43<>'S' AND tipoNC43='P' and ocurren43 in ('00','0000')
@@ -133,14 +133,14 @@ private $sqlgencom="SELECT ALL SUBSTRING(NOCOMP03,1,7) AS agencia,
 						     IFNULL((precvta03 - descvta03-desctotvta03)*-1,0) AS vtaNeta,
 						     (valorabono43/1.12)*-1 AS net,
 						      marca01 AS marcod,
-						     (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '4530' AND codtab <> '' AND codtab = marca01) AS marca,
+						     (SELECT DISTINCT nomtab FROM fullm.maetab WHERE numtab = '4530' AND codtab <> '' AND codtab = marca01) AS marca,
 						      vendcte01 AS vencod,
-						      (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
+						      (SELECT nomtab FROM fullm.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM jcev.categorias a INNER JOIN  jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
-                              (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = jcev.maecte.canton) AS ciudad
-					      FROM jcev.movcte
-					      INNER JOIN jcev.maecte ON codcte43=codcte01
+						      (SELECT a.desccate AS categoria FROM fullm.categorias a INNER JOIN  fullm.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
+                              (SELECT DISTINCT nomtab FROM fullm.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = fullm.maecte.canton) AS ciudad
+					      FROM fullm.movcte
+					      INNER JOIN fullm.maecte ON codcte43=codcte01
 					      INNER JOIN xbase.movpro  ON NOCOMP03=numdoc43 AND tipotra03 IN ('22') AND cvanulado03 <>'S'
 					      INNER JOIN xbase.maepro ON codprod03 = codprod01 AND  tipprod01='S'  AND statuspro01='S'
 					      WHERE tipodoc43 IN ('53')  AND ((fecdoc43 >= 'xfinicio'  AND fecdoc43<= 'xffin') or (fecdoc43 >= 'yfinicioa'  AND fecdoc43 <= 'yffina')
@@ -168,14 +168,14 @@ private $sqlgencom="SELECT ALL SUBSTRING(NOCOMP03,1,7) AS agencia,
 						     IFNULL((precvta03 - descvta03-desctotvta03)*-1,0) AS vtaNeta,
 						     (valorabono43/1.12)*-1 AS net,
 						      marca01 AS marcod,
-						     (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '4530' AND codtab <> '' AND codtab = marca01) AS marca,
+						     (SELECT DISTINCT nomtab FROM fullm.maetab WHERE numtab = '4530' AND codtab <> '' AND codtab = marca01) AS marca,
 						      vendcte01 AS vencod,
-						      (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
+						      (SELECT nomtab FROM fullm.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM jcev.categorias a INNER JOIN  jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
-                              (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = jcev.maecte.canton) AS ciudad
-					      FROM jcev.movcte2
-					      INNER JOIN jcev.maecte ON codcte43=codcte01
+						      (SELECT a.desccate AS categoria FROM fullm.categorias a INNER JOIN  fullm.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
+                              (SELECT DISTINCT nomtab FROM fullm.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = fullm.maecte.canton) AS ciudad
+					      FROM fullm.movcte2
+					      INNER JOIN fullm.maecte ON codcte43=codcte01
 					      INNER JOIN xbase.movpro  ON NOCOMP03=numdoc43 AND tipotra03 IN ('22') AND cvanulado03 <>'S'
 					      INNER JOIN xbase.maepro ON codprod03 = codprod01 AND  tipprod01='S'  AND statuspro01='S'
 					      WHERE tipodoc43 IN ('53')  AND ((fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin') or (fecdoc43 >= 'yfinicioa'  AND fecdoc43 <= 'yffina')) AND cvanulado43<>'S' AND tipoNC43='P' and ocurren43 in ('00','0000')
@@ -202,14 +202,14 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
 						     IFNULL((precvta03 - descvta03-desctotvta03)*-1,0) AS vtaNeta,
 						     (valorabono43/1.12)*-1 AS net,
 						      marca01 AS marcod,
-						     (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '4530' AND codtab <> '' AND codtab = marca01) AS marca,
+						     (SELECT DISTINCT nomtab FROM fullm.maetab WHERE numtab = '4530' AND codtab <> '' AND codtab = marca01) AS marca,
 						      vendcte01 AS vencod,
-						      (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
+						      (SELECT nomtab FROM fullm.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM jcev.categorias a INNER JOIN  jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
-                              (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = jcev.maecte.canton) AS ciudad
-					      FROM jcev.movcte2
-					      INNER JOIN jcev.maecte ON codcte43=codcte01
+						      (SELECT a.desccate AS categoria FROM fullm.categorias a INNER JOIN  fullm.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
+                              (SELECT DISTINCT nomtab FROM fullm.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = fullm.maecte.canton) AS ciudad
+					      FROM fullm.movcte2
+					      INNER JOIN fullm.maecte ON codcte43=codcte01
 					      INNER JOIN xbase.movpro  ON NOCOMP03=numdoc43 AND tipotra03 IN ('22') AND cvanulado03 <>'S'
 					      INNER JOIN xbase.maepro ON codprod03 = codprod01 AND  tipprod01='S'  AND statuspro01='S'
 					      WHERE tipodoc43 IN ('53')  AND ((fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin') or (fecdoc43 >= 'yfinicioa'  AND fecdoc43 <= 'yffina')
@@ -261,28 +261,26 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
 
         if ($bodega=='todas'){
                 // select de ventas
-               $sql=$this->generaQueryVentasCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+               $sql=$this->generaQueryVentasCom('fullm',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
                 // select de notas de credito
-                $sqlnc=$this->generaQueryNCCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatrizCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$this->generaQueryNCCom('fullm',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatrizCom('fullm',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
 
         }
         else
@@ -391,29 +389,26 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
 
         if ($bodega=='todas'){
                 // select de ventas
-               $sql=$this->generaQueryVentas('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+               $sql=$this->generaQueryVentas('fullm',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
                 // select de notas de credito
-                $sqlnc=$this->generaQueryNC('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCMatriz('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$this->generaQueryNC('fullm',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
 
         }
         else
@@ -519,29 +514,27 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
 
         if ($bodega=='todas'){
                 // select de ventas
-                $sql=$this->generaQueryVentasCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$this->generaQueryVentasCom('fullm',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
                 // select de notas de credito
-                $sqlnc=$this->generaQueryNCCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatrizCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$this->generaQueryNCCom('fullm',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatrizCom('fullm',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
 
         }
         else
@@ -640,29 +633,27 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
 
         if ($bodega=='todas'){
                 // select de ventas
-                $sql=$this->generaQueryVentas('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$this->generaQueryVentas('fullm',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
                 // select de notas de credito
-                $sqlnc=$this->generaQueryNC('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCMatriz('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$this->generaQueryNC('fullm',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCMatriz('fullm',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
 
         }
         else
@@ -753,29 +744,27 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
 
         if ($bodega=='todas'){
                 // select de ventas
-                $sql=$this->generaQueryVentas('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$this->generaQueryVentas('fullm',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
                 // select de notas de credito
-                $sqlnc=$this->generaQueryNC('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatriz('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+                $sqlnc=$this->generaQueryNC('fullm',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatriz('fullm',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
 
         }
         else
@@ -877,29 +866,27 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
 
         if ($bodega=='todas'){
                 // select de ventas
-                $sql=$this->generaQueryVentasCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$this->generaQueryVentasCom('fullm',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
                 // select de notas de credito
-                $sqlnc=$this->generaQueryNCCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
+                $sqlnc=$this->generaQueryNCCom('fullm',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCCom('fullm',$inicio,$fin,$marca,$producto,$vendedor,$cliente);
 
         }
         else
@@ -1002,29 +989,27 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
 
         if ($bodega=='todas'){
                 // select de ventas
-                $sql=$this->generaQueryVentas('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$this->generaQueryVentas('fullm',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentas('fullmstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina);
                 // select de notas de credito
-                $sqlnc=$this->generaQueryNC('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
-                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatriz('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$this->generaQueryNC('fullm',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatriz('fullm',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
 
         }
         else
@@ -1122,29 +1107,27 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
 
         if ($bodega=='todas'){
                 // select de ventas
-                $sql=$this->generaQueryVentasCom('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
-                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$this->generaQueryVentasCom('fullm',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'SI',$inicioa,$fina,$inicioa1,$fina1);
+                $sql=$sql.' UNION ALL '.$this->generaQueryVentasCom('fullmstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,'NO',$inicioa,$fina,$inicioa1,$fina1);
                 // select de notas de credito
-                $sqlnc=$this->generaQueryNC('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('jcevcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('jcevgye3',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
-                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatriz('jcev',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
+                $sqlnc=$this->generaQueryNC('fullm',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmconsigvirt',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmcuenca2',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNC('fullmcuenca1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmgye1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmgye10',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmuio1',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmgyeassem',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                $sqlnc=$sqlnc.' UNION ALL '.$this->generaQueryNCCom('fullmstecvir',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina,$inicioa1,$fina1);
+                //$sqlnc=$sqlnc.' UNION '.$this->generaQueryNCMatriz('fullm',$inicio,$fin,$marca,$producto,$vendedor,$cliente,$inicioa,$fina);
 
         }
         else
@@ -1216,13 +1199,13 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
     public function generaQueryVentas($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,$virtual1,$inicioa,$fina)
     {
         $query=  str_replace('xbase',$bodega,$this->sqlgen);
-        if ($bodega=='jcevconsigvirt'){
-            $query= str_replace('ybase1','jcevuio1',$query);
+        if ($bodega=='fullmconsigvirt'){
+            $query= str_replace('ybase1','fullmuio1',$query);
             if ($virtual1=='SI'){
-                $query= str_replace('zbase1','jcevgyeassem',$query);
+                $query= str_replace('zbase1','fullmgyeassem',$query);
             }
             else{
-                $query= str_replace('zbase1','jcevuio1',$query);
+                $query= str_replace('zbase1','fullmuio1',$query);
             }
         }
         else{
@@ -1246,13 +1229,13 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
     public function generaQueryVentasCom($bodega,$inicio,$fin,$marca,$producto,$vendedor,$cliente,$virtual1,$inicioa,$fina,$inicioa1,$fina1)
     {
         $query=  str_replace('xbase',$bodega,$this->sqlgencom);
-        if ($bodega=='jcevconsigvirt'){
-            $query= str_replace('ybase1','jcevuio1',$query);
+        if ($bodega=='fullmconsigvirt'){
+            $query= str_replace('ybase1','fullmuio1',$query);
             if ($virtual1=='SI'){
-                $query= str_replace('zbase1','jcevgyeassem',$query);
+                $query= str_replace('zbase1','fullmgyeassem',$query);
             }
             else{
-                $query= str_replace('zbase1','jcevuio1',$query);
+                $query= str_replace('zbase1','fullmuio1',$query);
             }
         }
         else{
@@ -1369,10 +1352,10 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
 						      '0' AS marcod,
 						     '-' AS marca,
 						      vendcte01 AS vencod,
-						      (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
+						      (SELECT nomtab FROM fullm.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM jcev.categorias a INNER JOIN  jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
-                              (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = jcev.maecte.canton) AS ciudad
+						      (SELECT a.desccate AS categoria FROM fullm.categorias a INNER JOIN  fullm.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
+                              (SELECT DISTINCT nomtab FROM fullm.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = fullm.maecte.canton) AS ciudad
 					    FROM xbase.movcte
 					    INNER JOIN xbase.maecte ON codcte43=codcte01
 					    WHERE tipodoc43 IN ('53')  AND ((fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin') or (fecdoc43 >= 'yfinicioa'  AND fecdoc43 <= 'yffina'))  AND cvanulado43<>'S' AND tipoNC43<>'P' and ocurren43 in ('00','0000')
@@ -1397,10 +1380,10 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
 						      '0' AS marcod,
 						     '-' AS marca,
 						      vendcte01 AS vencod,
-						      (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
+						      (SELECT nomtab FROM fullm.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM  jcev.categorias a INNER JOIN   jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
-                              (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = jcev.maecte.canton) AS ciudad
+						      (SELECT a.desccate AS categoria FROM  fullm.categorias a INNER JOIN   fullm.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
+                              (SELECT DISTINCT nomtab FROM fullm.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = fullm.maecte.canton) AS ciudad
 					      FROM xbase.movcte2
 					      INNER JOIN xbase.maecte ON codcte43=codcte01
 					      WHERE tipodoc43 IN ('53')  AND ((fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin') or (fecdoc43 >= 'yfinicioa'  AND fecdoc43 <= 'yffina')) AND cvanulado43<>'S' AND tipoNC43<>'P' and ocurren43 in ('00','0000')
@@ -1445,10 +1428,10 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
 						      '0' AS marcod,
 						     '-' AS marca,
 						      vendcte01 AS vencod,
-						      (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
+						      (SELECT nomtab FROM fullm.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM jcev.categorias a INNER JOIN  jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
-                              (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = jcev.maecte.canton) AS ciudad
+						      (SELECT a.desccate AS categoria FROM fullm.categorias a INNER JOIN  fullm.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
+                              (SELECT DISTINCT nomtab FROM fullm.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = fullm.maecte.canton) AS ciudad
 					    FROM xbase.movcte
 					    INNER JOIN xbase.maecte ON codcte43=codcte01
 					    WHERE tipodoc43 IN ('53')  AND ((fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin') or (fecdoc43 >= 'yfinicioa'  AND fecdoc43 <= 'yffina')
@@ -1474,10 +1457,10 @@ private $sqlgennc1Com="SELECT SUBSTRING(numdoc43,1,7) AS agencia,
 						      '0' AS marcod,
 						     '-' AS marca,
 						      vendcte01 AS vencod,
-						      (SELECT nomtab FROM jcev.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
+						      (SELECT nomtab FROM fullm.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM  jcev.categorias a INNER JOIN   jcev.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
-                              (SELECT DISTINCT nomtab FROM jcev.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = jcev.maecte.canton) AS ciudad
+						      (SELECT a.desccate AS categoria FROM  fullm.categorias a INNER JOIN   fullm.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate,
+                              (SELECT DISTINCT nomtab FROM fullm.maetab WHERE numtab = '34' AND codtab <> '' AND codtab = fullm.maecte.canton) AS ciudad
 					      FROM xbase.movcte2
 					      INNER JOIN xbase.maecte ON codcte43=codcte01
 					      WHERE tipodoc43 IN ('53')  AND ((fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin') or (fecdoc43 >= 'yfinicioa'  AND fecdoc43 <= 'yffina')

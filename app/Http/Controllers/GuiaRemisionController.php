@@ -21,7 +21,6 @@ use PDF;
 use Illuminate\Support\Str;
 use App\Models\SqlModel;
 
-
 class GuiaRemisionController extends Controller
 {
     use FormatResponseTrait;
@@ -40,8 +39,8 @@ class GuiaRemisionController extends Controller
 
 
         $sql = "SELECT gr.id, gr.ruc, gr.cliente, gr.status, gr.autorizacion, gr.status_code, gr.message_error, gr.aditional_message_error,
-                gr.documento, gr.serie, gr.numero,(gr.serie||'-'||lpad(gr.numero,9,'0')) as guia_numero,
-                gr.fecha_inicio, gr.fecha_fin, gr.transportista_id, t.nombres as transportista, gr.observacion
+                gr.documento, gr.serie, gr.numero,(gr.serie||'-'||lpad(gr.numero,9,'0')) as guia_numero,origen,
+                gr.fecha_inicio, gr.fecha_fin, gr.transportista_id, t.nombres as transportista, gr.observacion,gr.documentos
                 FROM guias_remision gr
                 INNER JOIN transportistas t ON gr.transportista_id = t.id
                 WHERE gr.fecha_inicio >= ? AND gr.fecha_inicio <= ? AND gr.documento = ?
@@ -199,13 +198,14 @@ class GuiaRemisionController extends Controller
                         $detalleObj->save();
 
 
-                        if ($input['origen'] == 'PAC') {
+                        if ($input['origen'] != 'MANUAL') {
                             $guia_numero = $guia->serie . Str::padLeft($guia->numero, 9, '0');;
-                            $result = DB::update('update catalogo_series set guia_remision_id=?, guia_remision_numero=? where chasis=? and serie=?', [
+                            $result = DB::update('update catalogo_series set guia_remision_id=?, guia_remision_numero=? where chasis=? and serie=? and documento=?', [
                                 $guia->id,
                                 $guia_numero,
                                 $detalleObj->chasis,
                                 $detalleObj->serie,
+                                $guia->documento,
                             ]);
                         }
                     };
@@ -223,6 +223,84 @@ class GuiaRemisionController extends Controller
                     DB::commit();
                     $guianew=GuiaRemision::with(['detalle', 'transportista'])->find($guia->id);
                     $this->requestToSri($guianew);
+
+                    // =========================
+                    // PAC + ASIGNACIÓN
+                    // =========================
+                    try {
+
+                        // número formateado
+                        $numeroFormateado =
+                            $guianew->serie . '-' . str_pad($guianew->numero, 9, '0', STR_PAD_LEFT);
+
+                        // INSERT PAC
+                        DB::connection('pgsql')->select(
+                            'SELECT guias_pac_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                            [
+                                'Fullm',
+                                $numeroFormateado,
+                                $guianew->fecha_inicio,
+                                $guianew->transportista->nombres ?? '',
+                                $guianew->transportista->ruc ?? '',
+                                null,
+                                $guianew->partida,
+                                $guianew->motivo,
+                                null,
+                                $guianew->direccion,
+                                $guianew->direccion,
+                                $guianew->direccion,
+                                $guianew->fecha_inicio,
+                                $guianew->fecha_fin,
+                                null,
+                                $guianew->ruc,
+                                $guianew->cliente,
+                                null,
+                                $guianew->telefono,
+                                $guianew->observacion,
+                                $guianew->documentos,
+                                null,
+                                '',
+                                null,
+                                auth()->user()->name ?? 'system',
+                                $guianew->transportista_id
+                            ]
+                        );
+
+                        \Log::info('INSERT PAC OK: ' . $numeroFormateado);
+
+                        // =========================
+                        //  ASIGNACIÓN DEL TRANSPORTISTA EN GUIASPAC
+                        // =========================
+
+                        if ($guianew->transportista_id) {
+
+                            // obtener USER_ID correcto del transportista
+                            $transportista = DB::table('transportistas')
+                                ->where('id', $guianew->transportista_id)
+                                ->first();
+
+                            $userId = $transportista->user_id ?? null;
+
+                            $actualizado = DB::update(
+                                "update guiaspac 
+                             set transportista_id = ?, 
+                                 transportista_id_guia = ?, 
+                                 fecha_asignacion = current_timestamp, 
+                                 esasignado = 1
+                             where numero_guia_remision = ?",
+                                [
+                                    $userId,
+                                    $guianew->transportista_id,
+                                    $numeroFormateado
+                                ]
+                            );
+
+                            \Log::info('UPDATE GUIASPAC filas: ' . $actualizado);
+                        }
+
+                    } catch (\Exception $e) {
+                        \Log::error('ERROR PAC: ' . $e->getMessage());
+                    }
 
                     //return $this->insertOk($guia);
                 } else {
@@ -469,4 +547,21 @@ class GuiaRemisionController extends Controller
             ], 400);
         }
     }
+
+    public function buscarSerieEnGuias(Request $request)
+    {
+        $serie = $request['serie'];
+
+        $sql = "select id,serie,numero,fecha_inicio,
+                'Guia Numero: '||numero|| ' del: '||fecha_inicio ||' en la empresa Fullm ' as descripcion
+                from guias_remision where id in (select guiar_id from guias_remisiond where descripcion like '%".$serie."%')
+                ORDER BY numero DESC";
+
+        $list = DB::select($sql, []);
+
+        return $this->getOk($list);
+    }
+
+
+
 }

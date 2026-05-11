@@ -16,6 +16,9 @@ use App\Http\Controllers\GuiasProductosController;
 use App\Http\Controllers\DireccionController;
 use App\Http\Controllers\TipoVisitaController;
 use App\Http\Controllers\VisitaController;
+use App\Http\Controllers\VisitaVendedorController;
+use App\Http\Controllers\PacFacturasDespachadasController;
+use App\Http\Controllers\SeriesDespachadasController;
 
 /*
 |--------------------------------------------------------------------------
@@ -147,6 +150,12 @@ Route::group([
     Route::get('getdespachos', [GuiasProductosController::class, 'importaDespachos']);
     Route::get('getdesdetalle', [GuiasProductosController::class, 'importaDespachosDetalle']);
     Route::put('updest', [GuiasProductosController::class, 'actualizaEstadoFacturas']);
+    Route::get('busserie', [GuiaRemisionController::class, 'buscarSerieEnGuias']);
+    Route::get('facdespchadas', [PacFacturasDespachadasController::class, 'facturasDespachadas']);
+
+    Route::get('seriesdespchadas', [SeriesDespachadasController::class, 'seriesDespachadas']);
+    Route::get('serieslista', [SeriesDespachadasController::class, 'obtenerSeries']);
+    Route::get('seriebusca', [SeriesDespachadasController::class, 'seriesBuscar']);
 
  });
 
@@ -168,6 +177,7 @@ Route::group([
    'prefix' => 'tipov',
 ], function () {
    Route::get('list', [TipoVisitaController::class, 'list']);
+   Route::get('listvis', [TipoVisitaController::class, 'listVisitas']);
    Route::get('list/{id}', [TipoVisitaController::class, 'getById']);
    Route::post('create', [TipoVisitaController::class, 'create']);
    Route::put('edit', [TipoVisitaController::class, 'edit']);
@@ -183,5 +193,16 @@ Route::group([
     Route::get('list', [VisitaController::class, 'list']);
     Route::post('create', [VisitaController::class, 'save']);
     Route::get('list/{id}', [VisitaController::class, 'findById']);
+
+ });
+
+
+Route::group([
+    'prefix' => 'visven',
+ ], function () {
+
+    Route::get('list', [VisitaVendedorController::class, 'list']);
+    Route::post('create', [VisitaVendedorController::class, 'save']);
+    Route::get('list/{id}', [VisitaVendedorController::class, 'findById']);
 
  });

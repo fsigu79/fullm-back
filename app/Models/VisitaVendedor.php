@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Visita extends Model
+class VisitaVendedor  extends Model
 {
-    protected $table = 'visitas';
+    protected $table = 'visitasv';
 
     protected $fillable = [
         'documento',
@@ -18,32 +18,19 @@ class Visita extends Model
         'fecha',
         'tipo_id',
         'contacto',
-        'marca',
-        'marca_venta',
-        'marca1',
-        'marca_venta1',
-        'marca2',
-        'marca_venta2',
-        'marc3',
-        'marca_vent3',
         'observaciones',
         'longitud',
         'latitud',
         'imagen1',
         'imagen2',
         'imagen3',
-        'imagen4',
-        'imagen5',
         'firma',
-        'revision_stock',
-        'ex_preferencial',
-        'material_pop',
-        'limpieza_producto',
-        'revision_antiguedad',
-        'reposicion_stock',
-        'esactivo',
+        'escobranza',
+        'pagare',
+        'pedido_numero',
         'inicio',
         'fin',
+        'esactivo',
         'usuario_created',
         'usuario_updated',
     ];

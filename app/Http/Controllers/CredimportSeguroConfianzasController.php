@@ -48,6 +48,8 @@ class CredimportSeguroConfianzasController extends Controller
 
             $sql=$sql.' UNION ALL '.$this->generaQuery('vintipartcuen1',$inicio,$fin); //guayaquil
             $sql=$sql.' UNION ALL '.$this->generaQuery('vintipartuio',$inicio,$fin);//quito
+            $sql=$sql.' UNION ALL '.$this->generaQuery('vintipartgye3',$inicio,$fin);//quito
+
             /*$sql=$sql.' UNION ALL '.$this->generaQuery('jcevgye1',$inicio,$fin);
             $sql=$sql.' UNION ALL '.$this->generaQuery('jcevgye10',$inicio,$fin);
             $sql=$sql.' UNION ALL '.$this->generaQuery('jcevuio1',$inicio,$fin);

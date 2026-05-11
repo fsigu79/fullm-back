@@ -41,7 +41,8 @@ class GuiaRemision extends Model
         'origen',
         'direccion_id',
         'ruc_transportista',
-        'nombre_transportista'
+        'nombre_transportista',
+        'documentos'
     ];
 
     protected $hidden = [

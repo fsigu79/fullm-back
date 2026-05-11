@@ -45,8 +45,8 @@ class TodoMotoSeguroConfianzasController extends Controller
 
         try{
             $sql=$this->generaQuery('todomoto',$inicio,$fin);
-
-
+            $sql=$sql.' UNION ALL '.$this->generaQuery('todomotogye1',$inicio,$fin);
+            $sql=$sql.' UNION ALL '.$this->generaQuery('todomotouio1',$inicio,$fin);
             /*$sql=$sql.' UNION ALL '.$this->generaQuery('jcevcuenca2',$inicio,$fin);
             $sql=$sql.' UNION ALL '.$this->generaQuery('jcevcuenca1',$inicio,$fin);
             $sql=$sql.' UNION ALL '.$this->generaQuery('jcevgye1',$inicio,$fin);

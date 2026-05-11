@@ -20,7 +20,7 @@ class ConsultaExtPacController extends Controller
     {
         $this->middleware('auth:admin',['except' =>
               [
-                  'datosPorChasis',
+                  'datosPorChasis','datosPorChasisFullm'
                   ]]);
     }
 
@@ -53,6 +53,49 @@ class ConsultaExtPacController extends Controller
                                 cvanulada04,
                                 codprod04
                         from jcevgyeassem.maeser, maepro
+                        where codprod04=codprod01 and chasis04=?";
+                        //and cvanulada04='T'"; validar que es este campo con alexis
+
+                $list = DB::connection('mysqlpac')->select($sql,[$chasis]);
+                return $this->getOk($list);
+            } catch (\Exception $e) {
+            return $this->insertErrCustom($input, $e->getMessage());
+            }
+        }
+        else
+        {
+            return $this->insertErrCustom($validation->messages(), 'Datos inválidos');
+        }
+    }
+
+    public function datosPorChasisFullm(Request $request)
+    {
+        $input = $request->all();
+        $chasis = $request['chasis'];
+        $serie = $request['serie'];
+
+        $validation = Validator::make(
+            $request->all(),
+            [
+                'chasis' => 'required',
+            ],
+            [
+                'chasis.required' => 'El chasis es requerido.',
+            ]
+        );
+
+        if (!$validation->fails()) {
+            try{
+                $sql="select  desprod01 as modelo,
+                                serie04 as motor,
+                                chasis04 as chasis,
+                                anio04 as anio,
+                                color04 as color,
+                                cpn04 as cpn,
+                                ramv04 as ramv,
+                                cvanulada04,
+                                codprod04
+                        from fullmgyeassem.maeser, fullmgyeassem.maepro
                         where codprod04=codprod01 and chasis04=?";
                         //and cvanulada04='T'"; validar que es este campo con alexis
 
@@ -926,6 +969,86 @@ class ConsultaExtPacController extends Controller
                 return $this->insertErrCustom($input, $e->getMessage());
             }
     }
+
+
+    public function facturaPorNumeroFullmot(Request $request)
+    {
+        $input = $request->all();
+        $serie = $input['serie'];
+        $numero = $input['numero'];
+        $comprobante=$serie.'-'.$numero;
+        $base='fullm';
+
+            try{
+
+                if ($serie=='001-100'){
+                    $base='fullm';
+                } else if ($serie=='001-101') {
+                    $base='fullm';
+                } else {
+                    $base='fullm';
+                }
+                //consulta catalog de series
+                $sql="select tipodocto31,nofact31,nocte31,nomcte31,vtabta31 as subcab,if (cvanulado31=9,'ANULADO','FACTURADO') as estadofac,
+                        descto31,
+                        ((select sum(round(precvta03-descvta03,2)) from xbase.movpro where tipotra03='80' and nofact31=nocomp03)-xbase.maefac.descto31-xbase.maefac.desctofp31) as subtotal,
+                        (select round(sum( (iva03/100)*(precvta03 - descvta03-desctotvta03)),2) from xbase.movpro where tipotra03='80' and nofact31=nocomp03) as iva
+                        from xbase.maefac where tipodocto31=02 and nofact31=?";
+
+                $query=  str_replace('xbase',$base,$sql);
+
+
+                $fact = DB::connection('mysqlpac')->select($query,[$comprobante]);
+
+
+                $factura= new FacturaRpa();
+                if (!empty($fact)) {
+                    $factura->tipodocto31=$fact[0]->tipodocto31;
+                    $factura->nofact31=$fact[0]->nofact31;
+                    $factura->nocte31=$fact[0]->nocte31;
+                    $factura->nomcte31=$fact[0]->nomcte31;
+                    $factura->descto31=$fact[0]->descto31;
+                    $factura->subcab=$fact[0]->subcab;
+                    $factura->estadofac=$fact[0]->estadofac;
+                    $factura->subtotal=$fact[0]->subtotal;
+                    $factura->iva=$fact[0]->iva;
+
+                    $sql="select cte.codcte01,cte.agente_retencion,ar.descripcion,bienes_iva,servicios_iva,bienes_renta,servicios_renta
+                        from todomoto.maecte cte
+                        inner join todomoto.agentes_retencion ar on cte.agente_retencion =ar.id
+                        inner join todomoto.configuracion_agentes_retencion car on ar.id=car.id_agente_retencion
+                        where codcte01=?";
+
+                    $reten = DB::connection('mysqlpac')->select($sql,[$factura->nocte31]);
+                    if (!empty($reten)){
+                        $factura->agente_retencion=$reten[0]->agente_retencion;
+                        $factura->descripcion=$reten[0]->descripcion;
+                        $factura->bienes_iva=$reten[0]->bienes_iva;
+                        $factura->servicios_iva=$reten[0]->servicios_iva;
+                        $factura->bienes_renta=$reten[0]->bienes_renta;
+                        $factura->servicios_renta=$reten[0]->servicios_renta;
+                    }
+                    else{
+                         $factura->agente_retencion='';
+                        $factura->descripcion='';
+                        $factura->bienes_iva='';
+                        $factura->servicios_iva='';
+                        $factura->bienes_renta='';
+                        $factura->servicios_renta='';
+                    }
+                    return $this->getOk($factura);
+                }else{
+                    return $this->getOk($fact);
+                }
+
+
+
+            } catch (\Exception $e) {
+                return $this->insertErrCustom($input, $e->getMessage());
+            }
+    }
+
+
 
     public function facturaPorNumeroUltracem(Request $request)
     {
