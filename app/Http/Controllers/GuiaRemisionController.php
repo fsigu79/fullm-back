@@ -60,6 +60,15 @@ class GuiaRemisionController extends Controller
     public function findById($id)
     {
         $invoice = GuiaRemision::with(['detalle', 'transportista'])->find($id);
+
+        if ($invoice && $invoice->nombre_transportista) {
+            $invoice->transportista = (object)[
+                'nombres' => $invoice->nombre_transportista,
+                'ruc'     => $invoice->ruc_transportista,
+                'placa'   => $invoice->placa,
+            ];
+        }
+
         return $this->getOk($invoice);
     }
 
@@ -81,6 +90,14 @@ class GuiaRemisionController extends Controller
                     'code' => 'error',
                     'message' => "Invoice not found",
                 ], 404);
+            }
+
+            if ($invoice->nombre_transportista) {
+                $invoice->transportista = (object)[
+                    'nombres' => $invoice->nombre_transportista,
+                    'ruc'     => $invoice->ruc_transportista,
+                    'placa'   => $invoice->placa,
+                ];
             }
 
             $data = [
@@ -112,6 +129,14 @@ class GuiaRemisionController extends Controller
                     'code' => 'error',
                     'message' => "Invoice not found",
                 ], 404);
+            }
+
+            if ($invoice->nombre_transportista) {
+                $invoice->transportista = (object)[
+                    'nombres' => $invoice->nombre_transportista,
+                    'ruc'     => $invoice->ruc_transportista,
+                    'placa'   => $invoice->placa,
+                ];
             }
 
             $email = new InvoiceEmail($invoice->xml, $company, $invoice, 'guides');
@@ -167,7 +192,9 @@ class GuiaRemisionController extends Controller
                 $input = $request->all();
 
                 if (!empty($input['transportista']['user_id'])) {
-                    $input['transportista_id'] = $input['transportista']['user_id'];
+                    $input['transportista_id']      = $input['transportista']['user_id'];
+                    $input['nombre_transportista']  = $input['transportista']['nombres'] ?? $input['nombre_transportista'] ?? null;
+                    $input['ruc_transportista']     = $input['transportista']['ruc']     ?? $input['ruc_transportista']    ?? null;
                 }
 
                 DB::beginTransaction();
@@ -247,12 +274,11 @@ class GuiaRemisionController extends Controller
                     $this->requestToSri($guianew);
 
                     // =========================
-                    // PAC + ASIGNACIÓN
+                    // PAC
                     // =========================
-                    try {
-                        $numeroFormateado = $guianew->serie . '-' . str_pad($guianew->numero, 9, '0', STR_PAD_LEFT);
+                    $numeroFormateado = $guianew->serie . '-' . str_pad($guianew->numero, 9, '0', STR_PAD_LEFT);
 
-                        // INSERT PAC vía Store Procedure
+                    try {
                         DB::connection('pgsql_optimus')->select(
                             'SELECT guias_pac_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                             [
@@ -281,36 +307,55 @@ class GuiaRemisionController extends Controller
                                 '',
                                 null,
                                 auth()->user()->name ?? 'system',
-                                $guianew->transportista_id
+                                $input['transportista']['id'] ?? $input['transportista_id'] ?? null
                             ]
                         );
-
                         \Log::info('INSERT PAC OK: ' . $numeroFormateado);
+                    } catch (\Exception $e) {
+                        \Log::error('ERROR PAC GRABAR: ' . $e->getMessage());
+                    }
 
-                        // ASIGNACIÓN DEL TRANSPORTISTA EN GUIASPAC
-                        $transportistaOptimusId = $input['transportista']['id'] ?? $input['transportista_id'] ?? null;
-                        $userId = $input['transportista']['user_id'] ?? null;
+                    // =========================
+                    // ASIGNACIÓN TRANSPORTISTA
+                    // =========================
+                    try {
+                        if (!empty($input['transportista']['id'])) {
+                            $transportistaOptimusId = $input['transportista']['id'];
+                            $userId                 = $input['transportista']['user_id'] ?? null;
+                            $nombreTransportista    = $input['transportista']['nombres']  ?? $input['nombre_transportista'] ?? null;
+                            $rucTransportista       = $input['transportista']['ruc']      ?? $input['ruc_transportista']    ?? null;
+                        } else {
+                            $userId              = $input['transportista_id'] ?? null;
+                            $transOptimus        = $userId
+                                ? DB::connection('pgsql_optimus')->table('transportistas')->where('user_id', $userId)->first()
+                                : null;
+                            $transportistaOptimusId = $transOptimus->id      ?? null;
+                            $nombreTransportista    = $transOptimus->nombres  ?? $input['nombre_transportista'] ?? null;
+                            $rucTransportista       = $transOptimus->ruc      ?? $input['ruc_transportista']    ?? null;
+                        }
 
                         if ($transportistaOptimusId) {
                             $actualizado = DB::connection('pgsql_optimus')->update(
                                 "update guiaspac
-                             set transportista_id = ?,
-                                 transportista_id_guia = ?,
-                                 fecha_asignacion = current_timestamp,
-                                 esasignado = 1
-                             where numero_guia_remision = ?",
+                                 set nombre_transportista = ?,
+                                     ruc_transportista = ?,
+                                     transportista_id = ?,
+                                     transportista_id_guia = ?,
+                                     fecha_asignacion = current_timestamp,
+                                     esasignado = 1
+                                 where numero_guia_remision = ? and empresa = 'Fullmotos'",
                                 [
+                                    $nombreTransportista,
+                                    $rucTransportista,
                                     $userId,
                                     $transportistaOptimusId,
                                     $numeroFormateado
                                 ]
                             );
-
                             \Log::info('UPDATE GUIASPAC filas: ' . $actualizado);
                         }
-
                     } catch (\Exception $e) {
-                        \Log::error('ERROR PAC: ' . $e->getMessage());
+                        \Log::error('ERROR PAC ASIGNACION: ' . $e->getMessage());
                     }
 
                     return $this->insertOk($guia);
@@ -514,6 +559,14 @@ class GuiaRemisionController extends Controller
                     'code' => 'error',
                     'message' => "Invoice not found",
                 ], 404);
+            }
+
+            if ($guia->nombre_transportista) {
+                $guia->transportista = (object)[
+                    'nombres' => $guia->nombre_transportista,
+                    'ruc'     => $guia->ruc_transportista,
+                    'placa'   => $guia->placa,
+                ];
             }
 
             $sri = new SriFunctionsController("06", $guia);
