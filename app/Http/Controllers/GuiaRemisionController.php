@@ -254,20 +254,20 @@ class GuiaRemisionController extends Controller
                     // =========================
                     // SRI LOGIC
                     // =========================
-                    //$sri = new SriFunctionsController("06", $input);
-                    //$xml = $sri->getXml();
-                    //$key = $sri->getAccessKey();
+                    $sri = new SriFunctionsController("06", $input);
+                    $xml = $sri->getXml();
+                    $key = $sri->getAccessKey();
 
-                    //$guia->xml = $xml;
+                    $guia->xml = $xml;
                     $guia->status = 'PENDIENTE';
-                    //$guia->autorizacion = $key;
+                    $guia->autorizacion = $key;
                     $guia->save();
 
                     DB::commit();
 
                     // Notificar al SRI
                     $guianew = GuiaRemision::with(['detalle', 'transportista'])->find($guia->id);
-                    //$this->requestToSri($guianew);
+                    $this->requestToSri($guianew);
 
                     // =========================
                     // PAC
