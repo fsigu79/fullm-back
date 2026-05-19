@@ -39,10 +39,11 @@ class GuiaRemisionController extends Controller
 
 
         $sql = "SELECT gr.id, gr.ruc, gr.cliente, gr.status, gr.autorizacion, gr.status_code, gr.message_error, gr.aditional_message_error,
-                gr.documento, gr.serie, gr.numero,(gr.serie||'-'||lpad(gr.numero,9,'0')) as guia_numero,origen,
-                gr.fecha_inicio, gr.fecha_fin, gr.transportista_id, t.nombres as transportista, gr.observacion,gr.documentos
+                gr.documento, gr.serie, gr.numero,(gr.serie||'-'||lpad(gr.numero,9,'0')) as guia_numero,
+                gr.fecha_inicio, gr.fecha_fin, gr.transportista_id,
+                COALESCE(gr.nombre_transportista, t.nombres) as transportista, gr.observacion
                 FROM guias_remision gr
-                INNER JOIN transportistas t ON gr.transportista_id = t.id
+                LEFT JOIN transportistas t ON gr.transportista_id = t.id
                 WHERE gr.fecha_inicio >= ? AND gr.fecha_inicio <= ? AND gr.documento = ?
                 ORDER BY gr.numero DESC";
 
@@ -159,6 +160,11 @@ class GuiaRemisionController extends Controller
         if (!$validation->fails()) {
             try {
                 $input = $request->all();
+
+                if (!empty($input['transportista']['user_id'])) {
+                    $input['transportista_id'] = $input['transportista']['user_id'];
+                }
+
                 DB::beginTransaction();
 
                 if ($input['accion'] != 'Eliminar') {
@@ -248,8 +254,8 @@ class GuiaRemisionController extends Controller
                                 'Fullmotos',
                                 $numeroFormateado,
                                 $guianew->fecha_inicio,
-                                $guianew->transportista->nombres ?? '',
-                                $guianew->transportista->ruc ?? '',
+                                $guianew->nombre_transportista ?? '',
+                                $guianew->ruc_transportista ?? '',
                                 null,
                                 $guianew->partida,
                                 $guianew->motivo,
@@ -277,23 +283,20 @@ class GuiaRemisionController extends Controller
                         \Log::info('INSERT PAC OK: ' . $numeroFormateado);
 
                         // ASIGNACIÓN DEL TRANSPORTISTA EN GUIASPAC
-                        if ($guianew->transportista_id) {
-                            $transportista = DB::table('transportistas')
-                                ->where('id', $guianew->transportista_id)
-                                ->first();
+                        $transportistaOptimusId = $input['transportista']['id'] ?? $input['transportista_id'] ?? null;
+                        $userId = $input['transportista']['user_id'] ?? null;
 
-                            $userId = $transportista->user_id ?? null;
-
-                            $actualizado = DB::update(
-                                "update guiaspac 
-                             set transportista_id = ?, 
-                                 transportista_id_guia = ?, 
-                                 fecha_asignacion = current_timestamp, 
+                        if ($transportistaOptimusId) {
+                            $actualizado = DB::connection('pgsql_optimus')->update(
+                                "update guiaspac
+                             set transportista_id = ?,
+                                 transportista_id_guia = ?,
+                                 fecha_asignacion = current_timestamp,
                                  esasignado = 1
                              where numero_guia_remision = ?",
                                 [
                                     $userId,
-                                    $guianew->transportista_id,
+                                    $transportistaOptimusId,
                                     $numeroFormateado
                                 ]
                             );
