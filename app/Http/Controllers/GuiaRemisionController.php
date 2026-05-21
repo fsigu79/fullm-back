@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Traits\FormatResponseTrait;
 use App\Jobs\RequestSri;
 use App\Jobs\SenderEmail;
+use App\Jobs\SyncGuiaNexus;
 use App\Mail\InvoiceEmail;
 use App\Models\Company;
 use App\Models\GuiaRemision;
@@ -264,6 +265,15 @@ class GuiaRemisionController extends Controller
 
                     DB::commit();
 
+                    $nexusSync = ['ok' => false, 'message' => null];
+                    try {
+                        (new SyncGuiaNexus($input))->handle();
+                        $nexusSync['ok'] = true;
+                    } catch (\Throwable $e) {
+                        $nexusSync['message'] = 'No se pudo crear la guía en Nexus: ' . $e->getMessage();
+                        \Log::error('SyncGuiaNexus failed: ' . $e->getMessage(), ['id' => $input['id'] ?? null]);
+                    }
+
                     // Notificar al SRI
                     $guianew = GuiaRemision::with(['detalle', 'transportista'])->find($guia->id);
                     $this->requestToSri($guianew);
@@ -353,6 +363,7 @@ class GuiaRemisionController extends Controller
                         \Log::error('ERROR PAC ASIGNACION: ' . $e->getMessage());
                     }
 
+                    $guia->nexus_sync = $nexusSync;
                     return $this->insertOk($guia);
 
                 } else {
