@@ -42,6 +42,7 @@ class GuiaRemisionDwh extends Model
         'direccion_id',
         'ruc_transportista',
         'nombre_transportista',
+        'empresa',
     ];
 
     protected $hidden = ['created_at', 'updated_at'];

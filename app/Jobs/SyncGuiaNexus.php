@@ -26,6 +26,9 @@ class SyncGuiaNexus implements ShouldQueue
         try {
             $input = $this->input;
 
+            //add empresa FULLMOTOS
+            $input['empresa'] = 'FULLMOTOS';
+
             $guiaw = GuiaRemisionDwh::find($input['id']);
 
             if (!$guiaw) {
