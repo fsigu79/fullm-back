@@ -39,14 +39,9 @@ class GuiaRemisionController extends Controller
 
 
         $sql = "SELECT gr.id, gr.ruc, gr.cliente, gr.status, gr.autorizacion, gr.status_code, gr.message_error, gr.aditional_message_error,
-<<<<<<< HEAD
-                gr.documento, gr.serie, gr.numero,(gr.serie||'-'||lpad(gr.numero,9,'0')) as guia_numero,origen,
-                gr.fecha_inicio, gr.fecha_fin, gr.transportista_id, t.nombres as transportista, gr.observacion,gr.documentos
-=======
                 gr.documento, gr.serie, gr.numero,(gr.serie||'-'||lpad(gr.numero,9,'0')) as guia_numero,
                 gr.fecha_inicio, gr.fecha_fin, gr.transportista_id,
                 COALESCE(gr.nombre_transportista, t.nombres) as transportista, gr.observacion
->>>>>>> ab6ea73da095465916d296fefe4d6d76720d18c1
                 FROM guias_remision gr
                 LEFT JOIN transportistas t ON gr.transportista_id = t.id
                 WHERE gr.fecha_inicio >= ? AND gr.fecha_inicio <= ? AND gr.documento = ?
