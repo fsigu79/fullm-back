@@ -58,10 +58,10 @@ class GuiaRemisionController extends Controller
         $invoice = GuiaRemision::with(['detalle', 'transportista'])->find($id);
 
         if ($invoice && $invoice->nombre_transportista) {
-            $invoice->transportista = (object)[
+            $invoice->transportista = (object) [
                 'nombres' => $invoice->nombre_transportista,
-                'ruc'     => $invoice->ruc_transportista,
-                'placa'   => $invoice->placa,
+                'ruc' => $invoice->ruc_transportista,
+                'placa' => $invoice->placa,
             ];
         }
 
@@ -89,10 +89,10 @@ class GuiaRemisionController extends Controller
             }
 
             if ($invoice->nombre_transportista) {
-                $invoice->transportista = (object)[
+                $invoice->transportista = (object) [
                     'nombres' => $invoice->nombre_transportista,
-                    'ruc'     => $invoice->ruc_transportista,
-                    'placa'   => $invoice->placa,
+                    'ruc' => $invoice->ruc_transportista,
+                    'placa' => $invoice->placa,
                 ];
             }
 
@@ -128,10 +128,10 @@ class GuiaRemisionController extends Controller
             }
 
             if ($invoice->nombre_transportista) {
-                $invoice->transportista = (object)[
+                $invoice->transportista = (object) [
                     'nombres' => $invoice->nombre_transportista,
-                    'ruc'     => $invoice->ruc_transportista,
-                    'placa'   => $invoice->placa,
+                    'ruc' => $invoice->ruc_transportista,
+                    'placa' => $invoice->placa,
                 ];
             }
 
@@ -188,9 +188,9 @@ class GuiaRemisionController extends Controller
                 $input = $request->all();
 
                 if (!empty($input['transportista']['user_id'])) {
-                    $input['transportista_id']      = $input['transportista']['user_id'];
-                    $input['nombre_transportista']  = $input['transportista']['nombres'] ?? $input['nombre_transportista'] ?? null;
-                    $input['ruc_transportista']     = $input['transportista']['ruc']     ?? $input['ruc_transportista']    ?? null;
+                    $input['transportista_id'] = $input['transportista']['user_id'];
+                    $input['nombre_transportista'] = $input['transportista']['nombres'] ?? $input['nombre_transportista'] ?? null;
+                    $input['ruc_transportista'] = $input['transportista']['ruc'] ?? $input['ruc_transportista'] ?? null;
                 }
 
                 DB::beginTransaction();
@@ -265,6 +265,12 @@ class GuiaRemisionController extends Controller
 
                     DB::commit();
 
+
+
+                    // Notificar al SRI
+                    $guianew = GuiaRemision::with(['detalle', 'transportista'])->find($guia->id);
+                    $this->requestToSri($guianew);
+
                     $nexusSync = ['ok' => false, 'message' => null];
                     try {
                         (new SyncGuiaNexus($input))->handle();
@@ -273,10 +279,6 @@ class GuiaRemisionController extends Controller
                         $nexusSync['message'] = 'No se pudo crear la guía en Nexus: ' . $e->getMessage();
                         \Log::error('SyncGuiaNexus failed: ' . $e->getMessage(), ['id' => $input['id'] ?? null]);
                     }
-
-                    // Notificar al SRI
-                    $guianew = GuiaRemision::with(['detalle', 'transportista'])->find($guia->id);
-                    $this->requestToSri($guianew);
 
                     // =========================
                     // PAC
@@ -326,17 +328,17 @@ class GuiaRemisionController extends Controller
                     try {
                         if (!empty($input['transportista']['id'])) {
                             $transportistaOptimusId = $input['transportista']['id'];
-                            $userId                 = $input['transportista']['user_id'] ?? null;
-                            $nombreTransportista    = $input['transportista']['nombres']  ?? $input['nombre_transportista'] ?? null;
-                            $rucTransportista       = $input['transportista']['ruc']      ?? $input['ruc_transportista']    ?? null;
+                            $userId = $input['transportista']['user_id'] ?? null;
+                            $nombreTransportista = $input['transportista']['nombres'] ?? $input['nombre_transportista'] ?? null;
+                            $rucTransportista = $input['transportista']['ruc'] ?? $input['ruc_transportista'] ?? null;
                         } else {
-                            $userId              = $input['transportista_id'] ?? null;
-                            $transOptimus        = $userId
+                            $userId = $input['transportista_id'] ?? null;
+                            $transOptimus = $userId
                                 ? DB::connection('pgsql_optimus')->table('transportistas')->where('user_id', $userId)->first()
                                 : null;
-                            $transportistaOptimusId = $transOptimus->id      ?? null;
-                            $nombreTransportista    = $transOptimus->nombres  ?? $input['nombre_transportista'] ?? null;
-                            $rucTransportista       = $transOptimus->ruc      ?? $input['ruc_transportista']    ?? null;
+                            $transportistaOptimusId = $transOptimus->id ?? null;
+                            $nombreTransportista = $transOptimus->nombres ?? $input['nombre_transportista'] ?? null;
+                            $rucTransportista = $transOptimus->ruc ?? $input['ruc_transportista'] ?? null;
                         }
 
                         if ($transportistaOptimusId) {
@@ -568,10 +570,10 @@ class GuiaRemisionController extends Controller
             }
 
             if ($guia->nombre_transportista) {
-                $guia->transportista = (object)[
+                $guia->transportista = (object) [
                     'nombres' => $guia->nombre_transportista,
-                    'ruc'     => $guia->ruc_transportista,
-                    'placa'   => $guia->placa,
+                    'ruc' => $guia->ruc_transportista,
+                    'placa' => $guia->placa,
                 ];
             }
 
