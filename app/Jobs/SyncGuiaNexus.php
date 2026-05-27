@@ -23,38 +23,33 @@ class SyncGuiaNexus implements ShouldQueue
 
     public function handle(): void
     {
-        try {
+        $input = $this->input;
 
-            $input = $this->input;
+        $guiaw = GuiaRemisionDwh::where('numero', $input['numero'])
+            ->where('documento', $input['documento'])
+            ->where('serie', $input['serie'])
+            ->where('empresa', 'FULLMOTOS')
+            ->first();
 
-            $guiaw = GuiaRemisionDwh::where('numero', $input['numero'])
-                ->where('documento', $input['documento'])
-                ->first();
+        //add empresa FULLMOTOS
+        $input['empresa'] = 'FULLMOTOS';
 
-            //add empresa FULLMOTOS
-            $input['empresa'] = 'FULLMOTOS';
+        if (!$guiaw) {
+            $guiaw = new GuiaRemisionDwh($input);
+            $guiaw->numero = $input['numero'];
+            $guiaw->save();
+        } else {
+            $guiaw->update($input);
+        }
 
-            if (!$guiaw) {
-                $guiaw = new GuiaRemisionDwh($input);
-                $guiaw->numero = $input['numero'];
-                $guiaw->save();
-            } else {
-                $guiaw->update($input);
-            }
+        $guiaw->detalle()->delete();
 
-            $guiaw->detalle()->delete();
-
-            foreach ($input['detalle'] as $detalle) {
-                $detalleObj = new GuiaRemisionDetalleDwh($detalle);
-                $detalleObj->guiar_id = $guiaw->id;
-                $detalleObj->documento = $guiaw->documento;
-                $detalleObj->numero = $guiaw->numero;
-                $detalleObj->save();
-            }
-        } catch (\Throwable $e) {
-            \Log::error('SyncGuiaNexus failed: ' . $e->getMessage(), [
-                'input_id' => $this->input['id'] ?? null,
-            ]);
+        foreach ($input['detalle'] as $detalle) {
+            $detalleObj = new GuiaRemisionDetalleDwh($detalle);
+            $detalleObj->guiar_id = $guiaw->id;
+            $detalleObj->documento = $guiaw->documento;
+            $detalleObj->numero = $guiaw->numero;
+            $detalleObj->save();
         }
     }
 }
