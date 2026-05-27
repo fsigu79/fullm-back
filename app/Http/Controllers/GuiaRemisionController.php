@@ -277,7 +277,7 @@ class GuiaRemisionController extends Controller
                         $nexusSync['ok'] = true;
                     } catch (\Throwable $e) {
                         $nexusSync['message'] = 'No se pudo crear la guía en Nexus: ' . $e->getMessage();
-                        \Log::error('SyncGuiaNexus failed: ' . $e->getMessage(), ['id' => $input['id'] ?? null]);
+                        \Log::error('SyncGuiaNexus failed: ' . $e->getMessage(), ['id' => $guia->id]);
                     }
 
                     // =========================
