@@ -171,6 +171,7 @@ class GuiasPacController extends Controller
 
     public function guiasResumen(Request $request)
     {
+        //fsigu cabmio guias detalle optimus
         $input = $request->all();
         $inicio=$request['finicio'].' 00:00:00';
         $fin=$request['ffin'].' 23:59:00';
