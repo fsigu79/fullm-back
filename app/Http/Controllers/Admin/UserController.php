@@ -123,7 +123,7 @@ class UserController extends Controller
              //Se obtiene el id del resgistro de la tabla de usuarios
              $latestId = User::latest('id')->first()->id;
 
-             //Comparamos los roles para crear el rol de transportista    
+             //Comparamos los roles para crear el rol de transportista
              if($request['role'] == "2"){
                  $validation_t = Validator::make(
                      $request->all(),
@@ -139,7 +139,7 @@ class UserController extends Controller
                      ]
                  );
                  if (!$validation_t->fails()) {
-         
+
                      $input = $request->all();
                      $entidad = new Transportista();
                      $entidad->razon_social = $request['razon_social'];
@@ -292,6 +292,15 @@ class UserController extends Controller
 
             $input = $request->all();
             $user = User::find($id);
+
+            if (isset($input["password"]) && $input["password"] != "" && $input["password"] != null) {
+                $user["password"] = Hash::make($input["password"]);
+                //return $this->updateOkCustom('user1',$user);
+            } else {
+                unset($input["password"]);
+                //return $this->updateOkCustom('user2',$user);
+            }
+
             $user->update($input);
 
             try{
@@ -316,7 +325,7 @@ class UserController extends Controller
         $user = User::find($id);
         if (is_object($user)) {
             if($user->role == '2'){
-                $transportista = Transportista::where('user_id',$user->id)->get();  
+                $transportista = Transportista::where('user_id',$user->id)->get();
                 $data = array(
                     'code' => 200,
                     'status' => 'success',

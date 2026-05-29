@@ -5,17 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PresupuestProducto extends Model
+class Buffer extends Model
 {
-    protected $table = 'presupuesto_productos';
+    protected $table = 'buffers';
 
     protected $fillable = [
         'anio',
+        'cod_cliente',
+        'direccion_id',
         'marca_id',
         'marca',
-        'cod_cliente',
-        'cliente',
-        'vendedor_id',
         'codigo',
         'descripcion',
         'precio',

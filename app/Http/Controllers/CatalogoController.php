@@ -20,7 +20,7 @@ class CatalogoController extends Controller
 
     public function listProvincias()
     {
-        $query=  "select codtab as codigo,nomtab as provincia from jcev.maetab where numtab='33' AND codtab <> ''";
+        $query=  "select codtab as codigo,nomtab as provincia from fullm.maetab where numtab='33' AND codtab <> ''";
         //$list = DB::select($sql,[$request['cliente_id']]);
         $list = DB::connection('mysqlpac')->select($query);
 
@@ -45,9 +45,10 @@ class CatalogoController extends Controller
         return $this->getOk($list);
     }
 
+
     public function listVendedores()
     {
-        $query=  "SELECT codtab as codigo,nomtab as vendedor FROM jcev.maetab WHERE numtab='73' AND codtab <> ''";
+        $query=  "SELECT codtab as codigo,nomtab as vendedor FROM fullm.maetab WHERE numtab='73' AND codtab <> ''";
         //$list = DB::select($sql,[$request['cliente_id']]);
         $list = DB::connection('mysqlpac')->select($query);
 
@@ -74,7 +75,7 @@ class CatalogoController extends Controller
 
     public function listCatClientes()
     {
-        $query=  "SELECT codcate as codigo,desccate as catcliente FROM jcev.categorias WHERE tipocate='03'";
+        $query=  "SELECT codcate as codigo,desccate as catcliente FROM fullm.categorias WHERE tipocate='03'";
         //$list = DB::select($sql,[$request['cliente_id']]);
         $list = DB::connection('mysqlpac')->select($query);
 
@@ -101,7 +102,7 @@ class CatalogoController extends Controller
 
     public function listCatProductos()
     {
-        $query=  "SELECT codcate as codigo,desccate as codproducto FROM jcev.categorias WHERE tipocate='02' ";
+        $query=  "SELECT codcate as codigo,desccate as codproducto FROM fullm.categorias WHERE tipocate='02' ";
         //$list = DB::select($sql,[$request['cliente_id']]);
         $list = DB::connection('mysqlpac')->select($query);
 
@@ -128,7 +129,7 @@ class CatalogoController extends Controller
 
     public function listMarcas()
     {
-        $query=  "SELECT DISTINCT codtab as codigo,nomtab as marca FROM jcev.maetab WHERE numtab = '4530' AND codtab <> '' order by nomtab";
+        $query=  "SELECT DISTINCT codtab as codigo,nomtab as marca FROM fullm.maetab WHERE numtab = '4530' AND codtab <> '' order by nomtab";
         //$list = DB::select($sql,[$request['cliente_id']]);
         $list = DB::connection('mysqlpac')->select($query);
 

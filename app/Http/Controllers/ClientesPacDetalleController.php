@@ -13,7 +13,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use PDF;
 
-class ClientesPacController extends Controller
+class ClientesPacDetalleController extends Controller
 {
     use FormatResponseTrait;
 
@@ -177,25 +177,7 @@ class ClientesPacController extends Controller
         if ($unidades=="true")
         {
             //return $this->getOk('trueeeee');
-            $sql='SELECT 	codigocliente AS codigo,
-				                        cliente AS articulo,
-				                        cate AS categoria,
-				                        vendedor,
-					                        ROUND(SUM(IF(MONTH(fecha) = 1,  cantidad, 0)),2) AS ene,
-								            ROUND(SUM(IF(MONTH(fecha) = 2,  cantidad, 0)),2) AS feb,
-								            ROUND(SUM(IF(MONTH(fecha) = 3,  cantidad, 0)),2) AS mar,
-								            ROUND(SUM(IF(MONTH(fecha) = 4,  cantidad, 0)),2) AS abr,
-								            ROUND(SUM(IF(MONTH(fecha) = 5,  cantidad, 0)),2) AS may,
-								            ROUND(SUM(IF(MONTH(fecha) = 6,  cantidad, 0)),2) AS jun,
-								            ROUND(SUM(IF(MONTH(fecha) = 7,  cantidad, 0)),2) AS jul,
-								            ROUND(SUM(IF(MONTH(fecha) = 8,  cantidad, 0)),2) AS ago,
-								            ROUND(SUM(IF(MONTH(fecha) = 9,  cantidad, 0)),2) AS sep,
-								            ROUND(SUM(IF(MONTH(fecha) = 10,  cantidad, 0)),2) AS oct,
-								            ROUND(SUM(IF(MONTH(fecha) = 11,  cantidad, 0)),2) AS nov,
-								            ROUND(SUM(IF(MONTH(fecha) = 12,  cantidad, 0)),2) AS dic,
-								            ROUND(SUM(cantidad),2) AS total
-                                  FROM
-                                 (  '.$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
+            $sql=$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
 					            codigo, articulo,
 	                            tipodoc,documento,fecha,
 	                            cantidad,costotal,
@@ -205,32 +187,12 @@ class ClientesPacController extends Controller
 	                            marcod,marca,
 					            vencod,vendedor,
 					            catcod,cate
-                        FROM ( '.$sqlnc.') a'.') b
-                                      GROUP BY b.codigocliente,b.cliente,b.cate,b.vendedor
-                                      ORDER BY SUM(b.cantidad) DESC';
+                        FROM ( '.$sqlnc.') a';
         }
         else
         {
             //return $this->getOk('falseeee');
-            $sql='SELECT 	codigocliente AS codigo,
-				                        cliente AS articulo,
-				                        cate AS categoria,
-				                        vendedor,
-					                        ROUND(SUM(IF(MONTH(fecha) = 1,  vtaneta, 0)),2) AS ene,
-								            ROUND(SUM(IF(MONTH(fecha) = 2,  vtaneta, 0)),2) AS feb,
-								            ROUND(SUM(IF(MONTH(fecha) = 3,  vtaneta, 0)),2) AS mar,
-								            ROUND(SUM(IF(MONTH(fecha) = 4,  vtaneta, 0)),2) AS abr,
-								            ROUND(SUM(IF(MONTH(fecha) = 5,  vtaneta, 0)),2) AS may,
-								            ROUND(SUM(IF(MONTH(fecha) = 6,  vtaneta, 0)),2) AS jun,
-								            ROUND(SUM(IF(MONTH(fecha) = 7,  vtaneta, 0)),2) AS jul,
-								            ROUND(SUM(IF(MONTH(fecha) = 8,  vtaneta, 0)),2) AS ago,
-								            ROUND(SUM(IF(MONTH(fecha) = 9,  vtaneta, 0)),2) AS sep,
-								            ROUND(SUM(IF(MONTH(fecha) = 10,  vtaneta, 0)),2) AS oct,
-								            ROUND(SUM(IF(MONTH(fecha) = 11,  vtaneta, 0)),2) AS nov,
-								            ROUND(SUM(IF(MONTH(fecha) = 12,  vtaneta, 0)),2) AS dic,
-								            ROUND(SUM(vtaneta),2) AS total
-                                  FROM
-                                 (  '.$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
+            $sql=$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
 					            codigo, articulo,
 	                            tipodoc,documento,fecha,
 	                            cantidad,costotal,
@@ -240,9 +202,7 @@ class ClientesPacController extends Controller
 	                            marcod,marca,
 					            vencod,vendedor,
 					            catcod,cate
-                        FROM ( '.$sqlnc.') a'.') b
-                                      GROUP BY b.codigocliente,b.cliente,b.cate,b.vendedor
-                                      ORDER BY SUM(b.vtaneta) DESC';
+                        FROM ( '.$sqlnc.') a';
         }
 
 
@@ -318,22 +278,7 @@ class ClientesPacController extends Controller
 
         if ($unidades=="true")
         {
-            $sql='SELECT 	vencod,vendedor,
-					            ROUND(SUM(IF(MONTH(fecha) = 1,  cantidad, 0)),2) AS ene,
-								ROUND(SUM(IF(MONTH(fecha) = 2,  cantidad, 0)),2) AS feb,
-								ROUND(SUM(IF(MONTH(fecha) = 3,  cantidad, 0)),2) AS mar,
-								ROUND(SUM(IF(MONTH(fecha) = 4,  cantidad, 0)),2) AS abr,
-								ROUND(SUM(IF(MONTH(fecha) = 5,  cantidad, 0)),2) AS may,
-								ROUND(SUM(IF(MONTH(fecha) = 6,  cantidad, 0)),2) AS jun,
-								ROUND(SUM(IF(MONTH(fecha) = 7,  cantidad, 0)),2) AS jul,
-								ROUND(SUM(IF(MONTH(fecha) = 8,  cantidad, 0)),2) AS ago,
-								ROUND(SUM(IF(MONTH(fecha) = 9,  cantidad, 0)),2) AS sep,
-								ROUND(SUM(IF(MONTH(fecha) = 10,  cantidad, 0)),2) AS oct,
-								ROUND(SUM(IF(MONTH(fecha) = 11,  cantidad, 0)),2) AS nov,
-								ROUND(SUM(IF(MONTH(fecha) = 12,  cantidad, 0)),2) AS dic,
-								ROUND(SUM(cantidad),2) AS total
-                            FROM
-                                 (  '.$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
+            $sql=$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
 					            codigo, articulo,
 	                            tipodoc,documento,fecha,
 	                            cantidad,costotal,
@@ -343,28 +288,11 @@ class ClientesPacController extends Controller
 	                            marcod,marca,
 					            vencod,vendedor,
 					            catcod,cate
-                        FROM ( '.$sqlnc.') a'.') b
-                                      GROUP BY b.vencod,b.vendedor
-                                      ORDER BY SUM(b.cantidad) DESC';
+                        FROM ( '.$sqlnc.') a';
         }
         else
         {
-            $sql='SELECT 	vencod,vendedor,
-					            ROUND(SUM(IF(MONTH(fecha) = 1,  vtaneta, 0)),2) AS ene,
-								ROUND(SUM(IF(MONTH(fecha) = 2,  vtaneta, 0)),2) AS feb,
-								ROUND(SUM(IF(MONTH(fecha) = 3,  vtaneta, 0)),2) AS mar,
-								ROUND(SUM(IF(MONTH(fecha) = 4,  vtaneta, 0)),2) AS abr,
-								ROUND(SUM(IF(MONTH(fecha) = 5,  vtaneta, 0)),2) AS may,
-								ROUND(SUM(IF(MONTH(fecha) = 6,  vtaneta, 0)),2) AS jun,
-								ROUND(SUM(IF(MONTH(fecha) = 7,  vtaneta, 0)),2) AS jul,
-								ROUND(SUM(IF(MONTH(fecha) = 8,  vtaneta, 0)),2) AS ago,
-								ROUND(SUM(IF(MONTH(fecha) = 9,  vtaneta, 0)),2) AS sep,
-								ROUND(SUM(IF(MONTH(fecha) = 10,  vtaneta, 0)),2) AS oct,
-								ROUND(SUM(IF(MONTH(fecha) = 11,  vtaneta, 0)),2) AS nov,
-								ROUND(SUM(IF(MONTH(fecha) = 12,  vtaneta, 0)),2) AS dic,
-								ROUND(SUM(vtaneta),2) AS total
-                            FROM
-                                 (  '.$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
+            $sql=$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
 					            codigo, articulo,
 	                            tipodoc,documento,fecha,
 	                            cantidad,costotal,
@@ -374,9 +302,7 @@ class ClientesPacController extends Controller
 	                            marcod,marca,
 					            vencod,vendedor,
 					            catcod,cate
-                        FROM ( '.$sqlnc.') a'.') b
-                                      GROUP BY b.vencod,b.vendedor
-                                      ORDER BY SUM(b.vtaneta) DESC';
+                        FROM ( '.$sqlnc.') a ';
         }
 
 
@@ -447,35 +373,7 @@ class ClientesPacController extends Controller
         // IFNULL((SELECT cantact01 FROM fullmconsigvirt.maepro WHERE codigo=fullmconsigvirt.maepro.codprod01),0) +
         if ($unidades=="true")
         {
-            $sql='SELECT 	codigo,
-                                articulo,
-                                marca,
-                                (
-                                    IFNULL((SELECT cantact01 FROM fullm.maepro WHERE codigo=fullm.maepro.codprod01),0)+
-                                    IFNULL((SELECT cantact01 FROM fullmcuenca2.maepro WHERE codigo=fullmcuenca2.maepro.codprod01),0)+
-                                    IFNULL((SELECT cantact01 FROM fullmgye1.maepro WHERE codigo=fullmgye1.maepro.codprod01),0)+
-                                    IFNULL((SELECT cantact01 FROM fullmuio1.maepro WHERE codigo=fullmuio1.maepro.codprod01),0)+
-
-                                    IFNULL((SELECT cantact01 FROM fullmstecvir.maepro WHERE codigo=fullmstecvir.maepro.codprod01),0) +
-                                    IFNULL((SELECT cantact01 FROM fullmgyeassem.maepro WHERE codigo=fullmgyeassem.maepro.codprod01),0) +
-                                    IFNULL((SELECT cantact01 FROM fullmcuenca1.maepro WHERE codigo=fullmcuenca1.maepro.codprod01),0) +
-                                    IFNULL((SELECT cantact01 FROM fullmgye10.maepro WHERE codigo=fullmgye10.maepro.codprod01),0)
-                                ) as stock,
-					            ROUND(SUM(IF(MONTH(fecha) = 1,  cantidad, 0)),2) AS ene,
-								ROUND(SUM(IF(MONTH(fecha) = 2,  cantidad, 0)),2) AS feb,
-								ROUND(SUM(IF(MONTH(fecha) = 3,  cantidad, 0)),2) AS mar,
-								ROUND(SUM(IF(MONTH(fecha) = 4,  cantidad, 0)),2) AS abr,
-								ROUND(SUM(IF(MONTH(fecha) = 5,  cantidad, 0)),2) AS may,
-								ROUND(SUM(IF(MONTH(fecha) = 6,  cantidad, 0)),2) AS jun,
-								ROUND(SUM(IF(MONTH(fecha) = 7,  cantidad, 0)),2) AS jul,
-								ROUND(SUM(IF(MONTH(fecha) = 8,  cantidad, 0)),2) AS ago,
-								ROUND(SUM(IF(MONTH(fecha) = 9,  cantidad, 0)),2) AS sep,
-								ROUND(SUM(IF(MONTH(fecha) = 10,  cantidad, 0)),2) AS oct,
-								ROUND(SUM(IF(MONTH(fecha) = 11,  cantidad, 0)),2) AS nov,
-								ROUND(SUM(IF(MONTH(fecha) = 12,  cantidad, 0)),2) AS dic,
-								ROUND(SUM(cantidad),2) AS total
-                            FROM
-                                 (  '.$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
+            $sql=$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
 					            codigo, articulo,
 	                            tipodoc,documento,fecha,
 	                            cantidad,costotal,
@@ -485,42 +383,12 @@ class ClientesPacController extends Controller
 	                            marcod,marca,
 					            vencod,vendedor,
 					            catcod,cate
-                        FROM ( '.$sqlnc.') a'.') b
-                                      GROUP BY b.codigo,b.articulo,b.marca
-                                      ORDER BY SUM(b.cantidad) DESC';
+                        FROM ( '.$sqlnc.') a ';
         }
         else
         {
             //IFNULL((SELECT cantact01 FROM fullmconsigvirt.maepro WHERE codigo=fullmconsigvirt.maepro.codprod01),0) +
-            $sql='SELECT 	codigo,
-                                articulo,
-                                marca,
-                                (
-                                    IFNULL((SELECT cantact01 FROM fullm.maepro WHERE codigo=fullm.maepro.codprod01),0)+
-                                    IFNULL((SELECT cantact01 FROM fullmcuenca2.maepro WHERE codigo=fullmcuenca2.maepro.codprod01),0)+
-                                    IFNULL((SELECT cantact01 FROM fullmgye1.maepro WHERE codigo=fullmgye1.maepro.codprod01),0)+
-                                    IFNULL((SELECT cantact01 FROM fullmuio1.maepro WHERE codigo=fullmuio1.maepro.codprod01),0)+
-
-                                    IFNULL((SELECT cantact01 FROM fullmstecvir.maepro WHERE codigo=fullmstecvir.maepro.codprod01),0) +
-                                    IFNULL((SELECT cantact01 FROM fullmgyeassem.maepro WHERE codigo=fullmgyeassem.maepro.codprod01),0) +
-                                    IFNULL((SELECT cantact01 FROM fullmcuenca1.maepro WHERE codigo=fullmcuenca1.maepro.codprod01),0) +
-                                    IFNULL((SELECT cantact01 FROM fullmgye10.maepro WHERE codigo=fullmgye10.maepro.codprod01),0)
-                                ) as stock,
-					            ROUND(SUM(IF(MONTH(fecha) = 1,  vtaneta, 0)),2) AS ene,
-								ROUND(SUM(IF(MONTH(fecha) = 2,  vtaneta, 0)),2) AS feb,
-								ROUND(SUM(IF(MONTH(fecha) = 3,  vtaneta, 0)),2) AS mar,
-								ROUND(SUM(IF(MONTH(fecha) = 4,  vtaneta, 0)),2) AS abr,
-								ROUND(SUM(IF(MONTH(fecha) = 5,  vtaneta, 0)),2) AS may,
-								ROUND(SUM(IF(MONTH(fecha) = 6,  vtaneta, 0)),2) AS jun,
-								ROUND(SUM(IF(MONTH(fecha) = 7,  vtaneta, 0)),2) AS jul,
-								ROUND(SUM(IF(MONTH(fecha) = 8,  vtaneta, 0)),2) AS ago,
-								ROUND(SUM(IF(MONTH(fecha) = 9,  vtaneta, 0)),2) AS sep,
-								ROUND(SUM(IF(MONTH(fecha) = 10,  vtaneta, 0)),2) AS oct,
-								ROUND(SUM(IF(MONTH(fecha) = 11,  vtaneta, 0)),2) AS nov,
-								ROUND(SUM(IF(MONTH(fecha) = 12,  vtaneta, 0)),2) AS dic,
-								ROUND(SUM(vtaneta),2) AS total
-                            FROM
-                                 (  '.$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
+            $sql=$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
 					            codigo, articulo,
 	                            tipodoc,documento,fecha,
 	                            cantidad,costotal,
@@ -530,9 +398,7 @@ class ClientesPacController extends Controller
 	                            marcod,marca,
 					            vencod,vendedor,
 					            catcod,cate
-                        FROM ( '.$sqlnc.') a'.') b
-                                      GROUP BY b.codigo,b.articulo,b.marca
-                                      ORDER BY SUM(b.vtaneta) DESC';
+                        FROM ( '.$sqlnc.') a';
 
         }
 
@@ -608,22 +474,7 @@ class ClientesPacController extends Controller
 
         if ($unidades=="true")
         {
-            $sql='SELECT 	marca,
-					            ROUND(SUM(IF(MONTH(fecha) = 1,  cantidad, 0)),2) AS ene,
-								ROUND(SUM(IF(MONTH(fecha) = 2,  cantidad, 0)),2) AS feb,
-								ROUND(SUM(IF(MONTH(fecha) = 3,  cantidad, 0)),2) AS mar,
-								ROUND(SUM(IF(MONTH(fecha) = 4,  cantidad, 0)),2) AS abr,
-								ROUND(SUM(IF(MONTH(fecha) = 5,  cantidad, 0)),2) AS may,
-								ROUND(SUM(IF(MONTH(fecha) = 6,  cantidad, 0)),2) AS jun,
-								ROUND(SUM(IF(MONTH(fecha) = 7,  cantidad, 0)),2) AS jul,
-								ROUND(SUM(IF(MONTH(fecha) = 8,  cantidad, 0)),2) AS ago,
-								ROUND(SUM(IF(MONTH(fecha) = 9,  cantidad, 0)),2) AS sep,
-								ROUND(SUM(IF(MONTH(fecha) = 10,  cantidad, 0)),2) AS oct,
-								ROUND(SUM(IF(MONTH(fecha) = 11,  cantidad, 0)),2) AS nov,
-								ROUND(SUM(IF(MONTH(fecha) = 12,  cantidad, 0)),2) AS dic,
-								ROUND(SUM(cantidad),2) AS total
-                            FROM
-                                 (  '.$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
+            $sql=$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
 					            codigo, articulo,
 	                            tipodoc,documento,fecha,
 	                            cantidad,costotal,
@@ -633,28 +484,11 @@ class ClientesPacController extends Controller
 	                            marcod,marca,
 					            vencod,vendedor,
 					            catcod,cate
-                        FROM ( '.$sqlnc.') a'.') b
-                                      GROUP BY b.marca
-                                      ORDER BY SUM(b.cantidad) DESC';
+                        FROM ( '.$sqlnc.') a';
         }
         else
         {
-            $sql='SELECT 	marca,
-					            ROUND(SUM(IF(MONTH(fecha) = 1,  vtaneta, 0)),2) AS ene,
-								ROUND(SUM(IF(MONTH(fecha) = 2,  vtaneta, 0)),2) AS feb,
-								ROUND(SUM(IF(MONTH(fecha) = 3,  vtaneta, 0)),2) AS mar,
-								ROUND(SUM(IF(MONTH(fecha) = 4,  vtaneta, 0)),2) AS abr,
-								ROUND(SUM(IF(MONTH(fecha) = 5,  vtaneta, 0)),2) AS may,
-								ROUND(SUM(IF(MONTH(fecha) = 6,  vtaneta, 0)),2) AS jun,
-								ROUND(SUM(IF(MONTH(fecha) = 7,  vtaneta, 0)),2) AS jul,
-								ROUND(SUM(IF(MONTH(fecha) = 8,  vtaneta, 0)),2) AS ago,
-								ROUND(SUM(IF(MONTH(fecha) = 9,  vtaneta, 0)),2) AS sep,
-								ROUND(SUM(IF(MONTH(fecha) = 10,  vtaneta, 0)),2) AS oct,
-								ROUND(SUM(IF(MONTH(fecha) = 11,  vtaneta, 0)),2) AS nov,
-								ROUND(SUM(IF(MONTH(fecha) = 12,  vtaneta, 0)),2) AS dic,
-								ROUND(SUM(vtaneta),2) AS total
-                            FROM
-                                 (  '.$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
+            $sql=$sql.' UNION ALL SELECT agencia,codigocliente,cliente,desfac,
 					            codigo, articulo,
 	                            tipodoc,documento,fecha,
 	                            cantidad,costotal,
@@ -664,9 +498,7 @@ class ClientesPacController extends Controller
 	                            marcod,marca,
 					            vencod,vendedor,
 					            catcod,cate
-                        FROM ( '.$sqlnc.') a'.') b
-                                      GROUP BY b.marca
-                                      ORDER BY SUM(b.vtaneta) DESC';
+                        FROM ( '.$sqlnc.') a';
         }
 
 
@@ -776,7 +608,6 @@ class ClientesPacController extends Controller
 					    INNER JOIN xbase.maecte ON codcte43=codcte01
 					    WHERE tipodoc43 IN ('53')  AND fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin' AND cvanulado43<>'S' AND tipoNC43<>'P' and ocurren43 in ('00','0000')
                             and case when '0'='xclie' then true else codcte43 in ('xclie') end
-                            and case when '0'='xvend' then true else numvencob43 in ('xvend') end
                         UNION ALL
                         SELECT SUBSTRING(numdoc43,1,7) AS agencia,
 					             codcte43 AS codigocliente,
@@ -803,9 +634,7 @@ class ClientesPacController extends Controller
 					      FROM xbase.movcte2
 					      INNER JOIN xbase.maecte ON codcte43=codcte01
 					      WHERE tipodoc43 IN ('53')  AND fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin' AND cvanulado43<>'S' AND tipoNC43<>'P' and ocurren43 in ('00','0000')
-                              and case when '0'='xclie' then true else codcte43 in ('xclie') end
-                              and case when '0'='xvend' then true else numvencob43 in ('xvend') end";
-
+                              and case when '0'='xclie' then true else codcte43 in ('xclie') end";
 
         $queryncmatriz=  str_replace('xbase',$bodega,$queryncmatriz);
         $queryncmatriz=  str_replace('xfinicio',$inicio,$queryncmatriz);

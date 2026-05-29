@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Models\SqlModel;
 
 class AuthController extends Controller
 {
@@ -73,18 +74,26 @@ class AuthController extends Controller
             //     ])
             //     ->get();
             // }
+
+            //fsigu sqls
+            /*$sql=$request['app'];
+            $box = new SqlModel();
+            $box->sql= $sql;
+            $box->sql1=$sql;
+            $box->save();*/
+
             $mostrarMenu='jcev';
             if (isset($request['app'])){
-                if($request['app']='jcev'){
+                if($request['app']=='jcev'){
                         $mostrarMenu='jcev';
                     }else{
                        $mostrarMenu='movil';
                     }
             }else{
-                $mostrarMenu='movil';
+                $mostrarMenu='jcev';
             }
 
-            if ($mostrarMenu='jcev'){
+            if ($mostrarMenu=='jcev'){
                 $menu = Menu::where("parent_id", null)
                         ->where("isactive", 1)
                         ->where("app", 0)

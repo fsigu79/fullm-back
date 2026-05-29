@@ -36,7 +36,7 @@ class TodoMotoVentaMensualController extends Controller
 	 				        novend31 AS vencod,
   					        (SELECT nomtab FROM todomoto.maetab WHERE numtab='73' AND codtab =novend31) AS vendedor,
 					        catcte01 AS catcod,
-  					        (SELECT b.desccate AS categoria FROM todomoto.categorias a INNER JOIN  todomoto.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
+  					        (SELECT a.desccate AS categoria FROM todomoto.categorias a INNER JOIN  todomoto.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
                FROM xbase.movpro
                INNER JOIN ybase1.maepro ON codprod03 = codprod01
                INNER JOIN zbase1.maefac ON NOCOMP03=nofact31 AND cvanulado31!=9
@@ -68,7 +68,7 @@ class TodoMotoVentaMensualController extends Controller
 						      numvencob43 AS vencod,
 						      (SELECT nomtab FROM todomoto.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM todomoto.categorias a INNER JOIN  todomoto.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
+						      (SELECT a.desccate AS categoria FROM todomoto.categorias a INNER JOIN  todomoto.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
 					      FROM todomoto.movcte
 					      INNER JOIN todomoto.maecte ON codcte43=codcte01
 					      INNER JOIN xbase.movpro  ON NOCOMP03=numdoc43 AND tipotra03 IN ('22') AND cvanulado03 <>'S'
@@ -101,7 +101,7 @@ class TodoMotoVentaMensualController extends Controller
 						      numvencob43 AS vencod,
 						      (SELECT nomtab FROM todomoto.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM todomoto.categorias a INNER JOIN  todomoto.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
+						      (SELECT a.desccate AS categoria FROM todomoto.categorias a INNER JOIN  todomoto.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
 					      FROM todomoto.movcte2
 					      INNER JOIN todomoto.maecte ON codcte43=codcte01
 					      INNER JOIN xbase.movpro  ON NOCOMP03=numdoc43 AND tipotra03 IN ('22') AND cvanulado03 <>'S'
@@ -643,7 +643,7 @@ class TodoMotoVentaMensualController extends Controller
 						      numvencob43 AS vencod,
 						      (SELECT nomtab FROM todomoto.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM todomoto.categorias a INNER JOIN  todomoto.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
+						      (SELECT a.desccate AS categoria FROM todomoto.categorias a INNER JOIN  todomoto.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
 					    FROM xbase.movcte
 					    INNER JOIN xbase.maecte ON codcte43=codcte01
 					    WHERE tipodoc43 IN ('53')  AND fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin' AND cvanulado43<>'S' AND tipoNC43<>'P' and ocurren43 in ('00','0000')
@@ -670,7 +670,7 @@ class TodoMotoVentaMensualController extends Controller
 						      numvencob43 AS vencod,
 						      (SELECT nomtab FROM todomoto.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM  todomoto.categorias a INNER JOIN   todomoto.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
+						      (SELECT a.desccate AS categoria FROM  todomoto.categorias a INNER JOIN   todomoto.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
 					      FROM xbase.movcte2
 					      INNER JOIN xbase.maecte ON codcte43=codcte01
 					      WHERE tipodoc43 IN ('53')  AND fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin' AND cvanulado43<>'S' AND tipoNC43<>'P' and ocurren43 in ('00','0000')

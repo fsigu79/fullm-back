@@ -29,8 +29,7 @@ class SiniestroController extends Controller
         $finicio=$request['finicio'];
         $ffin=$request['ffin'];
         $doc=$request['doc'];
-
-
+        $ing=$request['ing'];
 
         $sql=  "SELECT c.id,c.serie, documento, c.numero as numero,cliente_id,destino_id,cliente_codigo,cliente_ruc,cliente_nombre,d.nombre as destino,
                         transportista,referencia,observacion,fecha, total,c.esactivo,aprobado,registrado,referencia_pac,negado,referencia_negado,
@@ -38,9 +37,10 @@ class SiniestroController extends Controller
                 FROM movimientos c
                 inner join destinos d on c.destino_id=d.id
                 where fecha>=? and fecha<=? and c.documento=?
+                and case when '0'=? then true else registrado=0 end
                 order by fecha desc,numero desc";
 
-        $list = DB::select($sql,[$finicio,$ffin,$doc]);
+        $list = DB::select($sql,[$finicio,$ffin,$doc,$ing]);
 
         return $this->getOk($list);
     }

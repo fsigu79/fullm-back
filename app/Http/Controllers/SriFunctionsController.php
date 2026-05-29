@@ -146,10 +146,10 @@ class SriFunctionsController extends Controller
     public function soapRecuestRc($xml)
     {
         //fsigu sqls
-        $box = new SqlModel();
+        /*$box = new SqlModel();
         $box->sql = 'soapRecuestRc';
         $box->sql1 = 'wsdl';
-        $box->save();
+        $box->save();*/
 
 
         if ($this->company["environment"] == 1) {
@@ -180,10 +180,10 @@ class SriFunctionsController extends Controller
     public function soapRecuestAc($key)
     {
         //fsigu sqls
-        $box = new SqlModel();
+        /*$box = new SqlModel();
         $box->sql = 'soapRecuestAc';
         $box->sql1 = '2';
-        $box->save();
+        $box->save();*/
 
         if ($this->company["environment"] == 1) {
             $wsdl = env('WS_SRI_AC');
@@ -418,6 +418,12 @@ class SriFunctionsController extends Controller
             $campoAdicional = $xml->createElement("campoAdicional");
             $campoAdicional->setAttribute("nombre", "Observacion");
             $campoAdicional->appendChild($xml->createTextNode($this->invoice['observacion']));
+            $infoAdicional->appendChild($campoAdicional);
+        }
+        if (isset($this->invoice['documentos'])) {
+            $campoAdicional = $xml->createElement("campoAdicional");
+            $campoAdicional->setAttribute("nombre", "Factura");
+            $campoAdicional->appendChild($xml->createTextNode($this->invoice['documentos']));
             $infoAdicional->appendChild($campoAdicional);
         }
 

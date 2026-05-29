@@ -37,7 +37,7 @@ class CredimportVentaMensualController extends Controller
 	 				        novend31 AS vencod,
   					        (SELECT nomtab FROM vintipart.maetab WHERE numtab='73' AND codtab =novend31) AS vendedor,
 					        catcte01 AS catcod,
-  					        (SELECT b.desccate AS categoria FROM vintipart.categorias a INNER JOIN  vintipart.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
+  					        (SELECT a.desccate AS categoria FROM vintipart.categorias a INNER JOIN  vintipart.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
                FROM xbase.movpro
                INNER JOIN ybase1.maepro ON codprod03 = codprod01
                INNER JOIN zbase1.maefac ON NOCOMP03=nofact31 AND cvanulado31!=9
@@ -69,7 +69,7 @@ class CredimportVentaMensualController extends Controller
 						      numvencob43 AS vencod,
 						      (SELECT nomtab FROM vintipart.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM vintipart.categorias a INNER JOIN  vintipart.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
+						      (SELECT a.desccate AS categoria FROM vintipart.categorias a INNER JOIN  vintipart.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
 					      FROM vintipart.movcte
 					      INNER JOIN vintipart.maecte ON codcte43=codcte01
 					      INNER JOIN xbase.movpro  ON NOCOMP03=numdoc43 AND tipotra03 IN ('22') AND cvanulado03 <>'S'
@@ -102,7 +102,7 @@ class CredimportVentaMensualController extends Controller
 						      numvencob43 AS vencod,
 						      (SELECT nomtab FROM vintipart.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM vintipart.categorias a INNER JOIN  vintipart.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
+						      (SELECT a.desccate AS categoria FROM vintipart.categorias a INNER JOIN  vintipart.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
 					      FROM vintipart.movcte2
 					      INNER JOIN vintipart.maecte ON codcte43=codcte01
 					      INNER JOIN xbase.movpro  ON NOCOMP03=numdoc43 AND tipotra03 IN ('22') AND cvanulado03 <>'S'
@@ -408,7 +408,8 @@ class CredimportVentaMensualController extends Controller
                                 (
                                     IFNULL((SELECT cantact01 FROM vintipart.maepro WHERE codigo=vintipart.maepro.codprod01),0)+
                                     IFNULL((SELECT cantact01 FROM vintipartcuen1.maepro WHERE codigo=vintipartcuen1.maepro.codprod01),0)+
-                                    IFNULL((SELECT cantact01 FROM vintipartuio.maepro WHERE codigo=vintipartuio.maepro.codprod01),0)
+                                    IFNULL((SELECT cantact01 FROM vintipartuio.maepro WHERE codigo=vintipartuio.maepro.codprod01),0)+
+                                    IFNULL((SELECT cantact01 FROM vintipartgye3.maepro WHERE codigo=vintipartgye3.maepro.codprod01),0)
                                 ) as stock,
 					            ROUND(SUM(IF(MONTH(fecha) = 1,  cantidad, 0)),2) AS ene,
 								ROUND(SUM(IF(MONTH(fecha) = 2,  cantidad, 0)),2) AS feb,
@@ -596,10 +597,10 @@ class CredimportVentaMensualController extends Controller
         }
 
             //fsigu sqls
-         $box = new SqlModel();
+         /*$box = new SqlModel();
             $box->sql= $sql;
             $box->sql1=$sql;
-            $box->save();
+            $box->save();*/
 
         //return $this->getOk($sql);
 
@@ -677,7 +678,7 @@ class CredimportVentaMensualController extends Controller
 						      numvencob43 AS vencod,
 						      (SELECT nomtab FROM vintipart.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM vintipart.categorias a INNER JOIN  vintipart.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
+						      (SELECT a.desccate AS categoria FROM vintipart.categorias a INNER JOIN  vintipart.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
 					    FROM xbase.movcte
 					    INNER JOIN xbase.maecte ON codcte43=codcte01
 					    WHERE tipodoc43 IN ('53')  AND fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin' AND cvanulado43<>'S' AND tipoNC43<>'P' and ocurren43 in ('00','0000')
@@ -704,7 +705,7 @@ class CredimportVentaMensualController extends Controller
 						      numvencob43 AS vencod,
 						      (SELECT nomtab FROM vintipart.maetab WHERE numtab='73' AND codtab=numvencob43) AS vendedor,
 						      catcte01 AS catcod,
-						      (SELECT b.desccate AS categoria FROM  vintipart.categorias a INNER JOIN   vintipart.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
+						      (SELECT a.desccate AS categoria FROM  vintipart.categorias a INNER JOIN   vintipart.categorias b ON a.codcatep=b.codcate AND b.tipocate='03' WHERE a.tipocate='03' AND a.codcate=catcte01) AS cate
 					      FROM xbase.movcte2
 					      INNER JOIN xbase.maecte ON codcte43=codcte01
 					      WHERE tipodoc43 IN ('53')  AND fecdoc43 >= 'xfinicio'  AND fecdoc43 <= 'xffin' AND cvanulado43<>'S' AND tipoNC43<>'P' and ocurren43 in ('00','0000')

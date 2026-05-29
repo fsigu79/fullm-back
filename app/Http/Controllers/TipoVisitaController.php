@@ -33,7 +33,18 @@ class TipoVisitaController extends Controller
 
     public function list(){
         try{
-        $list = TipoVisita::where('esactivo', '1')->get();
+        $list = TipoVisita::where('esactivo', '1')->where('modulo','P')->get();
+            return $this->getOk($list);
+
+        } catch (\Exception $e) {
+            return $this->getErr($e->getMessage());
+        }
+
+    }
+
+    public function listVisitas(){
+        try{
+        $list = TipoVisita::where('esactivo', '1')->where('modulo','V')->get();
             return $this->getOk($list);
 
         } catch (\Exception $e) {

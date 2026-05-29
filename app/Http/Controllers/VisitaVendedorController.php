@@ -4,14 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Traits\FormatResponseTrait;
-use App\Models\Visita;
+use App\Models\VisitaVendedor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
-class VisitaController extends Controller
+class VisitaVendedorController extends Controller
 {
     use FormatResponseTrait;
 
@@ -40,9 +40,9 @@ class VisitaController extends Controller
         $user=$usuario->id;
 
         $sql=  "SELECT v.id, numero, cliente_id_pac, cliente, direccion_id,d.nombre as direccion, fecha,
-                        tipo_id, marca,marca_venta,v.esactivo,v.longitud,v.latitud,inicio,fin,
-                        u.name||' '||u.surname as promotor
-                FROM visitas v
+                        tipo_id, v.esactivo,v.longitud,v.latitud,inicio,fin,
+                        u.name||' '||u.surname as vendedor
+                FROM visitasv v
                 inner join direcciones d on v.direccion_id=d.id
                 left join users u on usuario_created=u.id
                 where fecha>=? and fecha<=? and v.documento=?
@@ -54,9 +54,11 @@ class VisitaController extends Controller
     }
 
 
+
+
     public function findById($id)
     {
-        $entidad = Visita::with(['tipovisita','direciones'])->find($id);
+        $entidad = VisitaVendedor::with(['tipovisita','direciones'])->find($id);
         return $this->getOk($entidad);
     }
 
@@ -75,21 +77,13 @@ class VisitaController extends Controller
         if (!$validation->fails()) {
                 $input = $request->all();
                 try{
-                    $img4='';
-                    $img5='';
-                    if (isset($input['imagen4'])) {
-                        $img4=$input['imagen4'];
-                    }
-                    if (isset($input['imagen5'])) {
-                        $img5=$input['imagen5'];
-                    }
                     $usuario=Auth::user();
                     $userc=$usuario->id;
                     $userm=$usuario->id;
 
                     DB::beginTransaction();
                     if ($input['accion']!='Eliminar') {
-                        $results=DB::select('SELECT visitas_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                          $results=DB::select('SELECT visitas_vendedor_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                                     [$input['id'],
                                     $input['documento'],
                                     $input['numero'],
@@ -99,40 +93,28 @@ class VisitaController extends Controller
                                     $input['fecha'],
                                     $input['tipo_id'],
                                     $input['contacto'],
-                                    $input['marca'],
-                                    $input['marca_venta'],
-                                    $input['marca1'],
-                                    $input['marca_venta1'],
-                                    $input['marca2'],
-                                    $input['marca_venta2'],
-                                    $input['marca3'],
-                                    $input['marca_venta3'],
                                     $input['observaciones'],
                                     $input['longitud'],
                                     $input['latitud'],
                                     $input['imagen1'],
                                     $input['imagen2'],
                                     $input['imagen3'],
-                                    $img4,
-                                    $img5,
                                     $input['firma'],
-                                    $input['revision_stock'],
-                                    $input['ex_preferencial'],
-                                    $input['material_pop'],
-                                    $input['limpieza_producto'],
-                                    $input['revision_antiguedad'],
-                                    $input['reposicion_stock'],
+                                    $input['escobranza'],
+                                    $input['pagare'],
+                                    $input['pedido_numero'],
+                                    $input['inicio'],
+                                    $input['fin'],
                                     $input['esactivo'],
                                     $userc,
                                     $userm,
                                     $input['accion'],
-                                    $input['inicio'],
-                                    $input['fin']
+
                                 ]);
 
                     }else{
 
-                        $results=DB::select('SELECT SELECT visita_elimina(?,?,?)',
+                        $results=DB::select('SELECT SELECT visita_vendedor_elimina(?,?,?)',
                         [$input['id'],
                         $input['documento'],
                         $input['numero'],

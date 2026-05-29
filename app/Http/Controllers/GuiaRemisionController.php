@@ -22,7 +22,6 @@ use PDF;
 use Illuminate\Support\Str;
 use App\Models\SqlModel;
 
-
 class GuiaRemisionController extends Controller
 {
     use FormatResponseTrait;
@@ -608,4 +607,21 @@ class GuiaRemisionController extends Controller
             ], 400);
         }
     }
+
+    public function buscarSerieEnGuias(Request $request)
+    {
+        $serie = $request['serie'];
+
+        $sql = "select id,serie,numero,fecha_inicio,
+                'Guia Numero: '||numero|| ' del: '||fecha_inicio ||' en la empresa Fullm ' as descripcion
+                from guias_remision where id in (select guiar_id from guias_remisiond where descripcion like '%".$serie."%')
+                ORDER BY numero DESC";
+
+        $list = DB::select($sql, []);
+
+        return $this->getOk($list);
+    }
+
+
+
 }
