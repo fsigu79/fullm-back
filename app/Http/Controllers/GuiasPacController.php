@@ -227,8 +227,8 @@ class GuiasPacController extends Controller
                                     c.ruta,
 									dir.ciudad,
                                     dir.nombre as tienda,
-                                    t.ruc as ruc_transportista,
-                                    t.nombres as nombre_transportista,
+                                    c.ruc_transportista,
+                                    c.nombre_transportista,
                                     '' as vendedor,
                                     '' as marca,
                                     d.codigo,
@@ -237,7 +237,6 @@ class GuiasPacController extends Controller
                                     d.cantidad
                             from guias_remision c
                             inner join guias_remisiond d on c.id=d.guiar_id
-                            inner join transportistas t on c.transportista_id=t.id
                             left join direcciones dir on c.direccion_id=dir.id
                             left join documentos doc on c.serie=doc.serie and doc.codigo='GR'
                             where fecha_inicio>=? and fecha_inicio<=?
