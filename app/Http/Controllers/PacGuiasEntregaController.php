@@ -155,7 +155,7 @@ class PacGuiasEntregaController extends Controller
 
 
         foreach ($list as $detalle) {
-            $results = DB::select('SELECT guias_pac_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [
+            $results = DB::select('SELECT guias_pac_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [
                 $detalle->numero,
                 $detalle->fecha,
                 $detalle->nombre_transportista,
@@ -181,7 +181,8 @@ class PacGuiasEntregaController extends Controller
                 $detalle->fecha_factura,
                 '',
                 null,
-                $detalle->usuario
+                $detalle->usuario,
+                $detalle->placa
             ]);
         };
         $termino = "IMPORTACION OK";
@@ -225,7 +226,7 @@ class PacGuiasEntregaController extends Controller
 
 
         foreach ($list as $detalle) {
-            $results = DB::select('SELECT guias_pac_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [
+            $results = DB::select('SELECT guias_pac_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [
                 $detalle->numero,
                 $detalle->fecha,
                 $detalle->nombre_transportista,
@@ -251,7 +252,8 @@ class PacGuiasEntregaController extends Controller
                 $detalle->fecha_factura,
                 '',
                 null,
-                $detalle->usuario
+                $detalle->usuario,
+                $detalle->placa
             ]);
         };
         $termino = "IMPORTACION OK";
@@ -295,7 +297,7 @@ class PacGuiasEntregaController extends Controller
 
 
         foreach ($list as $detalle) {
-            $results = DB::select('SELECT guias_pac_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [
+            $results = DB::select('SELECT guias_pac_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [
                 $detalle->numero,
                 $detalle->fecha,
                 $detalle->nombre_transportista,
@@ -321,7 +323,8 @@ class PacGuiasEntregaController extends Controller
                 $detalle->fecha_factura,
                 '',
                 null,
-                $detalle->usuario
+                $detalle->usuario,
+                $detalle->placa
             ]);
         };
         $termino = "IMPORTACION OK";
@@ -801,5 +804,25 @@ class PacGuiasEntregaController extends Controller
         } else {
             return $this->updateErrCustom($validation->messages(), 'Datos inválidos');
         }
+    }
+
+    public function sincronizarPlaca()
+    {
+        $guias = DB::table('guias_remision')
+            ->select('serie', 'numero', 'placa')
+            ->where('fecha_inicio', '>=', '2026-01-01')
+            ->whereNotNull('placa')
+            ->get();
+
+        $actualizados = 0;
+        foreach ($guias as $guia) {
+            $numeroFormateado = $guia->serie . '-' . str_pad($guia->numero, 9, '0', STR_PAD_LEFT);
+            $actualizados += DB::connection('pgsql_optimus')->update(
+                "UPDATE guiaspac SET placa = ? WHERE numero_guia_remision = ? AND empresa = 'Fullmotos'",
+                [$guia->placa, $numeroFormateado]
+            );
+        }
+
+        return $this->getOk(['actualizados' => $actualizados, 'total' => $guias->count()]);
     }
 }

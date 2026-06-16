@@ -376,6 +376,7 @@ Route::group([
     Route::put('firmaguia', [PacGuiasEntregaController::class, 'actualizaFirma']);
     Route::post('add-image', [PacGuiasEntregaController::class, 'addImage']);
     Route::post('send-mail', [PacGuiasEntregaController::class, 'email_send_guias']);
+    Route::get('sincronizar-placa', [PacGuiasEntregaController::class, 'sincronizarPlaca']);
 });
 
 

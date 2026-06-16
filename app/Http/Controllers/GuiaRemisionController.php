@@ -287,7 +287,7 @@ class GuiaRemisionController extends Controller
 
                     try {
                         DB::connection('pgsql_optimus')->select(
-                            'SELECT guias_pac_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+                            'SELECT guias_pac_grabar(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                             [
                                 'Fullmotos',
                                 $numeroFormateado,
@@ -314,7 +314,8 @@ class GuiaRemisionController extends Controller
                                 '',
                                 null,
                                 auth()->user()->name ?? 'system',
-                                $input['transportista']['id'] ?? $input['transportista_id'] ?? null
+                                $input['transportista']['id'] ?? $input['transportista_id'] ?? null,
+                                $guianew->placa
                             ]
                         );
                         \Log::info('INSERT PAC OK: ' . $numeroFormateado);
