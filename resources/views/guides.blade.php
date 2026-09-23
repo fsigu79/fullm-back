@@ -224,6 +224,12 @@
                                     <td style="padding: 0.3em;">{{ $invoice->direccion }}</td>
                                 </tr>
                             @endif
+                            @if (!empty($invoice->agencia))
+                                <tr>
+                                    <td style="padding: 0.3em;">Agencia</td>
+                                    <td style="padding: 0.3em;">{{ $invoice->agencia }}</td>
+                                </tr>
+                            @endif
                             @if (isset($invoice->email))
                                 <tr>
                                     <td style="padding: 0.3em;">Email</td>

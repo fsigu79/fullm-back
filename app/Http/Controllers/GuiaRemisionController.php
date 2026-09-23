@@ -96,6 +96,15 @@ class GuiaRemisionController extends Controller
                 ];
             }
 
+            // Agencia para el PDF: direccion_id se resuelve contra la 'direcciones'
+            // de JCEV, vía 'pgsql_optimus' — la misma conexión que ya usa
+            // guias_pac_grabar más abajo para llegar a la base real de jcev-back.
+            // La 'direcciones' local de esta app (base 'fullm') no sirve: está
+            // desincronizada con la de jcev (mismo id, contenido distinto).
+            $invoice->agencia = $invoice->direccion_id
+                ? optional(DB::connection('pgsql_optimus')->table('direcciones')->where('id', $invoice->direccion_id)->first())->nombre
+                : null;
+
             $data = [
                 'invoice' => $invoice,
                 'company' => $company
